@@ -5,6 +5,7 @@ import { AdminDashboard } from "./AdminDashboard";
 import { AnnouncementsPanel } from "./AnnouncementsPanel";
 import { DashboardHero } from "./DashboardHero";
 import { ParentDashboard } from "./ParentDashboard";
+import { RecentEventsPanel } from "./RecentEventsPanel";
 import { SchoolRatingPanel } from "./SchoolRatingPanel";
 import { StudentDashboard } from "./StudentDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
@@ -40,8 +41,9 @@ export function RoleDashboard() {
     <>
       <DashboardHero currentUser={currentUser} />
       {renderRoleContent()}
-      <div className={scss.panelsGrid}>
+      <div className={scss.panelsGrid3}>
         <SchoolRatingPanel />
+        <RecentEventsPanel />
         <AnnouncementsPanel />
       </div>
     </>

@@ -203,6 +203,16 @@
       "chipClass": "Класс {name}",
       "chipXp": "{count} XP",
       "chipChildren": "Детей: {count}"
+    },
+    "classesChart": {
+      "title": "Ученики по классам",
+      "subtitle": "активные ученики",
+      "empty": "Классы пока не созданы",
+      "tooltip": "{name}: {count} уч."
+    },
+    "events": {
+      "title": "Последние события",
+      "empty": "Новых событий нет. Здесь появятся заявки, задания и другие уведомления."
     }
   },
   "admin": {
