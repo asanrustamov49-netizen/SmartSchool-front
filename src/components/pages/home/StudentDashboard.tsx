@@ -10,14 +10,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { CSSProperties } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { DataState } from "@/components/ui/DataState";
-import { MetricCard } from "./MetricCard";
+import { useSchoolRating } from "@/hooks/useDashboard";
+import { XpRing } from "./XpRing";
 import scss from "./home.module.scss";
-
-function formatRank(rank: number | null) {
-  return rank === null ? "—" : `#${rank}`;
-}
 
 // Типы значков и их иконки описаны в FRONTEND.md (badge_type → icon_name).
 const BADGE_ICONS: Record<string, LucideIcon> = {
@@ -33,35 +31,73 @@ const KNOWN_BADGES = Object.keys(BADGE_ICONS);
 export function StudentDashboard({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.student");
   const standing = currentUser.student;
+  // Тот же запрос, что у панели рейтинга школы: данные берутся из кэша TanStack Query.
+  const schoolRatingQuery = useSchoolRating(5);
 
   if (!standing) {
     return <DataState status="empty" message={t("noStanding")} />;
   }
 
   const maxSubjectXp = Math.max(...standing.subjects.map((subject) => subject.xp), 1);
+  const leaderXp = schoolRatingQuery.data?.items[0]?.xp;
+
+  // Показываются только места, которые вернул backend (null — места нет).
+  const ranks = [
+    { key: "classRank", value: standing.class_rank, icon: School },
+    { key: "parallelRank", value: standing.parallel_rank, icon: ChartNoAxesCombined },
+    { key: "schoolRank", value: standing.school_rank, icon: Award },
+  ].filter((rank): rank is { key: string; value: number; icon: LucideIcon } => rank.value !== null);
+
+  const getLeaderText = () => {
+    if (leaderXp === undefined) {
+      return t("progressHint");
+    }
+
+    if (standing.total_xp >= leaderXp) {
+      return t("youAreLeader");
+    }
+
+    return t("toLeader", { count: leaderXp - standing.total_xp });
+  };
 
   return (
     <>
-      <section className={scss.metricsGrid} aria-label={t("title")}>
-        <MetricCard icon={Sparkles} value={standing.total_xp} label={t("totalXp")} tone="violet" />
-        <MetricCard
-          icon={School}
-          value={formatRank(standing.class_rank)}
-          label={t("classRank")}
-          tone="blue"
-        />
-        <MetricCard
-          icon={ChartNoAxesCombined}
-          value={formatRank(standing.parallel_rank)}
-          label={t("parallelRank")}
-          tone="sky"
-        />
-        <MetricCard
-          icon={Award}
-          value={formatRank(standing.school_rank)}
-          label={t("schoolRank")}
-          tone="amber"
-        />
+      <section className={scss.progressGrid} aria-label={t("title")}>
+        <article className={scss.progressCard}>
+          <XpRing value={standing.total_xp} max={leaderXp ?? standing.total_xp}>
+            <strong>
+              <span
+                className={scss.metricCounter}
+                style={{ "--metric-target": standing.total_xp } as CSSProperties}
+                aria-hidden="true"
+              />
+              <span className="sr-only">{standing.total_xp}</span>
+            </strong>
+            <span>XP</span>
+          </XpRing>
+          <div className={scss.progressCopy}>
+            <h2>{t("totalXp")}</h2>
+            <p>{getLeaderText()}</p>
+          </div>
+        </article>
+
+        <article className={scss.progressCard}>
+          {ranks.length === 0 ? (
+            <DataState status="empty" message={t("noRanks")} />
+          ) : (
+            <ul className={scss.rankPodium}>
+              {ranks.map((rank) => (
+                <li key={rank.key} className={rank.value === 1 ? scss.rankPodiumTop : undefined}>
+                  <span className={scss.rankPodiumMedal}>
+                    <rank.icon size={20} aria-hidden="true" />
+                  </span>
+                  <strong>#{rank.value}</strong>
+                  <span>{t(rank.key)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
       </section>
 
       <div className={scss.panelsGrid}>
@@ -81,14 +117,14 @@ export function StudentDashboard({ currentUser }: { currentUser: CurrentUser }) 
             <ul className={scss.list}>
               {standing.subjects.map((subject) => (
                 <li key={subject.subject_id} className={scss.rankingRow}>
-                  <span className={scss.rankNumber}>{formatRank(subject.class_rank).replace("#", "")}</span>
+                  <span className={scss.rankNumber}>{subject.class_rank ?? "·"}</span>
                   <div className={scss.rankingName}>
                     <strong>{subject.subject_name ?? "—"}</strong>
                     <span className={scss.rankingBar} aria-hidden="true">
                       <span style={{ width: `${Math.round((subject.xp / maxSubjectXp) * 100)}%` }} />
                     </span>
                   </div>
-                  <span>{t("classRankShort")}</span>
+                  <span>{subject.class_rank !== null ? t("classRankShort") : ""}</span>
                   <b>{subject.xp} XP</b>
                 </li>
               ))}

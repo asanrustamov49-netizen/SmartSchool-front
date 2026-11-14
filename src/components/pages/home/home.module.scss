@@ -593,7 +593,8 @@
 
 .childCard {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 14px;
   padding: 16px;
   border: 1px solid var(--ss-line);
@@ -642,6 +643,207 @@
   font-weight: 800;
 }
 
+// ---------- Прогресс ученика: кольцо XP и подиум мест ----------
+.progressGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.progressCard {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 22px;
+  padding: 20px;
+  border: 1px solid var(--ss-line);
+  border-radius: var(--ss-radius-lg);
+  background: var(--ss-surface);
+  box-shadow: var(--ss-shadow);
+
+  > div[aria-busy],
+  > div:only-child {
+    flex: 1;
+  }
+}
+
+.progressCopy {
+  min-width: 0;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ss-muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.xpRing {
+  position: relative;
+  flex: 0 0 auto;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  circle {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+  }
+}
+
+.xpRingTrack {
+  stroke: var(--ss-surface-2);
+}
+
+.xpRingValue {
+  stroke: url(#xp-ring-gradient);
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - var(--ring-percent));
+  filter: drop-shadow(0 4px 8px rgb(124 92 255 / 35%));
+}
+
+.xpRingCenter {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  inset: 0;
+
+  strong {
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  > span {
+    margin-top: 2px;
+    color: var(--ss-muted);
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+.rankPodium {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 8px;
+    border-radius: var(--ss-radius);
+    background: var(--ss-surface-2);
+    text-align: center;
+  }
+
+  strong {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  li > span:last-child {
+    color: var(--ss-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.rankPodiumMedal {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+}
+
+.rankPodiumTop {
+  background: var(--ss-warning-soft) !important;
+
+  .rankPodiumMedal {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 10px 20px -10px #f59e0b;
+  }
+}
+
+// ---------- Карточка ребёнка: кольцо XP и место в школе ----------
+.childHead {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+
+  > span:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+.childHead > span:last-child > span {
+  color: var(--ss-muted);
+  font-size: 14px;
+}
+
+.childProgress {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ss-line);
+}
+
+.childRank {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  svg {
+    color: var(--ss-warning);
+  }
+
+  strong {
+    font-size: 22px !important;
+    font-weight: 800;
+  }
+
+  span {
+    color: var(--ss-muted);
+    font-size: 13px;
+  }
+}
+
+.childEmpty {
+  margin: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--ss-line);
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
 // ---------- Анимации Dashboard ----------
 @media (prefers-reduced-motion: no-preference) {
   // Карточки появляются волной сверху вниз.
@@ -669,6 +871,15 @@
     animation: metric-count 1.2s var(--ss-ease) 0.15s both;
   }
 
+  .xpRingValue {
+    animation: ring-fill 1.3s var(--ss-ease) 0.2s both;
+  }
+
+  .progressCard,
+  .rankPodium li {
+    animation: dash-rise 0.55s var(--ss-ease) both;
+  }
+
   .rankingBar > span {
     animation: bar-grow 0.9s var(--ss-ease) 0.3s both;
   }
@@ -691,6 +902,12 @@
   from {
     opacity: 0;
     transform: translateY(12px);
+  }
+}
+
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: 100;
   }
 }
 
@@ -719,6 +936,10 @@
 }
 
 @media (max-width: 760px) {
+  .progressGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .hero {
     min-height: 0;
     padding: 22px 20px;
