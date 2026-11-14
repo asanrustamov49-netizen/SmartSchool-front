@@ -1,0 +1,67 @@
+"use client";
+
+import { CalendarDays, Megaphone } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
+import { DataState } from "@/components/ui/DataState";
+import { useLatestAnnouncements } from "@/hooks/useDashboard";
+import { handleApiError } from "@/lib/errorHandler";
+import scss from "./home.module.scss";
+
+const LATEST_ANNOUNCEMENTS_LIMIT = 3;
+
+export function AnnouncementsPanel() {
+  const t = useTranslations("dashboard.announcements");
+  const tApiErrors = useTranslations("apiErrors");
+  const format = useFormatter();
+  const announcementsQuery = useLatestAnnouncements(LATEST_ANNOUNCEMENTS_LIMIT);
+
+  const renderContent = () => {
+    if (announcementsQuery.isPending) {
+      return <DataState status="loading" />;
+    }
+
+    if (announcementsQuery.isError) {
+      return (
+        <DataState
+          status="error"
+          message={handleApiError(announcementsQuery.error, tApiErrors)}
+          onRetry={() => announcementsQuery.refetch()}
+        />
+      );
+    }
+
+    if (announcementsQuery.data.length === 0) {
+      return <DataState status="empty" message={t("empty")} />;
+    }
+
+    return (
+      <ul className={scss.list}>
+        {announcementsQuery.data.map((announcement) => (
+          <li key={announcement.id} className={scss.announcementItem}>
+            <strong>{announcement.title}</strong>
+            {announcement.body && <p>{announcement.body}</p>}
+            <span>
+              <CalendarDays size={13} aria-hidden="true" />
+              {format.dateTime(
+                new Date(announcement.event_date ?? announcement.created_at),
+                { dateStyle: "medium" },
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  return (
+    <section className={scss.panel}>
+      <div className={scss.panelHeading}>
+        <div className={scss.headingTitle}>
+          <Megaphone size={20} aria-hidden="true" />
+          <h2>{t("title")}</h2>
+        </div>
+      </div>
+      {renderContent()}
+    </section>
+  );
+}

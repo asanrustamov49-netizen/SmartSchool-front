@@ -1,0 +1,43 @@
+.state {
+  display: flex;
+  min-height: 120px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 12px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.spinner {
+  color: var(--accent);
+  animation: data-state-spin 0.9s linear infinite;
+}
+
+.retryButton {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--ss-accent-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@keyframes data-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

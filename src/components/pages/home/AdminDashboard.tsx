@@ -1,0 +1,44 @@
+"use client";
+
+import { GraduationCap, Medal, UserRound, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { DataState } from "@/components/ui/DataState";
+import { useDashboardStats } from "@/hooks/useDashboard";
+import { handleApiError } from "@/lib/errorHandler";
+import { MetricCard } from "./MetricCard";
+import scss from "./home.module.scss";
+
+export function AdminDashboard() {
+  const t = useTranslations("dashboard.metrics");
+  const tApiErrors = useTranslations("apiErrors");
+  const statsQuery = useDashboardStats();
+
+  if (statsQuery.isPending) {
+    return <DataState status="loading" />;
+  }
+
+  if (statsQuery.isError) {
+    return (
+      <DataState
+        status="error"
+        message={handleApiError(statsQuery.error, tApiErrors)}
+        onRetry={() => statsQuery.refetch()}
+      />
+    );
+  }
+
+  const stats = statsQuery.data;
+
+  return (
+    <section className={scss.metricsGrid} aria-label={t("title")}>
+      <MetricCard icon={Users} value={stats.students} label={t("students")} />
+      <MetricCard icon={UserRound} value={stats.teachers} label={t("teachers")} />
+      <MetricCard icon={GraduationCap} value={stats.classes} label={t("classes")} />
+      <MetricCard
+        icon={Medal}
+        value={stats.olympiad_candidates}
+        label={t("olympiadCandidates")}
+      />
+    </section>
+  );
+}

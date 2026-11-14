@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-app);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -49,38 +49,38 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.12 0.02 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.12 0.02 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.12 0.02 250);
+  --primary: oklch(0.45 0.18 255);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.94 0.03 230);
+  --secondary-foreground: oklch(0.25 0.12 250);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.45 0.05 250);
+  --accent: oklch(0.92 0.04 240);
+  --accent-foreground: oklch(0.25 0.12 250);
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(0.91 0.02 250);
+  --input: oklch(0.91 0.02 250);
+  --ring: oklch(0.45 0.18 255 / 40%);
+  --chart-1: oklch(0.65 0.18 255);
+  --chart-2: oklch(0.7 0.15 165);
+  --chart-3: oklch(0.72 0.16 75);
+  --chart-4: oklch(0.65 0.16 310);
+  --chart-5: oklch(0.68 0.18 25);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.18 0.04 255);
+  --sidebar-foreground: oklch(0.95 0.01 255);
+  --sidebar-primary: oklch(0.45 0.18 255);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(1 0 0 / 10%);
+  --sidebar-accent-foreground: oklch(0.95 0.01 255);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.45 0.18 255);
 }
 
 .dark {
@@ -115,6 +115,50 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Единые токены SmartSchool (стиль «мягкий EdTech»). Модули SCSS ссылаются на них. */
+:root {
+  --ss-bg: #f8fafc;
+  --ss-surface: #ffffff;
+  --ss-surface-2: #f1f5f9;
+  --ss-ink: #0f172a;
+  --ss-muted: #475569;
+  --ss-line: #e2e8f0;
+  --ss-accent: #2563eb;
+  --ss-accent-strong: #1d4ed8;
+  --ss-accent-ink: #ffffff;
+  --ss-accent-soft: #eef4ff;
+  --ss-success: #047857;
+  --ss-success-soft: #ecfdf5;
+  --ss-warning: #b45309;
+  --ss-warning-soft: #fff7ed;
+  --ss-danger: #dc2626;
+  --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 6px 16px -8px rgb(15 23 42 / 10%);
+  --ss-shadow-lg: 0 24px 48px -24px rgb(15 23 42 / 25%);
+  --ss-radius: 14px;
+  --ss-radius-sm: 10px;
+  --ss-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dark {
+  --ss-bg: #0b111e;
+  --ss-surface: #111827;
+  --ss-surface-2: #1a2333;
+  --ss-ink: #e5e9f0;
+  --ss-muted: #94a3b8;
+  --ss-line: #1f2a3c;
+  --ss-accent: #60a5fa;
+  --ss-accent-strong: #93c5fd;
+  --ss-accent-ink: #0b111e;
+  --ss-accent-soft: rgb(96 165 250 / 12%);
+  --ss-success: #34d399;
+  --ss-success-soft: rgb(52 211 153 / 12%);
+  --ss-warning: #fbbf24;
+  --ss-warning-soft: rgb(251 191 36 / 12%);
+  --ss-danger: #f87171;
+  --ss-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  --ss-shadow-lg: 0 24px 48px -24px rgb(0 0 0 / 60%);
 }
 
 @layer base {

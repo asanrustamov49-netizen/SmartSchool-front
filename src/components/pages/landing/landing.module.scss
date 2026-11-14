@@ -1,0 +1,1339 @@
+// Палитра Landing согласована отдельно: фон #F8FAFC (светлая) и #0B111E (тёмная).
+.page {
+  --bg: var(--ss-bg);
+  --surface: var(--ss-surface);
+  --surface-2: var(--ss-surface-2);
+  --ink: var(--ss-ink);
+  --muted: var(--ss-muted);
+  --line: var(--ss-line);
+  --accent: var(--ss-accent);
+  --accent-strong: var(--ss-accent-strong);
+  --accent-ink: var(--ss-accent-ink);
+  --accent-soft: var(--ss-accent-soft);
+  --gold: var(--ss-warning);
+  --gold-soft: var(--ss-warning-soft);
+  --green: var(--ss-success);
+  --green-soft: var(--ss-success-soft);
+  --shadow-window: var(--ss-shadow-lg), var(--ss-shadow);
+  --shadow-float: var(--ss-shadow-lg);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --container: 1200px;
+  --gutter: 20px;
+
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-app), Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  :global(html):has(.page) {
+    scroll-behavior: smooth;
+  }
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.skipLink {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-ink) !important;
+  font-weight: 600;
+
+  &:focus {
+    top: 12px;
+  }
+}
+
+// ---------- Кнопки ----------
+
+.buttonPrimary,
+.buttonGhost {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.buttonPrimary {
+  background: var(--accent);
+  box-shadow: 0 10px 24px -12px var(--accent);
+  color: var(--accent-ink) !important;
+
+  &:hover {
+    background: var(--accent-strong);
+  }
+}
+
+.buttonGhost {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+
+  &:hover {
+    border-color: var(--accent);
+  }
+}
+
+.buttonLarge {
+  min-height: 52px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.iconButton {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.themeIconDark {
+  display: none;
+}
+
+:global(.dark) .themeIconLight {
+  display: none;
+}
+
+:global(.dark) .themeIconDark {
+  display: block;
+}
+
+// ---------- Header ----------
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(14px);
+}
+
+.headerInner {
+  display: flex;
+  width: min(var(--container), 100% - 2 * var(--gutter));
+  min-height: 68px;
+  align-items: center;
+  gap: 24px;
+  margin-inline: auto;
+}
+
+.brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-app), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.brandMark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.nav {
+  flex: 1;
+}
+
+.navLinks {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 550;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+}
+
+.navMobileActions {
+  display: none;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.localeSwitch {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+
+  button {
+    min-width: 38px;
+    height: 34px;
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.localeActive {
+  background: var(--accent-soft);
+  color: var(--accent) !important;
+}
+
+.menuButton {
+  display: none;
+}
+
+// ---------- Hero ----------
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 56px;
+  padding: 72px max(var(--gutter), (100% - var(--container)) / 2) 112px;
+  isolation: isolate;
+
+  // Сетка тетради/журнала — фон, который отсылает к школьной теме.
+  &::before {
+    position: absolute;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 44px 44px;
+    content: "";
+    inset: 0;
+    mask-image: radial-gradient(ellipse 70% 75% at 68% 42%, #000 15%, transparent 72%);
+    opacity: 0.7;
+  }
+}
+
+.heroCopy {
+  min-width: 0;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: var(--font-app), sans-serif;
+  font-size: clamp(2.1rem, 1.2rem + 3.3vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+.heroText {
+  max-width: 34rem;
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+  line-height: 1.6;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.heroRoles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 36px 0 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 550;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  svg {
+    color: var(--accent);
+  }
+}
+
+// ---------- Макет интерфейса ----------
+
+.preview {
+  min-width: 0;
+  margin: 0;
+}
+
+.previewStage {
+  position: relative;
+  perspective: 1600px;
+}
+
+.previewGlow {
+  position: absolute;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side, rgb(23 105 232 / 32%), transparent),
+    radial-gradient(closest-side at 80% 80%, rgb(201 134 15 / 18%), transparent);
+  filter: blur(30px);
+  inset: -8% -6% -10% 4%;
+}
+
+:global(.dark) .previewGlow {
+  background:
+    radial-gradient(closest-side, rgb(110 162 255 / 30%), transparent),
+    radial-gradient(closest-side at 80% 80%, rgb(242 190 92 / 14%), transparent);
+}
+
+.previewWindow {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-window);
+  transform: rotateY(-9deg) rotateX(4deg);
+  transform-origin: left center;
+}
+
+.previewSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+  border-right: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.previewLogo {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #2a7bff, #1257cf);
+}
+
+.previewNavItem,
+.previewNavActive {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 9px;
+}
+
+.previewNavActive {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.previewMain {
+  min-width: 0;
+  padding: 18px 20px 22px;
+}
+
+.previewTopbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+.previewChips {
+  display: flex;
+  gap: 6px;
+}
+
+.previewChip,
+.previewChipActive {
+  width: 34px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.previewChipActive {
+  background: var(--accent);
+}
+
+.skeleton,
+.skeletonShort {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.skeletonShort {
+  width: 64px;
+}
+
+.journal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.journalHead,
+.journalRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2.3fr) repeat(6, minmax(0, 1fr));
+  align-items: center;
+  gap: 6px;
+}
+
+.journalHead {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.journalDay {
+  width: 60%;
+  height: 8px;
+  margin-inline: auto;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.journalName {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.journalAvatar {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent-soft);
+}
+
+.journalCell {
+  display: grid;
+  aspect-ratio: 1;
+  max-height: 34px;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.cellTop {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.cellGood {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.cellMark {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.cellEmpty {
+  background: transparent;
+  outline: 1px dashed var(--line);
+  outline-offset: -1px;
+}
+
+.floatCard {
+  position: absolute;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-float);
+}
+
+.floatTitle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+
+  svg {
+    color: var(--gold);
+  }
+}
+
+.ratingCard {
+  bottom: -44px;
+  left: -36px;
+  width: 210px;
+  padding: 14px 16px;
+}
+
+.ratingRow {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+
+  & + & {
+    margin-top: 9px;
+  }
+}
+
+.ratingPlace {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.place1 {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.ratingTrack {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--gold)));
+    transform-origin: left;
+  }
+}
+
+.notifyCard {
+  top: 28px;
+  right: -28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 12px 12px;
+
+  > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+.notifyIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.previewCaption {
+  margin-top: 64px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+// Анимация загрузки: заголовок появляется, затем журнал «заполняется» оценками.
+@media (prefers-reduced-motion: no-preference) {
+  .heroCopy > * {
+    animation: hero-rise 0.6s var(--ss-ease) both;
+  }
+
+  .heroCopy > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+
+  .heroCopy > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+
+  .heroCopy > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+
+  .previewWindow {
+    animation: hero-rise 0.8s var(--ss-ease) 120ms both;
+  }
+
+  .journalCell {
+    animation: cell-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--cell-index) * 32ms + 350ms);
+  }
+
+  .ratingTrack > span {
+    animation: bar-grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 1.2s both;
+  }
+
+  .notifyCard {
+    animation: notify-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 1.6s both;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes notify-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+// ---------- Секции ----------
+
+.section {
+  width: min(var(--container), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+  padding-block: 96px;
+  scroll-margin-top: 72px;
+
+  & + & {
+    border-top: 1px solid var(--line);
+  }
+}
+
+.sectionIntro {
+  max-width: 40rem;
+  margin-bottom: 48px;
+
+  p {
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-size: 17px;
+  }
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-app), sans-serif;
+  font-size: clamp(1.7rem, 1.1rem + 2vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.groupTitle {
+  margin: 0 0 18px;
+  font-size: 17px;
+  font-weight: 650;
+
+  & ~ & {
+    margin-top: 48px;
+  }
+}
+
+.featureIcon {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.featureCard {
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+
+  h4 {
+    margin: 22px 0 8px;
+    font-size: 18px;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.soonList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  svg {
+    margin-top: 2px;
+    color: var(--muted);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.soonBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.audienceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 56px;
+}
+
+.audienceItem {
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0 0;
+    padding: 0;
+    color: var(--muted);
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    padding-left: 22px;
+
+    &::before {
+      position: absolute;
+      top: 0.62em;
+      left: 2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      content: "";
+    }
+  }
+}
+
+.audienceHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+  }
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+  }
+
+  // Линия между шагами показывает, что это последовательность.
+  li:not(:last-child)::after {
+    position: absolute;
+    top: 22px;
+    right: -12px;
+    left: 56px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), var(--line));
+    content: "";
+  }
+
+  h3 {
+    margin: 20px 0 8px;
+    font-size: 18px;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+}
+
+.stepNumber {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent);
+  font-family: var(--font-app), sans-serif;
+  font-weight: 600;
+}
+
+.benefits {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  svg {
+    margin-bottom: 8px;
+    color: var(--accent);
+  }
+
+  strong {
+    font-size: 17px;
+    font-weight: 650;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 15px;
+  }
+}
+
+// ---------- Доступ / финальный призыв ----------
+
+.access {
+  width: min(var(--container), 100% - 2 * var(--gutter));
+  margin: 24px auto 96px;
+  scroll-margin-top: 88px;
+}
+
+.accessInner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  overflow: hidden;
+  padding: 64px;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse 60% 80% at 100% 0%, rgb(42 123 255 / 55%), transparent 60%),
+    linear-gradient(150deg, #0e1f43, #0b111e 70%);
+  color: #edf2fb;
+  isolation: isolate;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 6%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 6%) 1px, transparent 1px);
+    background-size: 44px 44px;
+    content: "";
+    inset: 0;
+    mask-image: linear-gradient(120deg, transparent 30%, #000);
+  }
+}
+
+:global(.dark) .accessInner {
+  border: 1px solid var(--line);
+}
+
+.accessTitle {
+  margin: 0;
+  font-family: var(--font-app), sans-serif;
+  font-size: clamp(1.8rem, 1.2rem + 2vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.accessCopy {
+  p {
+    max-width: 30rem;
+    margin: 18px 0 32px;
+    color: #b8c4da;
+    font-size: 17px;
+  }
+
+  // Внутри тёмной панели кнопка всегда светлая, независимо от темы.
+  .buttonPrimary {
+    background: #ffffff;
+    box-shadow: none;
+    color: #0b111e !important;
+
+    &:hover {
+      background: #dce8ff;
+    }
+  }
+}
+
+.accessPaths {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  article {
+    padding: 24px;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 5%);
+    backdrop-filter: blur(6px);
+  }
+
+  .featureIcon {
+    background: rgb(110 162 255 / 18%);
+    color: #93baff;
+  }
+
+  h3 {
+    margin: 16px 0 6px;
+    font-size: 18px;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0;
+    color: #b8c4da;
+    font-size: 15px;
+  }
+}
+
+// ---------- Footer ----------
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 48px 0 32px;
+}
+
+.footerInner,
+.footerNote {
+  width: min(var(--container), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+}
+
+.footerInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.footerBrand p {
+  max-width: 26rem;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.footerNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  color: var(--muted);
+  font-size: 15px;
+
+  a:hover {
+    color: var(--ink);
+  }
+}
+
+.footerNote {
+  margin-top: 40px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+// ---------- Адаптивность ----------
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 72px;
+    padding-top: 56px;
+  }
+
+  .heroCopy {
+    max-width: 40rem;
+  }
+
+  .previewWindow {
+    transform: none;
+  }
+
+  .benefits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+// Меню сворачивается раньше: кыргызские подписи пунктов длиннее русских.
+@media (max-width: 1180px) {
+  .headerInner {
+    gap: 12px;
+  }
+
+  .menuButton {
+    display: inline-grid;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    padding: 8px var(--gutter) 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 0 24px 40px -24px rgb(16 40 92 / 30%);
+  }
+
+  .navOpen {
+    display: block;
+  }
+
+  .headerActions {
+    margin-left: auto;
+  }
+
+  .navLinks {
+    flex-direction: column;
+    gap: 0;
+
+    a {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      color: var(--ink);
+      font-size: 17px;
+    }
+  }
+
+  .navMobileActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 18px;
+
+    a {
+      min-height: 50px;
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .featureGrid,
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .steps {
+    row-gap: 40px;
+
+    li::after {
+      display: none;
+    }
+  }
+
+  .soonList,
+  .audienceGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .accessInner {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 48px 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    --gutter: 16px;
+  }
+
+  .brand {
+    font-size: 15px;
+  }
+
+  .hero {
+    gap: 48px;
+    padding-top: 40px;
+    padding-bottom: 64px;
+  }
+
+  .heroActions {
+    flex-direction: column;
+
+    a {
+      width: 100%;
+    }
+  }
+
+  .heroRoles {
+    margin-top: 28px;
+  }
+
+  // На телефоне макет не накладывается на соседние карточки: всё идёт одной колонкой.
+  .previewWindow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .previewSidebar {
+    display: none;
+  }
+
+  .previewMain {
+    padding: 16px 14px 18px;
+  }
+
+  .journalHead,
+  .journalRow {
+    grid-template-columns: minmax(0, 1.6fr) repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .journalCell {
+    border-radius: 7px;
+    font-size: 12px;
+  }
+
+  .journalAvatar {
+    display: none;
+  }
+
+  .previewStage {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .floatCard {
+    position: static;
+    width: auto;
+  }
+
+  .notifyCard {
+    order: -1;
+    align-self: flex-start;
+  }
+
+  .previewCaption {
+    margin-top: 16px;
+  }
+
+  .section {
+    padding-block: 64px;
+  }
+
+  .sectionIntro {
+    margin-bottom: 32px;
+  }
+
+  .featureGrid,
+  .steps,
+  .benefits {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .featureCard {
+    padding: 22px;
+  }
+
+  .steps {
+    row-gap: 28px;
+
+    li {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      column-gap: 16px;
+    }
+
+    h3 {
+      margin-top: 8px;
+    }
+
+    p {
+      grid-column: 2;
+    }
+  }
+
+  .benefits {
+    gap: 24px;
+
+    li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      column-gap: 14px;
+      row-gap: 4px;
+    }
+
+    svg {
+      grid-row: span 2;
+      margin: 2px 0 0;
+    }
+  }
+
+  .access {
+    margin-bottom: 64px;
+  }
+
+  .accessInner {
+    gap: 32px;
+    padding: 36px 22px;
+    border-radius: 22px;
+  }
+
+  .accessCopy a {
+    width: 100%;
+  }
+
+  .footerNav {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand {
+    gap: 0;
+    font-size: 0;
+  }
+}
