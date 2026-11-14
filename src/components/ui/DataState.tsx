@@ -27,7 +27,9 @@ export function DataState(props: DataStateProps) {
   if (props.status === "empty") {
     return (
       <div className={styles.state}>
-        <Inbox size={20} aria-hidden="true" />
+        <span className={styles.icon}>
+          <Inbox size={20} aria-hidden="true" />
+        </span>
         <span>{props.message}</span>
       </div>
     );
@@ -35,7 +37,9 @@ export function DataState(props: DataStateProps) {
 
   return (
     <div className={`${styles.state} ${styles.error}`} role="alert">
-      <CircleAlert size={20} aria-hidden="true" />
+      <span className={`${styles.icon} ${styles.iconError}`}>
+        <CircleAlert size={20} aria-hidden="true" />
+      </span>
       <span>{props.message}</span>
       <button type="button" className={styles.retryButton} onClick={props.onRetry}>
         {t("retry")}

@@ -31,6 +31,9 @@ import {
 import { NotificationsMenu } from "./NotificationsMenu";
 import styles from "./app-shell.module.scss";
 
+// В backend нет поиска, поэтому поле скрыто. Включить, когда появится endpoint поиска.
+const IS_SEARCH_ENABLED = false;
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("app");
   const tCommon = useTranslations("common");
@@ -237,14 +240,16 @@ function AuthenticatedShell({
               <span>{roleLabel}</span>
               <strong>{pageTitle}</strong>
             </div>
-            <label className={styles.searchBox}>
-              <Search size={16} aria-hidden="true" />
-              <input
-                type="search"
-                placeholder={t("search")}
-                aria-label={t("search")}
-              />
-            </label>
+            {IS_SEARCH_ENABLED && (
+              <label className={styles.searchBox}>
+                <Search size={16} aria-hidden="true" />
+                <input
+                  type="search"
+                  placeholder={t("search")}
+                  aria-label={t("search")}
+                />
+              </label>
+            )}
           </div>
 
           <div className={styles.headerActions}>

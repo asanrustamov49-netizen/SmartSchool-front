@@ -623,8 +623,18 @@
   line-height: 1.5;
 }
 
+.notificationItem {
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: var(--soft);
+  }
+}
+
 .notificationDotUnread {
-  background: var(--accent);
+  background: var(--ss-gradient);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .notificationBody {
@@ -818,8 +828,9 @@
   }
 
   .mobileNavItemActive {
-    background: var(--accent-soft);
-    color: var(--accent);
+    background: var(--ss-gradient);
+    box-shadow: var(--ss-glow);
+    color: #ffffff;
   }
 
   .backdrop {
