@@ -134,9 +134,6 @@
     "markAllRead": "Баарын окулду деп белгилөө"
   },
   "dashboard": {
-    "title": "Smart School",
-    "welcome": "Билим — келечекке ачылган эшик!",
-    "heroMessage": "Биздин мектеп — ийгиликтин башаты!",
     "metrics": {
       "title": "Мектептин көрсөткүчтөрү",
       "students": "Окуучулар",
@@ -182,6 +179,24 @@
     "ranking": {
       "title": "Мектептин рейтинги",
       "empty": "Рейтинг азырынча бош"
+    },
+    "hero": {
+      "greetingMorning": "Кутман таң",
+      "greetingDay": "Кутман күн",
+      "greetingEvening": "Кутман кеч",
+      "greetingNight": "Саламатсызбы",
+      "subtitle": {
+        "admin": "мектептин бүгүнкү абалы",
+        "teacher": "класстарыңыз жана сабактарыңыз",
+        "student": "прогрессиңиз жана жетишкендиктериңиз",
+        "parent": "балдарыңыздын ийгиликтери",
+        "system": "системаны башкаруу"
+      },
+      "chipClassLed": "{name} классынын жетекчиси",
+      "chipSubjects": "Сабактар: {count}",
+      "chipClass": "{name} класс",
+      "chipXp": "{count} XP",
+      "chipChildren": "Балдар: {count}"
     }
   },
   "admin": {

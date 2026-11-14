@@ -134,9 +134,6 @@
     "markAllRead": "Прочитать все"
   },
   "dashboard": {
-    "title": "Smart School",
-    "welcome": "Знания — дверь в открытое будущее!",
-    "heroMessage": "Наша школа — начало больших побед!",
     "metrics": {
       "title": "Показатели школы",
       "students": "Ученики",
@@ -182,6 +179,24 @@
     "ranking": {
       "title": "Рейтинг школы",
       "empty": "Рейтинг пока пуст"
+    },
+    "hero": {
+      "greetingMorning": "Доброе утро",
+      "greetingDay": "Добрый день",
+      "greetingEvening": "Добрый вечер",
+      "greetingNight": "Здравствуйте",
+      "subtitle": {
+        "admin": "обзор школы на сегодня",
+        "teacher": "ваши классы и предметы",
+        "student": "ваш прогресс и достижения",
+        "parent": "успехи ваших детей",
+        "system": "управление системой"
+      },
+      "chipClassLed": "Классный руководитель {name}",
+      "chipSubjects": "Предметов: {count}",
+      "chipClass": "Класс {name}",
+      "chipXp": "{count} XP",
+      "chipChildren": "Детей: {count}"
     }
   },
   "admin": {

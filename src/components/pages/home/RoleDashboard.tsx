@@ -3,6 +3,7 @@
 import { useCurrentUser } from "@/hooks/useAuth";
 import { AdminDashboard } from "./AdminDashboard";
 import { AnnouncementsPanel } from "./AnnouncementsPanel";
+import { DashboardHero } from "./DashboardHero";
 import { ParentDashboard } from "./ParentDashboard";
 import { SchoolRatingPanel } from "./SchoolRatingPanel";
 import { StudentDashboard } from "./StudentDashboard";
@@ -37,6 +38,7 @@ export function RoleDashboard() {
 
   return (
     <>
+      <DashboardHero currentUser={currentUser} />
       {renderRoleContent()}
       <div className={scss.panelsGrid}>
         <SchoolRatingPanel />
