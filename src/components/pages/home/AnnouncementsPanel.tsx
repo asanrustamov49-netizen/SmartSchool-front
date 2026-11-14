@@ -1,8 +1,9 @@
 "use client";
 
 import { CalendarDays, Megaphone } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
+import { useDateFormat } from "@/hooks/useDateFormat";
 import { useLatestAnnouncements } from "@/hooks/useDashboard";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
@@ -12,7 +13,7 @@ const LATEST_ANNOUNCEMENTS_LIMIT = 3;
 export function AnnouncementsPanel() {
   const t = useTranslations("dashboard.announcements");
   const tApiErrors = useTranslations("apiErrors");
-  const format = useFormatter();
+  const { formatDate } = useDateFormat();
   const announcementsQuery = useLatestAnnouncements(LATEST_ANNOUNCEMENTS_LIMIT);
 
   const renderContent = () => {
@@ -42,10 +43,7 @@ export function AnnouncementsPanel() {
             {announcement.body && <p>{announcement.body}</p>}
             <span>
               <CalendarDays size={13} aria-hidden="true" />
-              {format.dateTime(
-                new Date(announcement.event_date ?? announcement.created_at),
-                { dateStyle: "medium" },
-              )}
+              {formatDate(announcement.event_date ?? announcement.created_at)}
             </span>
           </li>
         ))}

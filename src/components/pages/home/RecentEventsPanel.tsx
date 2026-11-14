@@ -1,8 +1,9 @@
 "use client";
 
 import { BellRing } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
+import { useDateFormat } from "@/hooks/useDateFormat";
 import { useMarkNotificationRead, useNotifications } from "@/hooks/useNotifications";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
@@ -13,7 +14,7 @@ const RECENT_EVENTS_LIMIT = 5;
 export function RecentEventsPanel() {
   const t = useTranslations("dashboard.events");
   const tApiErrors = useTranslations("apiErrors");
-  const format = useFormatter();
+  const { formatRelative } = useDateFormat();
   const notificationsQuery = useNotifications(RECENT_EVENTS_LIMIT, true);
   const markRead = useMarkNotificationRead();
 
@@ -55,7 +56,7 @@ export function RecentEventsPanel() {
               <strong>{notification.title}</strong>
               {notification.body && <span>{notification.body}</span>}
               <time dateTime={notification.created_at}>
-                {format.relativeTime(new Date(notification.created_at))}
+                {formatRelative(notification.created_at)}
               </time>
             </button>
           </li>

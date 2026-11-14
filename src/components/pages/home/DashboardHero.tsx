@@ -10,8 +10,9 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { CurrentUser, UserRole } from "@/apis/auth.api";
+import { useDateFormat } from "@/hooks/useDateFormat";
 import scss from "./home.module.scss";
 
 type HeroTone = "admin" | "teacher" | "student" | "parent" | "system";
@@ -87,19 +88,18 @@ function getChips(user: CurrentUser, t: ReturnType<typeof useTranslations>) {
 export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.hero");
   const tRole = useTranslations("app.role");
-  const format = useFormatter();
+  const { formatLongDate } = useDateFormat();
   const now = new Date();
   const tone = ROLE_TONE[currentUser.role] ?? "system";
   const Icon = TONE_ICON[tone];
   const chips = getChips(currentUser, t);
-  const today = format.dateTime(now, { weekday: "long", day: "numeric", month: "long" });
 
   return (
     <header className={scss.hero} data-tone={tone}>
       <div className={scss.heroCopy}>
         <span className={scss.heroBrand}>
           <CalendarDays size={15} strokeWidth={2} aria-hidden="true" />
-          {today.charAt(0).toUpperCase() + today.slice(1)}
+          {formatLongDate(now)}
         </span>
         <h1>
           {t(getGreetingKey(now.getHours()))}, {currentUser.full_name}

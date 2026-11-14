@@ -1,10 +1,11 @@
 "use client";
 
 import { Bell } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Notification } from "@/apis/notifications.api";
 import { DataState } from "@/components/ui/DataState";
+import { useDateFormat } from "@/hooks/useDateFormat";
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
@@ -21,7 +22,7 @@ const NOTIFICATIONS_LIMIT = 20;
 export function NotificationsMenu() {
   const t = useTranslations("app");
   const tApiErrors = useTranslations("apiErrors");
-  const format = useFormatter();
+  const { formatDateTime } = useDateFormat();
   const [isOpen, setIsOpen] = useState(false);
 
   const unreadCountQuery = useUnreadNotificationsCount();
@@ -77,10 +78,7 @@ export function NotificationsMenu() {
                 </span>
               )}
               <small>
-                {format.dateTime(new Date(notification.created_at), {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
+                {formatDateTime(notification.created_at)}
               </small>
             </span>
           </button>
