@@ -345,3 +345,72 @@
     width: 100%;
   }
 }
+
+// ---------- Визуальное направление v2 ----------
+.pageHeader h1 {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.primaryButton {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: var(--ss-gradient);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+.card {
+  border-radius: var(--ss-radius-lg);
+}
+
+.table th {
+  text-transform: none;
+}
+
+// Формы и уведомления раскрываются плавно, строки таблицы появляются волной.
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    animation: admin-rise 0.45s var(--ss-ease) both;
+  }
+
+  .table tbody tr {
+    animation: admin-fade 0.4s ease both;
+  }
+
+  .table tbody tr:nth-child(2) {
+    animation-delay: 30ms;
+  }
+
+  .table tbody tr:nth-child(3) {
+    animation-delay: 60ms;
+  }
+
+  .table tbody tr:nth-child(4) {
+    animation-delay: 90ms;
+  }
+
+  .table tbody tr:nth-child(n + 5) {
+    animation-delay: 120ms;
+  }
+}
+
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes admin-fade {
+  from {
+    opacity: 0;
+  }
+}

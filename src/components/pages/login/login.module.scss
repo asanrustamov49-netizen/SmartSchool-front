@@ -249,3 +249,77 @@
     animation: none;
   }
 }
+
+// ---------- Визуальное направление v2: тёмно-синий фон как у Landing ----------
+.page {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 50% 60% at 80% 10%, rgb(47 107 255 / 40%), transparent 70%),
+    radial-gradient(ellipse 45% 55% at 10% 95%, rgb(124 92 255 / 35%), transparent 70%),
+    #070b1a;
+  isolation: isolate;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px);
+    background-size: 44px 44px;
+    content: "";
+    inset: 0;
+    mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000, transparent 75%);
+  }
+}
+
+.card {
+  border-color: rgb(255 255 255 / 10%);
+  box-shadow:
+    0 40px 80px -30px rgb(0 0 0 / 60%),
+    0 0 60px -20px rgb(91 140 255 / 40%);
+}
+
+.brandMark {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+}
+
+.submitButton {
+  background: var(--ss-gradient) !important;
+  box-shadow: var(--ss-glow);
+  transition: transform 0.2s var(--ss-ease), box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+.backLink,
+.langSwitcher {
+  border-color: rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 8%);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.langButton {
+  color: rgb(255 255 255 / 70%);
+}
+
+.langButtonActive {
+  background: rgb(255 255 255 / 16%);
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    animation: login-rise 0.6s var(--ss-ease) both;
+  }
+}
+
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
