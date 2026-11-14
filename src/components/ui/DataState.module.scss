@@ -15,11 +15,6 @@
   color: var(--danger);
 }
 
-.spinner {
-  color: var(--accent);
-  animation: data-state-spin 0.9s linear infinite;
-}
-
 .retryButton {
   min-height: 36px;
   padding: 0 14px;
@@ -30,14 +25,46 @@
   font-weight: 600;
 }
 
-@keyframes data-state-spin {
-  to {
-    transform: rotate(360deg);
+
+// Скелетон загрузки: мягкий перелив идёт только пока данные загружаются.
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 2px;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--ss-surface-2) 0%, var(--ss-line) 50%, var(--ss-surface-2) 100%);
+  background-size: 200% 100%;
+
+  &:nth-child(2) {
+    width: 92%;
+  }
+
+  &:nth-child(3) {
+    width: 76%;
+  }
+
+  &:nth-child(4) {
+    width: 58%;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation: none;
+@media (prefers-reduced-motion: no-preference) {
+  .skeletonLine {
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
   }
 }

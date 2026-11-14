@@ -8,19 +8,48 @@
   margin: 0 auto;
 }
 
+// Приветственный баннер: тёмный градиент бренда и медленно плывущие пятна света.
 .hero {
   position: relative;
   display: flex;
-  min-height: 176px;
+  min-height: 188px;
   align-items: center;
   overflow: hidden;
-  padding: 28px 32px;
-  border: 1px solid var(--ss-line);
-  border-radius: calc(var(--ss-radius) + 4px);
+  padding: 30px 34px;
+  border-radius: var(--ss-radius-lg);
   background:
-    radial-gradient(ellipse 60% 120% at 100% 0%, var(--ss-accent-soft), transparent 70%),
-    var(--ss-surface);
-  color: var(--ss-ink);
+    radial-gradient(ellipse 50% 90% at 85% 10%, rgb(124 92 255 / 55%), transparent 70%),
+    radial-gradient(ellipse 40% 80% at 60% 120%, rgb(56 189 248 / 35%), transparent 70%),
+    linear-gradient(120deg, #0b1230 0%, #1a2a7a 55%, #2f3fb8 100%);
+  box-shadow: var(--ss-shadow-md);
+  color: #ffffff;
+  isolation: isolate;
+
+  &::before,
+  &::after {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    content: "";
+    filter: blur(10px);
+    pointer-events: none;
+  }
+
+  &::before {
+    top: -60px;
+    right: 18%;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(closest-side, rgb(47 107 255 / 55%), transparent);
+  }
+
+  &::after {
+    right: -40px;
+    bottom: -90px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(closest-side, rgb(124 92 255 / 45%), transparent);
+  }
 }
 
 .heroCopy {
@@ -39,7 +68,7 @@
   p {
     max-width: 60ch;
     margin: 0;
-    color: var(--ss-muted);
+    color: rgb(255 255 255 / 75%);
     font-size: 15px;
     line-height: 1.55;
   }
@@ -49,7 +78,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: var(--ss-accent);
+  color: #a9c1ff;
   font-size: 13px;
   font-weight: 700;
 }
@@ -60,58 +89,58 @@
   align-items: center;
   gap: 8px;
   margin-top: 16px;
-  padding: 0 12px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
-  background: var(--ss-accent-soft);
-  color: var(--ss-accent);
+  background: rgb(255 255 255 / 10%);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 650;
+  backdrop-filter: blur(6px);
 }
 
 .heroArtwork {
   position: absolute;
   top: 0;
-  right: 4%;
+  right: 5%;
   display: grid;
-  width: min(30%, 340px);
+  width: min(30%, 320px);
   height: 100%;
   place-items: center;
-  color: var(--ss-accent);
+  color: #ffffff;
 }
 
 .heroOrbit {
   position: absolute;
   width: 150px;
   height: 150px;
-  border: 1px solid var(--ss-line);
+  border: 1px dashed rgb(255 255 255 / 25%);
   border-radius: 50%;
-  box-shadow:
-    0 0 0 22px color-mix(in srgb, var(--ss-accent-soft) 60%, transparent),
-    0 0 0 46px color-mix(in srgb, var(--ss-accent-soft) 30%, transparent);
 }
 
 .heroSchool {
   position: relative;
   display: grid;
-  width: 104px;
-  height: 104px;
+  width: 100px;
+  height: 100px;
   place-items: center;
-  border: 1px solid var(--ss-line);
-  border-radius: 28px;
-  background: var(--ss-surface);
-  box-shadow: var(--ss-shadow-lg);
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 26px;
+  background: rgb(255 255 255 / 12%);
+  box-shadow: 0 20px 40px -20px rgb(0 0 0 / 50%);
+  backdrop-filter: blur(8px);
 
   svg {
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
   }
 }
 
 .heroSparkle {
   position: absolute;
-  top: 26px;
-  right: 24%;
-  color: var(--ss-warning);
+  top: 28px;
+  right: 22%;
+  color: #ffd27a;
 }
 
 .metricsGrid {
@@ -135,8 +164,36 @@
 }
 
 .metric {
+  position: relative;
   display: flex;
-  min-height: 76px;
+  min-height: 82px;
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s var(--ss-ease);
+
+  &:hover {
+    box-shadow: var(--ss-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  // Едва заметный цветной блик в углу карточки в цвет иконки.
+  &::after {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--tone-color, #2f6bff) 18%, transparent), transparent);
+    content: "";
+    pointer-events: none;
+  }
+}
+
+.metric {
+  min-height: 82px;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
@@ -144,17 +201,50 @@
 
 .metricIcon {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   flex: 0 0 auto;
   place-items: center;
   border-radius: 12px;
-  background: var(--ss-accent-soft);
-  color: var(--ss-accent);
+  background: var(--tone-gradient);
+  box-shadow: 0 8px 18px -10px var(--tone-color);
+  color: #ffffff;
+}
 
-  svg {
-    width: 20px;
-    height: 20px;
+.toneBlue {
+  --tone-color: #2f6bff;
+  --tone-gradient: linear-gradient(135deg, #3b82ff, #2f5bff);
+}
+
+.toneViolet {
+  --tone-color: #7c5cff;
+  --tone-gradient: linear-gradient(135deg, #8b6bff, #6a45ff);
+}
+
+.toneSky {
+  --tone-color: #0ea5e9;
+  --tone-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+}
+
+.toneAmber {
+  --tone-color: #f59e0b;
+  --tone-gradient: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+// Счётчик: значение анимируется через зарегистрированное свойство и выводится как counter.
+@property --metric-value {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.metricCounter {
+  --metric-value: var(--metric-target);
+
+  counter-reset: metric var(--metric-value);
+
+  &::after {
+    content: counter(metric);
   }
 }
 
@@ -173,7 +263,7 @@
     line-height: 1;
   }
 
-  span {
+  > span {
     overflow: hidden;
     color: var(--ss-muted);
     font-size: 13px;
@@ -361,6 +451,111 @@
     gap: 5px;
     color: var(--ss-muted);
     font-size: 12px;
+  }
+}
+
+.rankingName {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+
+  strong {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.rankingBar {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--ss-surface-2);
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ss-gradient);
+    transform-origin: left;
+  }
+}
+
+// ---------- Анимации Dashboard ----------
+@media (prefers-reduced-motion: no-preference) {
+  // Карточки появляются волной сверху вниз.
+  .metricsGrid > *,
+  .panelsGrid > * {
+    animation: dash-rise 0.55s var(--ss-ease) both;
+  }
+
+  .metricsGrid > :nth-child(2),
+  .panelsGrid > :nth-child(2) {
+    animation-delay: 70ms;
+  }
+
+  .metricsGrid > :nth-child(3) {
+    animation-delay: 140ms;
+  }
+
+  .metricsGrid > :nth-child(4) {
+    animation-delay: 210ms;
+  }
+
+  .metricCounter {
+    animation: metric-count 1.2s var(--ss-ease) 0.15s both;
+  }
+
+  .rankingBar > span {
+    animation: bar-grow 0.9s var(--ss-ease) 0.3s both;
+  }
+
+  // Медленный дрейф света в баннере и вращение пунктирной орбиты — только transform.
+  .hero::before {
+    animation: orb-drift 16s ease-in-out infinite alternate;
+  }
+
+  .hero::after {
+    animation: orb-drift 20s ease-in-out -6s infinite alternate-reverse;
+  }
+
+  .heroOrbit {
+    animation: orbit-spin 40s linear infinite;
+  }
+}
+
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes metric-count {
+  from {
+    --metric-value: 0;
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes orb-drift {
+  to {
+    transform: translate(-60px, 30px) scale(1.15);
+  }
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, Inbox, LoaderCircle } from "lucide-react";
+import { CircleAlert, Inbox } from "lucide-react";
 import { useTranslations } from "next-intl";
 import styles from "./DataState.module.scss";
 
@@ -15,9 +15,11 @@ export function DataState(props: DataStateProps) {
 
   if (props.status === "loading") {
     return (
-      <div className={styles.state} aria-live="polite">
-        <LoaderCircle className={styles.spinner} size={20} aria-hidden="true" />
-        <span>{t("loading")}</span>
+      <div className={styles.skeleton} aria-live="polite" aria-busy="true">
+        <span className="sr-only">{t("loading")}</span>
+        <span className={styles.skeletonLine} />
+        <span className={styles.skeletonLine} />
+        <span className={styles.skeletonLine} />
       </div>
     );
   }

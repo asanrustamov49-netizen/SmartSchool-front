@@ -33,6 +33,9 @@ export function SchoolRatingPanel() {
       return <DataState status="empty" message={t("empty")} />;
     }
 
+    // Полоса показывает XP относительно лидера — это реальные данные рейтинга.
+    const maxXp = Math.max(...ratingQuery.data.items.map((item) => item.xp), 1);
+
     return (
       <ul className={scss.list}>
         {ratingQuery.data.items.map((item) => (
@@ -40,7 +43,12 @@ export function SchoolRatingPanel() {
             <span className={`${scss.rankNumber} ${item.rank <= 3 ? scss[`rank${item.rank}`] : ""}`}>
               {item.rank}
             </span>
-            <strong>{item.full_name}</strong>
+            <div className={scss.rankingName}>
+              <strong>{item.full_name}</strong>
+              <span className={scss.rankingBar} aria-hidden="true">
+                <span style={{ width: `${Math.round((item.xp / maxXp) * 100)}%` }} />
+              </span>
+            </div>
             <span>{item.class_name ?? "—"}</span>
             <b>{item.xp} XP</b>
           </li>

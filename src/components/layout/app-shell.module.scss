@@ -18,10 +18,10 @@
   --accent-soft: var(--ss-accent-soft);
   --positive: var(--ss-success);
   --danger: var(--ss-danger);
-  --sidebar-background: var(--ss-surface);
-  --sidebar-foreground: var(--ss-ink);
-  --sidebar-muted: var(--ss-muted);
-  --sidebar-active: var(--ss-accent-soft);
+  --sidebar-background: var(--ss-sidebar);
+  --sidebar-foreground: #e6e9f5;
+  --sidebar-muted: #8f98bd;
+  --sidebar-active: var(--ss-gradient);
 
   display: flex;
   width: 100%;
@@ -43,9 +43,32 @@
   height: 100vh;
   flex-direction: column;
   padding: 18px 12px 14px;
-  border-right: 1px solid var(--border);
+  overflow: hidden;
   background: var(--sidebar-background);
   color: var(--sidebar-foreground);
+  isolation: isolate;
+
+  // Внутри тёмного меню общие переменные переопределяются под тёмный фон.
+  --text: #ffffff;
+  --muted: var(--sidebar-muted);
+  --border: rgb(255 255 255 / 8%);
+  --soft: rgb(255 255 255 / 6%);
+  --accent: #9db8ff;
+  --accent-soft: rgb(91 140 255 / 18%);
+
+  // Мягкое свечение в верхней части меню.
+  &::before {
+    position: absolute;
+    z-index: -1;
+    top: -120px;
+    left: -60px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(124 92 255 / 35%), transparent);
+    content: "";
+    pointer-events: none;
+  }
 }
 
 .brand {
@@ -81,9 +104,9 @@
   flex: 0 0 auto;
   place-items: center;
   border-radius: 16px;
-  background: var(--accent);
-  color: var(--ss-accent-ink);
-  box-shadow: var(--ss-shadow);
+  background: var(--ss-gradient);
+  color: #ffffff;
+  box-shadow: var(--ss-glow);
 }
 
 .nav {
@@ -118,12 +141,12 @@
 .navItem {
   display: flex;
   width: 100%;
-  min-height: 39px;
+  min-height: 42px;
   align-items: center;
-  gap: 10px;
-  padding: 0 11px;
+  gap: 11px;
+  padding: 0 12px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   color: var(--sidebar-foreground);
   font: inherit;
@@ -131,8 +154,17 @@
   text-align: left;
   text-decoration: none;
   transition:
-    background-color 140ms ease,
-    color 140ms ease;
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
+
+  svg {
+    transition: transform 200ms var(--ss-ease);
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(2px);
+  }
 
   &:hover:not(:disabled) {
     background: var(--soft);
@@ -157,8 +189,9 @@
 
 .navItemActive {
   background: var(--sidebar-active);
-  color: var(--accent);
-  font-weight: 650;
+  box-shadow: var(--ss-glow);
+  color: #ffffff !important;
+  font-weight: 700;
 }
 
 .comingSoon {
@@ -703,9 +736,10 @@
     height: 100dvh;
     transform: translateX(-105%);
     visibility: hidden;
+    box-shadow: 24px 0 60px -20px rgb(7 11 29 / 60%);
     transition:
-      transform 180ms ease-out,
-      visibility 180ms ease-out;
+      transform 320ms var(--ss-ease),
+      visibility 320ms var(--ss-ease);
   }
 
   .sidebarOpen {

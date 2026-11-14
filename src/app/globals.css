@@ -117,48 +117,66 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* Единые токены SmartSchool (стиль «мягкий EdTech»). Модули SCSS ссылаются на них. */
+/* Дизайн-система SmartSchool: единые токены. Модули SCSS ссылаются только на них. */
 :root {
-  --ss-bg: #f8fafc;
+  --ss-bg: #f5f7fb;
   --ss-surface: #ffffff;
-  --ss-surface-2: #f1f5f9;
+  --ss-surface-2: #f1f4f9;
   --ss-ink: #0f172a;
-  --ss-muted: #475569;
-  --ss-line: #e2e8f0;
-  --ss-accent: #2563eb;
-  --ss-accent-strong: #1d4ed8;
+  --ss-muted: #5b6478;
+  --ss-line: #e6eaf2;
+  --ss-accent: #2f6bff;
+  --ss-accent-strong: #1f55e0;
   --ss-accent-ink: #ffffff;
-  --ss-accent-soft: #eef4ff;
-  --ss-success: #047857;
-  --ss-success-soft: #ecfdf5;
-  --ss-warning: #b45309;
-  --ss-warning-soft: #fff7ed;
-  --ss-danger: #dc2626;
-  --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 6px 16px -8px rgb(15 23 42 / 10%);
-  --ss-shadow-lg: 0 24px 48px -24px rgb(15 23 42 / 25%);
-  --ss-radius: 14px;
-  --ss-radius-sm: 10px;
-  --ss-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ss-accent-soft: #edf2ff;
+  --ss-violet: #7c5cff;
+  --ss-violet-soft: #f1edff;
+  --ss-sky: #38bdf8;
+  --ss-success: #059669;
+  --ss-success-soft: #e8f8f1;
+  --ss-warning: #d97706;
+  --ss-warning-soft: #fff6e5;
+  --ss-danger: #e5484d;
+  --ss-gradient: linear-gradient(135deg, #2f6bff 0%, #7c5cff 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(47 107 255 / 12%), rgb(124 92 255 / 12%));
+  --ss-sidebar: linear-gradient(180deg, #0b1230 0%, #131a45 55%, #1e1b4b 100%);
+  --ss-shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);
+  --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 8px 20px -12px rgb(15 23 42 / 14%);
+  --ss-shadow-md: 0 2px 4px rgb(15 23 42 / 4%), 0 16px 32px -16px rgb(15 23 42 / 22%);
+  --ss-shadow-lg: 0 30px 60px -30px rgb(15 23 42 / 35%);
+  --ss-glow: 0 10px 28px -10px rgb(47 107 255 / 60%);
+  --ss-radius: 12px;
+  --ss-radius-sm: 8px;
+  --ss-radius-lg: 16px;
+  --ss-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dark {
   --ss-bg: #0b111e;
   --ss-surface: #111827;
-  --ss-surface-2: #1a2333;
-  --ss-ink: #e5e9f0;
-  --ss-muted: #94a3b8;
-  --ss-line: #1f2a3c;
-  --ss-accent: #60a5fa;
-  --ss-accent-strong: #93c5fd;
-  --ss-accent-ink: #0b111e;
-  --ss-accent-soft: rgb(96 165 250 / 12%);
+  --ss-surface-2: #172033;
+  --ss-ink: #e7ebf3;
+  --ss-muted: #94a0b8;
+  --ss-line: #1f2a3d;
+  --ss-accent: #5b8cff;
+  --ss-accent-strong: #8aaeff;
+  --ss-accent-ink: #ffffff;
+  --ss-accent-soft: rgb(91 140 255 / 14%);
+  --ss-violet: #9b85ff;
+  --ss-violet-soft: rgb(155 133 255 / 14%);
   --ss-success: #34d399;
   --ss-success-soft: rgb(52 211 153 / 12%);
   --ss-warning: #fbbf24;
   --ss-warning-soft: rgb(251 191 36 / 12%);
   --ss-danger: #f87171;
-  --ss-shadow: 0 1px 2px rgb(0 0 0 / 30%);
-  --ss-shadow-lg: 0 24px 48px -24px rgb(0 0 0 / 60%);
+  --ss-gradient: linear-gradient(135deg, #3b74ff 0%, #8b6bff 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(91 140 255 / 16%), rgb(155 133 255 / 16%));
+  --ss-sidebar: linear-gradient(180deg, #070b1d 0%, #0e1336 55%, #171447 100%);
+  --ss-shadow-xs: 0 1px 2px rgb(0 0 0 / 30%);
+  --ss-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 20px -12px rgb(0 0 0 / 50%);
+  --ss-shadow-md: 0 16px 32px -16px rgb(0 0 0 / 60%);
+  --ss-shadow-lg: 0 30px 60px -30px rgb(0 0 0 / 70%);
+  --ss-glow: 0 10px 28px -10px rgb(91 140 255 / 55%);
 }
 
 @layer base {
