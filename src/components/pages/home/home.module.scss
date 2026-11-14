@@ -986,6 +986,91 @@
   }
 }
 
+// ---------- Учитель: свой класс и предметы по классам ----------
+.classCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.classCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+  border-radius: var(--ss-radius);
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+  transition: transform 0.25s var(--ss-ease);
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.classCardName {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.classCardMeta {
+  color: rgb(255 255 255 / 75%);
+  font-size: 13px;
+}
+
+.classCardStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  align-self: flex-start;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 16%);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.subjectGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--ss-line);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  strong {
+    font-size: 15px;
+    font-weight: 800;
+  }
+}
+
+.subjectChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  span {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--ss-accent-soft);
+    color: var(--ss-accent);
+    font-size: 13px;
+    font-weight: 650;
+  }
+}
+
 // ---------- Анимации Dashboard ----------
 @media (prefers-reduced-motion: no-preference) {
   // Карточки появляются волной сверху вниз.

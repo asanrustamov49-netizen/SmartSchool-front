@@ -42,6 +42,22 @@ export async function getStudents(): Promise<Student[]> {
   return response.data;
 }
 
+// GET /students/class/{class_id}. Схема ответа в openapi.json пустая,
+// поля взяты из backend: mysite/api/students.py (get_class_students).
+export type ClassStudent = {
+  id: number;
+  inn: string;
+  full_name: string;
+  phone: string | null;
+  class_id: number;
+  academic_year: string;
+};
+
+export async function getClassStudents(classId: number): Promise<ClassStudent[]> {
+  const response = await api.get<ClassStudent[]>(`/students/class/${classId}`);
+  return response.data;
+}
+
 export async function createStudent(data: StudentCreate): Promise<StudentCreated> {
   const response = await api.post<StudentCreated>("/students/", data);
   return response.data;

@@ -1,68 +1,94 @@
-import { BookOpen, School } from "lucide-react";
+import { BookOpen, School, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { CurrentUser } from "@/apis/auth.api";
+import type { CurrentUser, TeacherLedClass } from "@/apis/auth.api";
 import { DataState } from "@/components/ui/DataState";
-import { MetricCard } from "./MetricCard";
+import { useClassStudents } from "@/hooks/useStudents";
 import scss from "./home.module.scss";
 
-// Данные учителя (classes_led, assignments) приходят в /me, отдельных запросов нет.
+// Один запрос на класс, которым руководит учитель (а не на ученика).
+function LedClassCard({ schoolClass }: { schoolClass: TeacherLedClass }) {
+  const t = useTranslations("dashboard.teacher");
+  const studentsQuery = useClassStudents(schoolClass.id);
+
+  return (
+    <li className={scss.classCard}>
+      <span className={scss.classCardName}>{schoolClass.name ?? "—"}</span>
+      <span className={scss.classCardMeta}>{schoolClass.academic_year}</span>
+      <span className={scss.classCardStat}>
+        <Users size={16} aria-hidden="true" />
+        {studentsQuery.isPending
+          ? "…"
+          : studentsQuery.isError
+            ? t("studentsUnavailable")
+            : t("studentsCount", { count: studentsQuery.data.length })}
+      </span>
+    </li>
+  );
+}
+
+// Классы и предметы учителя приходят в /me (classes_led, assignments).
 export function TeacherDashboard({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.teacher");
   const classesLed = currentUser.classes_led ?? [];
   const assignments = currentUser.assignments ?? [];
 
+  // Предметы группируются по классу, чтобы было видно нагрузку на каждый класс.
+  const subjectsByClass = new Map<string, string[]>();
+  for (const assignment of assignments) {
+    const className = assignment.class_name ?? "—";
+    subjectsByClass.set(className, [
+      ...(subjectsByClass.get(className) ?? []),
+      assignment.subject_name,
+    ]);
+  }
+
   return (
-    <>
-      <section className={scss.metricsGrid} aria-label={t("title")}>
-        <MetricCard icon={School} value={classesLed.length} label={t("classesLed")} tone="violet" />
-        <MetricCard icon={BookOpen} value={assignments.length} label={t("assignments")} tone="blue" />
+    <div className={scss.panelsGrid}>
+      <section className={scss.panel}>
+        <div className={scss.panelHeading}>
+          <div className={scss.headingTitle}>
+            <School size={20} aria-hidden="true" />
+            <h2>{t("classesLed")}</h2>
+          </div>
+        </div>
+        {classesLed.length === 0 ? (
+          <DataState status="empty" message={t("noClassesLed")} />
+        ) : (
+          <ul className={scss.classCards}>
+            {classesLed.map((schoolClass) => (
+              <LedClassCard key={schoolClass.id} schoolClass={schoolClass} />
+            ))}
+          </ul>
+        )}
       </section>
 
-      <div className={scss.panelsGrid}>
-        <section className={scss.panel}>
-          <div className={scss.panelHeading}>
-            <div className={scss.headingTitle}>
-              <School size={20} aria-hidden="true" />
-              <h2>{t("classesLed")}</h2>
-            </div>
+      <section className={scss.panel}>
+        <div className={scss.panelHeading}>
+          <div className={scss.headingTitle}>
+            <BookOpen size={20} aria-hidden="true" />
+            <h2>{t("assignments")}</h2>
           </div>
-          {classesLed.length === 0 ? (
-            <DataState status="empty" message={t("noClassesLed")} />
-          ) : (
-            <ul className={scss.list}>
-              {classesLed.map((schoolClass) => (
-                <li key={schoolClass.id} className={scss.listRow}>
-                  <strong>{schoolClass.name ?? "—"}</strong>
-                  <span>{schoolClass.academic_year}</span>
-                </li>
-              ))}
-            </ul>
+          {assignments.length > 0 && (
+            <span className={scss.panelMeta}>{t("subjectsTotal", { count: assignments.length })}</span>
           )}
-        </section>
-
-        <section className={scss.panel}>
-          <div className={scss.panelHeading}>
-            <div className={scss.headingTitle}>
-              <BookOpen size={20} aria-hidden="true" />
-              <h2>{t("assignments")}</h2>
-            </div>
-          </div>
-          {assignments.length === 0 ? (
-            <DataState status="empty" message={t("noAssignments")} />
-          ) : (
-            <ul className={scss.list}>
-              {assignments.map((assignment) => (
-                <li key={assignment.id} className={scss.listRow}>
-                  <strong>{assignment.subject_name}</strong>
-                  <span>
-                    {assignment.class_name ?? "—"} · {assignment.academic_year}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    </>
+        </div>
+        {assignments.length === 0 ? (
+          <DataState status="empty" message={t("noAssignments")} />
+        ) : (
+          <ul className={scss.list}>
+            {[...subjectsByClass.entries()].map(([className, subjects]) => (
+              <li key={className} className={scss.subjectGroup}>
+                <strong>{className}</strong>
+                <span className={scss.subjectChips}>
+                  {subjects.map((subject, index) => (
+                    <span key={`${subject}-${index}`}>{subject}</span>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { AdminDashboard } from "./AdminDashboard";
 import { AnnouncementsPanel } from "./AnnouncementsPanel";
@@ -14,6 +16,7 @@ import scss from "./home.module.scss";
 // Роль известна только после /me на клиенте. AppShell показывает страницу,
 // когда пользователь уже загружен, поэтому здесь данные берутся из кэша.
 export function RoleDashboard() {
+  const t = useTranslations("dashboard");
   const currentUser = useCurrentUser().data;
 
   if (!currentUser) {
@@ -33,7 +36,8 @@ export function RoleDashboard() {
       case "PARENT":
         return <ParentDashboard currentUser={currentUser} />;
       default:
-        return null;
+        // Для SYSTEM_ADMIN в API нет отдельных данных главной — показываем честное пустое состояние.
+        return <DataState status="empty" message={t("systemEmpty")} />;
     }
   };
 

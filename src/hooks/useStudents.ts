@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createStudent,
+  getClassStudents,
   getStudents,
   updateStudent,
   type StudentUpdate,
@@ -12,6 +13,13 @@ export function useStudents() {
   return useQuery({
     queryKey: studentsQueryKey,
     queryFn: getStudents,
+  });
+}
+
+export function useClassStudents(classId: number) {
+  return useQuery({
+    queryKey: [...studentsQueryKey, "class", classId],
+    queryFn: () => getClassStudents(classId),
   });
 }
 
