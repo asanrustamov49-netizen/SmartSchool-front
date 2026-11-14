@@ -1,11 +1,8 @@
 import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { getRelativeTimeParts } from "@/lib/utils";
 
 type DateInput = string | Date | null | undefined;
 
-const MINUTE = 60;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
-const WEEK = 7 * DAY;
 const EMPTY_DATE = "—";
 
 // Строка вида "2026-11-24" — это календарная дата без времени: читаем её в локальном поясе,
@@ -95,38 +92,41 @@ export function useDateFormat() {
     return format.dateTime(date, { dateStyle: "medium", timeStyle: "short" });
   };
 
-  // «5 мүнөт мурун», «кечээ» / «5 минут назад». Округление как у Intl для ru, чтобы языки не расходились.
-  // Старше недели — обычная дата.
+  // «5 мүнөт мурун», «кечээ» / «5 минут назад».
+  // Единицу для обоих языков выбирает getRelativeTimeParts — без «60 минут назад».
   const formatRelative = (value: DateInput) => {
     const date = toDate(value);
     if (!date) {
       return EMPTY_DATE;
     }
 
+    const now = new Date();
+    const parts = getRelativeTimeParts((now.getTime() - date.getTime()) / 1000);
+
     if (!isKyrgyz) {
-      return format.relativeTime(date, new Date());
+      // Будущее и старше недели — как раньше, единицу подбирает Intl.
+      return parts
+        ? format.relativeTime(date, { now, unit: parts.unit })
+        : format.relativeTime(date, now);
     }
 
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-
-    if (seconds < 0 || seconds >= WEEK) {
+    if (!parts) {
       return formatDate(date);
     }
 
-    if (seconds < MINUTE) {
+    if (parts.unit === "second") {
       return t("justNow");
     }
 
-    if (seconds < HOUR) {
-      return t("minutesAgo", { count: Math.max(1, Math.round(seconds / MINUTE)) });
+    if (parts.unit === "minute") {
+      return t("minutesAgo", { count: parts.value });
     }
 
-    if (seconds < DAY) {
-      return t("hoursAgo", { count: Math.max(1, Math.round(seconds / HOUR)) });
+    if (parts.unit === "hour") {
+      return t("hoursAgo", { count: parts.value });
     }
 
-    const days = Math.round(seconds / DAY);
-    return days === 1 ? t("yesterday") : t("daysAgo", { count: days });
+    return parts.value === 1 ? t("yesterday") : t("daysAgo", { count: parts.value });
   };
 
   return { formatLongDate, formatDate, formatDateTime, formatRelative };
