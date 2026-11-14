@@ -153,7 +153,15 @@
       "subjects": "Сабактар боюнча XP",
       "noSubjects": "Сабактар боюнча XP азырынча жок",
       "classRankShort": "класста",
-      "noStanding": "Рейтинг маалыматы жеткиликсиз"
+      "noStanding": "Рейтинг маалыматы жеткиликсиз",
+      "badges": "Менин значоктарым",
+      "noBadges": "Азырынча значок жок — алар окуудагы ийгилик үчүн берилет",
+      "badgeTypes": {
+        "SUBJECT_LEADER": "Сабактын лидери",
+        "PARALLEL_CHAMP": "Параллелдин чемпиону",
+        "PERFECT_ATTENDANCE": "Мыкты катышуу",
+        "OLYMPIAD_CANDIDATE": "Олимпиадага талапкер"
+      }
     },
     "parent": {
       "children": "Балдарым",

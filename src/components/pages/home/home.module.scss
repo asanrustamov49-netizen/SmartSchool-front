@@ -485,11 +485,123 @@
   }
 }
 
+// ---------- Значки ученика ----------
+.badgeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px;
+  border: 1px solid var(--ss-line);
+  border-radius: var(--ss-radius);
+  background: var(--ss-gradient-soft);
+  text-align: center;
+  transition: transform 0.25s var(--ss-ease), box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: var(--ss-shadow-md);
+    transform: translateY(-3px);
+  }
+
+  strong {
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  > span:last-child:not(:first-child) {
+    color: var(--ss-muted);
+    font-size: 12px;
+  }
+}
+
+.badgeIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 10px 20px -10px #f59e0b;
+  color: #ffffff;
+}
+
+// ---------- Карточки детей (родитель) ----------
+.childGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.childCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--ss-line);
+  border-radius: var(--ss-radius);
+  background: var(--ss-surface);
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.25s var(--ss-ease);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--ss-accent) 40%, var(--ss-line));
+    box-shadow: var(--ss-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  > span:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  strong {
+    overflow: hidden;
+    font-size: 16px;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  > span:last-child > span {
+    color: var(--ss-muted);
+    font-size: 14px;
+  }
+}
+
+.childAvatar {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+}
+
 // ---------- Анимации Dashboard ----------
 @media (prefers-reduced-motion: no-preference) {
   // Карточки появляются волной сверху вниз.
   .metricsGrid > *,
-  .panelsGrid > * {
+  .panelsGrid > *,
+  .badge,
+  .childCard {
     animation: dash-rise 0.55s var(--ss-ease) both;
   }
 

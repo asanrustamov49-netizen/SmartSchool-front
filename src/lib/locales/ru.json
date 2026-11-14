@@ -153,7 +153,15 @@
       "subjects": "XP по предметам",
       "noSubjects": "XP по предметам пока нет",
       "classRankShort": "в классе",
-      "noStanding": "Данные рейтинга недоступны"
+      "noStanding": "Данные рейтинга недоступны",
+      "badges": "Мои значки",
+      "noBadges": "Значков пока нет — они появятся за успехи в учёбе",
+      "badgeTypes": {
+        "SUBJECT_LEADER": "Лидер предмета",
+        "PARALLEL_CHAMP": "Чемпион параллели",
+        "PERFECT_ATTENDANCE": "Идеальная посещаемость",
+        "OLYMPIAD_CANDIDATE": "Кандидат на олимпиаду"
+      }
     },
     "parent": {
       "children": "Мои дети",

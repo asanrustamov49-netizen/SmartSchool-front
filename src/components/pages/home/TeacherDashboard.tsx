@@ -14,8 +14,8 @@ export function TeacherDashboard({ currentUser }: { currentUser: CurrentUser }) 
   return (
     <>
       <section className={scss.metricsGrid} aria-label={t("title")}>
-        <MetricCard icon={School} value={classesLed.length} label={t("classesLed")} />
-        <MetricCard icon={BookOpen} value={assignments.length} label={t("assignments")} />
+        <MetricCard icon={School} value={classesLed.length} label={t("classesLed")} tone="violet" />
+        <MetricCard icon={BookOpen} value={assignments.length} label={t("assignments")} tone="blue" />
       </section>
 
       <div className={scss.panelsGrid}>
