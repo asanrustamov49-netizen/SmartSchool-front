@@ -1337,3 +1337,297 @@
     font-size: 0;
   }
 }
+
+// =====================================================================
+// Визуальное направление v2: тёмно-синий hero, электрический синий,
+// сине-фиолетовые градиенты, светлые секции, контрастные CTA.
+// Правила ниже намеренно идут последними и уточняют базовые стили.
+// =====================================================================
+
+.page {
+  --navy: #070b1a;
+  --navy-2: #0d1433;
+}
+
+// ---------- Header поверх тёмного hero ----------
+.header {
+  border-bottom-color: rgb(255 255 255 / 8%);
+  background: rgb(7 11 26 / 92%);
+  color: #ffffff;
+
+  --ink: #ffffff;
+  --muted: rgb(255 255 255 / 70%);
+  --line: rgb(255 255 255 / 14%);
+  --surface: rgb(255 255 255 / 6%);
+  --accent: #8fb0ff;
+  --accent-soft: rgb(91 140 255 / 22%);
+}
+
+.navLinks a:hover {
+  color: #ffffff;
+}
+
+.nav {
+  @media (max-width: 1180px) {
+    background: var(--navy);
+  }
+}
+
+// ---------- Hero ----------
+.hero {
+  margin-top: -1px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 55% 60% at 75% 35%, rgb(47 107 255 / 38%), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 95% 90%, rgb(124 92 255 / 35%), transparent 70%),
+    radial-gradient(ellipse 35% 45% at 10% 100%, rgb(56 189 248 / 18%), transparent 70%),
+    var(--navy);
+  color: #ffffff;
+
+  --ink: #ffffff;
+  --muted: rgb(255 255 255 / 72%);
+  --line: rgb(255 255 255 / 7%);
+
+  // Сетка тетради на тёмном фоне и медленно плывущее световое пятно.
+  &::before {
+    opacity: 1;
+  }
+
+  &::after {
+    position: absolute;
+    z-index: -1;
+    top: 10%;
+    left: 35%;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(91 140 255 / 30%), transparent);
+    content: "";
+    filter: blur(20px);
+    pointer-events: none;
+  }
+}
+
+.heroTitle {
+  background: linear-gradient(180deg, #ffffff 30%, #b9c9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.heroRoles svg {
+  color: #8fb0ff;
+}
+
+.buttonPrimary {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff !important;
+
+  &:hover {
+    background: var(--ss-gradient);
+    box-shadow: 0 14px 34px -10px rgb(91 140 255 / 75%);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.hero .buttonGhost,
+.header .buttonGhost {
+  border-color: rgb(255 255 255 / 22%);
+  background: rgb(255 255 255 / 6%);
+  color: #ffffff;
+  backdrop-filter: blur(6px);
+
+  &:hover {
+    border-color: rgb(255 255 255 / 45%);
+    background: rgb(255 255 255 / 12%);
+  }
+}
+
+// Витрина: светлый интерфейс на тёмном фоне, наклон за курсором и мягкое «парение».
+.previewStage {
+  --ink: var(--ss-ink);
+  --muted: var(--ss-muted);
+  --line: var(--ss-line);
+  --surface: var(--ss-surface);
+  --surface-2: var(--ss-surface-2);
+  --tilt-x: 0;
+  --tilt-y: 0;
+
+  color: var(--ss-ink);
+}
+
+.previewWindow {
+  border-color: rgb(255 255 255 / 14%);
+  box-shadow:
+    0 50px 100px -40px rgb(0 0 0 / 70%),
+    0 0 0 1px rgb(255 255 255 / 6%),
+    0 0 80px -20px rgb(91 140 255 / 45%);
+  transform: rotateY(calc(-9deg + var(--tilt-x) * 8deg)) rotateX(calc(4deg - var(--tilt-y) * 6deg));
+  transition: transform 0.5s var(--ss-ease);
+}
+
+.previewGlow {
+  background:
+    radial-gradient(closest-side, rgb(47 107 255 / 55%), transparent),
+    radial-gradient(closest-side at 80% 80%, rgb(124 92 255 / 45%), transparent);
+}
+
+.previewCaption {
+  color: rgb(255 255 255 / 55%);
+}
+
+.notifyIcon {
+  background: var(--ss-gradient);
+  color: #ffffff;
+}
+
+// ---------- Светлые секции ----------
+.featureCard {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(135deg, rgb(47 107 255 / 45%), rgb(124 92 255 / 25%), var(--line)) border-box;
+  box-shadow: var(--ss-shadow);
+  transition:
+    transform 0.3s var(--ss-ease),
+    box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--ss-shadow-md), 0 0 0 1px rgb(91 140 255 / 30%);
+    transform: translateY(-4px);
+  }
+
+  .featureIcon {
+    background: var(--ss-gradient);
+    box-shadow: var(--ss-glow);
+    color: #ffffff;
+  }
+}
+
+.stepNumber {
+  border: 0;
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+}
+
+.audienceItem li::before {
+  background: var(--ss-gradient);
+}
+
+.benefits svg {
+  color: var(--ss-violet);
+}
+
+// ---------- Финальный призыв ----------
+.accessInner {
+  background:
+    radial-gradient(ellipse 50% 80% at 100% 0%, rgb(56 189 248 / 35%), transparent 60%),
+    radial-gradient(ellipse 60% 90% at 0% 100%, rgb(124 92 255 / 55%), transparent 60%),
+    linear-gradient(120deg, #1f3fd8 0%, #3b5bff 45%, #6d4dff 100%);
+  box-shadow: 0 40px 80px -40px rgb(47 107 255 / 55%);
+}
+
+.accessCopy p,
+.accessPaths p {
+  color: rgb(255 255 255 / 80%);
+}
+
+.accessPaths article {
+  border-color: rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 10%);
+}
+
+// ---------- Footer ----------
+.footer {
+  border-top: 0;
+  background: var(--navy);
+  color: #ffffff;
+
+  --ink: #ffffff;
+  --muted: rgb(255 255 255 / 60%);
+}
+
+// ---------- Анимации v2 ----------
+// Появление при прокрутке включается только когда эффекты активны (data-effects="on").
+.page[data-effects="on"] [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s var(--ss-ease),
+    transform 0.7s var(--ss-ease);
+}
+
+.page[data-effects="on"] [data-reveal][data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.page[data-effects="on"] .featureGrid > :nth-child(2),
+.page[data-effects="on"] .steps > :nth-child(2),
+.page[data-effects="on"] .audienceGrid > :nth-child(2),
+.page[data-effects="on"] .benefits > :nth-child(2) {
+  transition-delay: 90ms;
+}
+
+.page[data-effects="on"] .featureGrid > :nth-child(3),
+.page[data-effects="on"] .steps > :nth-child(3),
+.page[data-effects="on"] .audienceGrid > :nth-child(3),
+.page[data-effects="on"] .benefits > :nth-child(3) {
+  transition-delay: 180ms;
+}
+
+.page[data-effects="on"] .steps > :nth-child(4),
+.page[data-effects="on"] .audienceGrid > :nth-child(4),
+.page[data-effects="on"] .benefits > :nth-child(4) {
+  transition-delay: 270ms;
+}
+
+.page[data-effects="on"] .benefits > :nth-child(5) {
+  transition-delay: 360ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero::after {
+    animation: landing-orb 18s ease-in-out infinite alternate;
+  }
+
+  .ratingCard {
+    animation: landing-float 7s ease-in-out 2s infinite alternate;
+  }
+}
+
+@keyframes landing-orb {
+  to {
+    transform: translate(-140px, 60px) scale(1.2);
+  }
+}
+
+@keyframes landing-float {
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 1080px) {
+  .previewWindow {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero::after {
+    width: 320px;
+    height: 320px;
+  }
+
+  .ratingCard {
+    animation: none;
+  }
+}

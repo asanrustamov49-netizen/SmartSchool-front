@@ -46,7 +46,7 @@ export async function HeroPreview() {
 
   return (
     <figure className={styles.preview}>
-      <div className={styles.previewStage} aria-hidden="true">
+      <div className={styles.previewStage} aria-hidden="true" data-tilt>
         <div className={styles.previewGlow} />
 
         <div className={styles.previewWindow}>

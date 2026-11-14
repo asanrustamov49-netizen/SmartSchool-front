@@ -23,6 +23,7 @@ import {
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { HeroPreview } from "./HeroPreview";
+import { LandingEffects } from "./LandingEffects";
 import { LandingHeader } from "./LandingHeader";
 import styles from "./landing.module.scss";
 
@@ -64,7 +65,8 @@ const Landing = async () => {
   const t = await getTranslations("landing");
 
   return (
-    <div className={styles.page} id="top">
+    <div className={styles.page} id="top" data-landing>
+      <LandingEffects />
       <a href="#main" className={styles.skipLink}>
         {t("nav.skip")}
       </a>
@@ -96,7 +98,7 @@ const Landing = async () => {
         </section>
 
         <section id="features" className={styles.section} aria-labelledby="features-title">
-          <div className={styles.sectionIntro}>
+          <div className={styles.sectionIntro} data-reveal>
             <h2 id="features-title" className={styles.sectionTitle}>
               {t("features.title")}
             </h2>
@@ -106,7 +108,7 @@ const Landing = async () => {
           <h3 className={styles.groupTitle}>{t("features.availableTitle")}</h3>
           <div className={styles.featureGrid}>
             {AVAILABLE_FEATURES.map(({ key, icon: Icon }) => (
-              <article key={key} className={styles.featureCard}>
+              <article key={key} className={styles.featureCard} data-reveal>
                 <span className={styles.featureIcon}>
                   <Icon size={20} aria-hidden="true" />
                 </span>
@@ -117,7 +119,7 @@ const Landing = async () => {
           </div>
 
           <h3 className={styles.groupTitle}>{t("features.soonTitle")}</h3>
-          <ul className={styles.soonList}>
+          <ul className={styles.soonList} data-reveal>
             {SOON_FEATURES.map(({ key, icon: Icon }) => (
               <li key={key}>
                 <Icon size={18} aria-hidden="true" />
@@ -132,7 +134,7 @@ const Landing = async () => {
         </section>
 
         <section id="audience" className={styles.section} aria-labelledby="audience-title">
-          <div className={styles.sectionIntro}>
+          <div className={styles.sectionIntro} data-reveal>
             <h2 id="audience-title" className={styles.sectionTitle}>
               {t("audience.title")}
             </h2>
@@ -141,7 +143,7 @@ const Landing = async () => {
 
           <div className={styles.audienceGrid}>
             {AUDIENCES.map(({ key, icon: Icon }) => (
-              <article key={key} className={styles.audienceItem}>
+              <article key={key} className={styles.audienceItem} data-reveal>
                 <div className={styles.audienceHead}>
                   <span className={styles.featureIcon}>
                     <Icon size={20} aria-hidden="true" />
@@ -159,7 +161,7 @@ const Landing = async () => {
         </section>
 
         <section id="how" className={styles.section} aria-labelledby="how-title">
-          <div className={styles.sectionIntro}>
+          <div className={styles.sectionIntro} data-reveal>
             <h2 id="how-title" className={styles.sectionTitle}>
               {t("how.title")}
             </h2>
@@ -168,7 +170,7 @@ const Landing = async () => {
 
           <ol className={styles.steps}>
             {STEPS.map((step, index) => (
-              <li key={step}>
+              <li key={step} data-reveal>
                 <span className={styles.stepNumber}>{index + 1}</span>
                 <h3>{t(`how.steps.${step}.title`)}</h3>
                 <p>{t(`how.steps.${step}.text`)}</p>
@@ -178,7 +180,7 @@ const Landing = async () => {
         </section>
 
         <section className={styles.section} aria-labelledby="benefits-title">
-          <div className={styles.sectionIntro}>
+          <div className={styles.sectionIntro} data-reveal>
             <h2 id="benefits-title" className={styles.sectionTitle}>
               {t("benefits.title")}
             </h2>
@@ -186,7 +188,7 @@ const Landing = async () => {
 
           <ul className={styles.benefits}>
             {BENEFITS.map(({ key, icon: Icon }) => (
-              <li key={key}>
+              <li key={key} data-reveal>
                 <Icon size={20} aria-hidden="true" />
                 <strong>{t(`benefits.items.${key}.title`)}</strong>
                 <span>{t(`benefits.items.${key}.text`)}</span>
@@ -196,7 +198,7 @@ const Landing = async () => {
         </section>
 
         <section id="access" className={styles.access} aria-labelledby="access-title">
-          <div className={styles.accessInner}>
+          <div className={styles.accessInner} data-reveal>
             <div className={styles.accessCopy}>
               <h2 id="access-title" className={styles.accessTitle}>
                 {t("access.title")}
