@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { CircleAlert, Eye, EyeOff, IdCard, LoaderCircle, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -104,17 +104,20 @@ const Login = () => {
           <Label htmlFor="inn" className={styles.label}>
             {t("inn")}
           </Label>
-          <Input
-            id="inn"
-            className={styles.input}
-            inputMode="numeric"
-            autoComplete="username"
-            maxLength={14}
-            placeholder={t("innPlaceholder")}
-            aria-invalid={Boolean(errors.inn)}
-            aria-describedby={errors.inn ? "inn-error" : undefined}
-            {...register("inn")}
-          />
+          <div className={styles.inputWrap}>
+            <IdCard className={styles.inputIcon} size={18} aria-hidden="true" />
+            <Input
+              id="inn"
+              className={styles.input}
+              inputMode="numeric"
+              autoComplete="username"
+              maxLength={14}
+              placeholder={t("innPlaceholder")}
+              aria-invalid={Boolean(errors.inn)}
+              aria-describedby={errors.inn ? "inn-error" : undefined}
+              {...register("inn")}
+            />
+          </div>
           {errors.inn && (
             <p id="inn-error" className={styles.fieldError}>
               {errors.inn.message}
@@ -127,6 +130,7 @@ const Login = () => {
             {t("password")}
           </Label>
           <div className={styles.passwordWrap}>
+            <Lock className={styles.inputIcon} size={18} aria-hidden="true" />
             <Input
               id="password"
               className={styles.input}

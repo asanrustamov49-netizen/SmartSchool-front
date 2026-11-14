@@ -24,8 +24,8 @@
     "logout": "Чыгуу",
     "username": "Колдонуучунун аты",
     "password": "Сыр сөз",
-    "title": "Smart School'га кирүү",
-    "subtitle": "ИНН жана сыр сөзүңүздү киргизиңиз",
+    "title": "Кош келиңиз",
+    "subtitle": "Мектептен алган ИНН жана сыр сөз менен кириңиз",
     "inn": "ИНН",
     "innPlaceholder": "14 сан",
     "passwordPlaceholder": "Сыр сөзүңүз",
@@ -54,7 +54,14 @@
         "passwordsMismatch": "Сыр сөздөр дал келбейт"
       }
     },
-    "backToHome": "Башкы бетке"
+    "backToHome": "Башкы бетке",
+    "illustration": {
+      "gradeTitle": "Жаңы баа",
+      "gradeText": "Эң жакшы",
+      "rating": "Рейтинг",
+      "slogan": "Баары колуңда болгондо окуу кызыктуураак",
+      "audience": "Окуучулар, мугалимдер жана ата-энелер үчүн"
+    }
   },
   "app": {
     "title": "Башкы бет",

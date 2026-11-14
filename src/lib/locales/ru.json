@@ -24,8 +24,8 @@
     "logout": "Выйти",
     "username": "Имя пользователя",
     "password": "Пароль",
-    "title": "Вход в Smart School",
-    "subtitle": "Введите ИНН и пароль",
+    "title": "Добро пожаловать",
+    "subtitle": "Войдите по ИНН и паролю, которые выдала школа",
     "inn": "ИНН",
     "innPlaceholder": "14 цифр",
     "passwordPlaceholder": "Ваш пароль",
@@ -54,7 +54,14 @@
         "passwordsMismatch": "Пароли не совпадают"
       }
     },
-    "backToHome": "На главную"
+    "backToHome": "На главную",
+    "illustration": {
+      "gradeTitle": "Новая оценка",
+      "gradeText": "Отлично",
+      "rating": "Рейтинг",
+      "slogan": "Учиться интереснее, когда всё под рукой",
+      "audience": "Для учеников, учителей и родителей"
+    }
   },
   "app": {
     "title": "Главная",
