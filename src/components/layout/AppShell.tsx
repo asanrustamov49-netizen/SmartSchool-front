@@ -22,6 +22,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { handleApiError } from "@/lib/errorHandler";
 import {
+  getCurrentNavigationItem,
   getMobileItems,
   getRoleNavigation,
   isPathAllowed,
@@ -107,6 +108,8 @@ function AuthenticatedShell({
   const navigation = getRoleNavigation(currentUser);
   const mobileItems = getMobileItems(navigation);
   const pathAllowed = isPathAllowed(navigation, pathname);
+  const currentItem = getCurrentNavigationItem(navigation, pathname);
+  const pageTitle = currentItem ? t(`nav.${currentItem.key}`) : t("title");
   const roleLabel = t(`role.${currentUser.role}`);
   const RoleIcon = currentUser.role === "STUDENT" ? GraduationCap : UserRound;
 
@@ -232,7 +235,7 @@ function AuthenticatedShell({
             </button>
             <div className={styles.headerContext}>
               <span>{roleLabel}</span>
-              <strong>{t("title")}</strong>
+              <strong>{pageTitle}</strong>
             </div>
             <label className={styles.searchBox}>
               <Search size={16} aria-hidden="true" />

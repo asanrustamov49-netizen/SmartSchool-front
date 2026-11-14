@@ -123,7 +123,15 @@ export function getMobileItems(navigation: RoleNavigation): NavigationItem[] {
 }
 
 export function isPathAllowed(navigation: RoleNavigation, pathname: string) {
-  return navigation.items.some(
+  return getCurrentNavigationItem(navigation, pathname) !== undefined;
+}
+
+// Пункт меню для текущей страницы: точное совпадение или вложенный путь раздела.
+export function getCurrentNavigationItem(
+  navigation: RoleNavigation,
+  pathname: string,
+): NavigationItem | undefined {
+  return navigation.items.find(
     (item) =>
       pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(`${item.href}/`)),
