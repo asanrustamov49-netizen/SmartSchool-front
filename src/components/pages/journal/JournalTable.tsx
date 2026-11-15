@@ -89,7 +89,7 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
       {journal.can_edit && isFutureDay && <p className={adminStyles.notice}>{t("futureDay")}</p>}
 
       <div className={adminStyles.tableWrap}>
-        <table className={adminStyles.table}>
+        <table className={cn(adminStyles.table, adminStyles.responsiveTable)}>
           <thead>
             <tr>
               <th>№</th>
@@ -106,29 +106,29 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
               if (!canEdit || row.excused) {
                 return (
                   <tr key={row.student_id}>
-                    <td className={adminStyles.cellMuted}>{row.number}</td>
-                    <td>{row.full_name}</td>
-                    <td>
+                    <td data-mobile-hidden className={adminStyles.cellMuted}>{row.number}</td>
+                    <td data-label={t("student")}>{row.full_name}</td>
+                    <td data-label={t("grade")}>
                       {draft.grade !== null ? (
                         <span className={cn(styles.grade, styles[`grade${draft.grade}`])}>{draft.grade}</span>
                       ) : (
                         "—"
                       )}
                     </td>
-                    <td>
+                    <td data-label={t("attendance")}>
                       {draft.attendance ? t(`attendanceCodes.${draft.attendance}`) : "—"}
                       {row.excused && <span className={styles.excused}>{t("excused")}</span>}
                     </td>
-                    <td className={adminStyles.cellMuted}>{draft.comment || "—"}</td>
+                    <td data-label={t("comment")} className={adminStyles.cellMuted}>{draft.comment || "—"}</td>
                   </tr>
                 );
               }
 
               return (
                 <tr key={row.student_id}>
-                  <td className={adminStyles.cellMuted}>{row.number}</td>
-                  <td>{row.full_name}</td>
-                  <td>
+                  <td data-mobile-hidden className={adminStyles.cellMuted}>{row.number}</td>
+                  <td data-label={t("student")}>{row.full_name}</td>
+                  <td data-label={t("grade")}>
                     <div className={styles.gradeButtons} role="group" aria-label={t("grade")}>
                       {GRADES.map((grade) => (
                         <button
@@ -146,7 +146,7 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
                       ))}
                     </div>
                   </td>
-                  <td>
+                  <td data-label={t("attendance")}>
                     <select
                       className={styles.compactSelect}
                       aria-label={t("attendance")}
@@ -165,7 +165,7 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
                       ))}
                     </select>
                   </td>
-                  <td>
+                  <td data-label={t("comment")}>
                     <input
                       className={styles.commentInput}
                       aria-label={t("comment")}

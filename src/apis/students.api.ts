@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import type { StudentStanding } from "./auth.api";
 
 // GET /students/. Схема ответа в openapi.json пустая,
 // поля взяты из backend: mysite/api/students.py (get_students).
@@ -106,3 +107,23 @@ export async function deactivateStudent(studentId: number) {
   await api.delete(`/students/${studentId}`);
 }
 
+
+// GET /students/{id}/history — классы ученика по учебным годам (backend: get_student_history).
+export type EnrollmentStatus = "ACTIVE" | "COMPLETED" | string;
+
+export type StudentHistory = {
+  student_id: number;
+  full_name: string;
+  history: { academic_year: string; class_id: number; class_name: string; status: EnrollmentStatus }[];
+};
+
+export async function getStudentHistory(studentId: number): Promise<StudentHistory> {
+  const response = await api.get<StudentHistory>(`/students/${studentId}/history`);
+  return response.data;
+}
+
+// GET /profiles/students/{id} — XP, места в рейтинге и награды (тот же формат, что student в /me).
+export async function getStudentProfile(studentId: number): Promise<StudentStanding> {
+  const response = await api.get<StudentStanding>(`/profiles/students/${studentId}`);
+  return response.data;
+}

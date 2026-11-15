@@ -10,15 +10,17 @@ import { useClasses } from "@/hooks/useClasses";
 import { useDeactivateStudent, useStudents } from "@/hooks/useStudents";
 import { useResetUserPassword } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
-import { downloadBlob } from "@/lib/utils";
+import { cn,downloadBlob } from "@/lib/utils";
 import { StudentForm } from "./StudentForm";
 import { ExcelImport } from "./ExcelImport";
+import { StudentCard } from "./StudentCard";
 import styles from "./admin.module.scss";
 
 type Panel =
   | { type: "none" }
   | { type: "form"; student: Student | null }
   | { type: "import" }
+  | { type: "card"; studentId: number }
   | { type: "confirm"; action: "reset" | "deactivate"; student: Student };
 
 // Временный пароль показывается один раз: после создания ученика или сброса пароля.
@@ -151,7 +153,7 @@ export function StudentsPage() {
 
     return (
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
+        <table className={cn(styles.table, styles.responsiveTable)}>
           <thead>
             <tr>
               <th>{t("fullName")}</th>
@@ -167,15 +169,22 @@ export function StudentsPage() {
           <tbody>
             {students.map((student) => (
               <tr key={student.id}>
-                <td>{student.full_name}</td>
-                <td className={styles.cellMuted}>{student.inn}</td>
-                <td>{getStudentClassName(student)}</td>
-                <td className={styles.cellMuted}>{student.phone ?? "—"}</td>
-                <td className={student.is_active ? undefined : styles.statusInactive}>
+                <td data-label={t("fullName")}>{student.full_name}</td>
+                <td data-label={t("inn")} className={styles.cellMuted}>{student.inn}</td>
+                <td data-label={t("class")}>{getStudentClassName(student)}</td>
+                <td data-label={t("phone")} className={styles.cellMuted}>{student.phone ?? "—"}</td>
+                <td data-label={t("status")} className={student.is_active ? undefined : styles.statusInactive}>
                   {student.is_active ? t("active") : t("inactive")}
                 </td>
-                <td>
+                <td data-actions>
                   <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.linkButton}
+                      onClick={() => openPanel({ type: "card", studentId: student.id })}
+                    >
+                      {t("card")}
+                    </button>
                     <button
                       type="button"
                       className={styles.linkButton}
@@ -338,6 +347,14 @@ export function StudentsPage() {
               password: student.temporary_password,
             });
           }}
+          onClose={() => setPanel({ type: "none" })}
+        />
+      )}
+
+      {panel.type === "card" && (
+        <StudentCard
+          key={panel.studentId}
+          studentId={panel.studentId}
           onClose={() => setPanel({ type: "none" })}
         />
       )}

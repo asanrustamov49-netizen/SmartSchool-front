@@ -7,6 +7,7 @@ import { DataState } from "@/components/ui/DataState";
 import type { Subject } from "@/apis/subjects.api";
 import { useDeleteSubject, useSubjects } from "@/hooks/useSubjects";
 import { handleApiError } from "@/lib/errorHandler";
+import { cn } from "@/lib/utils";
 import { SubjectForm } from "./SubjectForm";
 import styles from "./admin.module.scss";
 
@@ -63,7 +64,7 @@ export function SubjectsPage() {
 
     return (
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
+        <table className={cn(styles.table, styles.responsiveTable)}>
           <thead>
             <tr>
               <th>{t("name")}</th>
@@ -76,9 +77,9 @@ export function SubjectsPage() {
           <tbody>
             {subjects.map((subject) => (
               <tr key={subject.id}>
-                <td>{subject.name}</td>
-                <td className={styles.cellMuted}>{subject.code ?? "—"}</td>
-                <td>
+                <td data-label={t("name")}>{subject.name}</td>
+                <td data-label={t("code")} className={styles.cellMuted}>{subject.code ?? "—"}</td>
+                <td data-actions>
                   <div className={styles.rowActions}>
                     <button
                       type="button"

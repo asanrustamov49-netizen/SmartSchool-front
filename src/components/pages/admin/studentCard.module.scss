@@ -1,0 +1,173 @@
+// Карточка ученика: прогресс и история классов.
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.subtitle {
+  margin: 4px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+
+  > span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--soft);
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  strong {
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.xp {
+  background: var(--ss-gradient) !important;
+  color: rgb(255 255 255 / 85%) !important;
+
+  strong,
+  svg {
+    color: #ffffff;
+  }
+}
+
+.subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  strong {
+    color: var(--accent);
+    white-space: nowrap;
+  }
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ss-warning, #d97706) 14%, transparent);
+    color: var(--ss-warning, #d97706);
+    font-size: 12px;
+    font-weight: 650;
+  }
+}
+
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: none;
+
+  &::before {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 5px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--border);
+    content: "";
+  }
+
+  li {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 13px;
+
+    &::before {
+      position: absolute;
+      top: 15px;
+      left: -18px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--surface);
+      border-radius: 50%;
+      background: var(--muted);
+      content: "";
+    }
+  }
+
+  strong {
+    font-size: 15px;
+  }
+
+  span {
+    color: var(--muted);
+  }
+}
+
+.current {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border)) !important;
+
+  &::before {
+    background: var(--accent) !important;
+  }
+}
+
+.status {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

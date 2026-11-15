@@ -13,7 +13,9 @@ import {
   School,
   ShieldCheck,
   Settings2,
+  TrendingUp,
   UserRound,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import type { CurrentUser } from "@/apis/auth.api";
@@ -110,6 +112,14 @@ const parentItems: NavigationItem[] = [
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
 ];
 
+// Перевод учеников на новый учебный год backend разрешает только директору.
+const promotionItem: NavigationItem = {
+  key: "promotion",
+  href: "/admin/promotion",
+  icon: TrendingUp,
+  available: true,
+};
+
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
   const items: NavigationItem[] = [
     homeItem,
@@ -120,6 +130,7 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
 
   // Классный руководитель определяется не ролью, а привязкой к классу (is_class_teacher).
   if (isClassTeacher) {
+    items.push({ key: "myClass", href: "/my-class", icon: Users, available: true });
     items.push({
       key: "absenceRequests",
       href: "/absence-requests",
@@ -144,7 +155,7 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
     case "DEPUTY":
       return {
         sectionKey: "admin",
-        items: adminItems,
+        items: user.role === "DIRECTOR" ? [...adminItems, promotionItem] : adminItems,
         accountItems: [profileItem, schoolSettingsItem, settingsItem],
       };
     case "TEACHER":

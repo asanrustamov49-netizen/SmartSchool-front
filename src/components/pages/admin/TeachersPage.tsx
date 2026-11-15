@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertCircle, FileSpreadsheet, KeyRound, Plus, Upload } from "lucide-react";
+import { AlertCircle, FileKey, FileSpreadsheet, KeyRound, Plus, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { downloadTeachersCredentials } from "@/apis/credentials.api";
 import { downloadTeachersTemplate, type Teacher } from "@/apis/teachers.api";
 import { DataState } from "@/components/ui/DataState";
 import { useSetTeacherActive, useTeachers } from "@/hooks/useTeachers";
@@ -80,6 +81,16 @@ export function TeachersPage() {
     }
   };
 
+  // Лист логинов: у кого ещё временный пароль, он виден в файле.
+  const handleCredentialsDownload = async () => {
+    setActionError("");
+    try {
+      downloadBlob(await downloadTeachersCredentials(), "teachers-logins.xlsx");
+    } catch (error) {
+      setActionError(handleApiError(error, tApiErrors));
+    }
+  };
+
   const handleActivate = (teacher: Teacher) => {
     openPanel({ type: "none" });
     setActiveMutation.mutate(
@@ -149,7 +160,7 @@ export function TeachersPage() {
 
     return (
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
+        <table className={cn(styles.table, styles.responsiveTable)}>
           <thead>
             <tr>
               <th>{t("fullName")}</th>
@@ -169,7 +180,7 @@ export function TeachersPage() {
 
               return (
                 <tr key={teacher.id}>
-                  <td>
+                  <td data-label={t("fullName")}>
                     {teacher.full_name}
                     {teacher.is_temp_password && (
                       <span className={styles.tag} title={t("tempPasswordHint")}>
@@ -177,20 +188,20 @@ export function TeachersPage() {
                       </span>
                     )}
                   </td>
-                  <td className={styles.cellMuted}>{teacher.inn}</td>
-                  <td className={styles.cellMuted}>{teacher.phone ?? "—"}</td>
-                  <td>
+                  <td data-label={t("inn")} className={styles.cellMuted}>{teacher.inn}</td>
+                  <td data-label={t("phone")} className={styles.cellMuted}>{teacher.phone ?? "—"}</td>
+                  <td data-label={t("classesLed")}>
                     {teacher.classes_led.length > 0
                       ? teacher.classes_led.map((schoolClass) => schoolClass.name).join(", ")
                       : "—"}
                   </td>
-                  <td className={styles.cellMuted} title={subjectNames.join(", ")}>
+                  <td data-label={t("subjects")} className={styles.cellMuted} title={subjectNames.join(", ")}>
                     {subjectNames.length > 0 ? subjectNames.join(", ") : "—"}
                   </td>
-                  <td className={teacher.is_active ? undefined : styles.statusInactive}>
+                  <td data-label={t("status")} className={teacher.is_active ? undefined : styles.statusInactive}>
                     {teacher.is_active ? t("active") : t("inactive")}
                   </td>
-                  <td>
+                  <td data-actions>
                     <div className={styles.rowActions}>
                       <button
                         type="button"
@@ -256,6 +267,10 @@ export function TeachersPage() {
           <p>{t("description")}</p>
         </div>
         <div className={styles.headerActions}>
+          <button type="button" className={styles.secondaryButton} onClick={handleCredentialsDownload}>
+            <FileKey size={16} aria-hidden="true" />
+            {t("downloadLogins")}
+          </button>
           <button type="button" className={styles.secondaryButton} onClick={handleTemplateDownload}>
             <FileSpreadsheet size={16} aria-hidden="true" />
             {t("downloadTemplate")}

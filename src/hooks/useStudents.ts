@@ -3,6 +3,8 @@ import {
   createStudent,
   deactivateStudent,
   getClassStudents,
+  getStudentHistory,
+  getStudentProfile,
   getStudents,
   importStudentsExcel,
   updateStudent,
@@ -73,5 +75,19 @@ export function useDeactivateStudent() {
   return useMutation({
     mutationFn: deactivateStudent,
     onSuccess: invalidateStudents,
+  });
+}
+
+export function useStudentHistory(studentId: number) {
+  return useQuery({
+    queryKey: [...studentsQueryKey, "history", studentId],
+    queryFn: () => getStudentHistory(studentId),
+  });
+}
+
+export function useStudentProfile(studentId: number) {
+  return useQuery({
+    queryKey: [...studentsQueryKey, "profile", studentId],
+    queryFn: () => getStudentProfile(studentId),
   });
 }

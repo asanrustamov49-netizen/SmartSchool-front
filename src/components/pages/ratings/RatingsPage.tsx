@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Layers, Trophy } from "lucide-react";
+import { BookOpen, CircleCheck, Layers, LoaderCircle, RefreshCw, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
@@ -9,7 +9,7 @@ import type { RatingItem, RatingScope } from "@/apis/ratings.api";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
-import { useRating } from "@/hooks/useRatings";
+import { useRating, useRecomputeRatings } from "@/hooks/useRatings";
 import { useSubjects } from "@/hooks/useSubjects";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
@@ -98,6 +98,7 @@ export function RatingsPage() {
   const [scope, setScope] = useState<RatingScope>({ kind: "school" });
   const [subjectId, setSubjectId] = useState<number | null>(null);
   const ratingQuery = useRating(scope, subjectId, RATING_LIMIT);
+  const recompute = useRecomputeRatings();
 
   // Список всех классов нужен только директору и завучу; остальным он может быть недоступен.
   const schoolClasses = user && isAdmin(user) ? (classesQuery.data ?? []) : [];
@@ -186,7 +187,35 @@ export function RatingsPage() {
           <h1>{t("title")}</h1>
           <p>{t("description")}</p>
         </div>
+        {/* Пересчёт XP по всему журналу — для директора и завуча (POST /ratings/recompute). */}
+        {user && isAdmin(user) && (
+          <button
+            type="button"
+            className={adminStyles.secondaryButton}
+            disabled={recompute.isPending}
+            onClick={() => recompute.mutate()}
+          >
+            {recompute.isPending ? (
+              <LoaderCircle className={adminStyles.spinner} size={16} aria-hidden="true" />
+            ) : (
+              <RefreshCw size={16} aria-hidden="true" />
+            )}
+            {t("recompute")}
+          </button>
+        )}
       </header>
+
+      {recompute.isSuccess && (
+        <p className={adminStyles.notice} role="status">
+          <CircleCheck size={16} aria-hidden="true" />
+          {t("recomputed", { count: recompute.data.recomputed })}
+        </p>
+      )}
+      {recompute.isError && (
+        <p className={adminStyles.formError} role="alert">
+          {handleApiError(recompute.error, tApiErrors)}
+        </p>
+      )}
 
       <section className={adminStyles.card}>
         <div className={styles.controls}>

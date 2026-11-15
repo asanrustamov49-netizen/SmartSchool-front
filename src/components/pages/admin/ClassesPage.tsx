@@ -8,6 +8,8 @@ import { DataState } from "@/components/ui/DataState";
 import { useClasses } from "@/hooks/useClasses";
 import { useSchoolUser } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
+import { cn } from "@/lib/utils";
+import { ClassCredentials } from "./ClassCredentials";
 import { ClassForm } from "./ClassForm";
 import styles from "./admin.module.scss";
 
@@ -32,6 +34,7 @@ export function ClassesPage() {
   const classesQuery = useClasses();
   const [formState, setFormState] = useState<FormState>({ isOpen: false });
   const [search, setSearch] = useState("");
+  const [credentialsClassId, setCredentialsClassId] = useState<number | null>(null);
 
   const normalizedSearch = search.trim().toLowerCase();
   const classes = (classesQuery.data ?? []).filter(
@@ -68,7 +71,7 @@ export function ClassesPage() {
 
     return (
       <div className={styles.tableWrap}>
-        <table className={styles.table}>
+        <table className={cn(styles.table, styles.responsiveTable)}>
           <thead>
             <tr>
               <th>{t("className")}</th>
@@ -82,19 +85,28 @@ export function ClassesPage() {
           <tbody>
             {classes.map((schoolClass) => (
               <tr key={schoolClass.id}>
-                <td>{getClassName(schoolClass)}</td>
-                <td className={styles.cellMuted}>{schoolClass.academic_year}</td>
-                <td>
+                <td data-label={t("className")}>{getClassName(schoolClass)}</td>
+                <td data-label={t("academicYear")} className={styles.cellMuted}>{schoolClass.academic_year}</td>
+                <td data-label={t("classTeacher")}>
                   <ClassTeacherName teacherId={schoolClass.class_teacher_id} />
                 </td>
-                <td>
-                  <button
-                    type="button"
-                    className={styles.linkButton}
-                    onClick={() => setFormState({ isOpen: true, schoolClass })}
-                  >
-                    {tForm("edit")}
-                  </button>
+                <td data-actions>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.linkButton}
+                      onClick={() => setCredentialsClassId(schoolClass.id)}
+                    >
+                      {t("logins")}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.linkButton}
+                      onClick={() => setFormState({ isOpen: true, schoolClass })}
+                    >
+                      {tForm("edit")}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -128,6 +140,14 @@ export function ClassesPage() {
           key={formState.schoolClass?.id ?? "new"}
           schoolClass={formState.schoolClass}
           onClose={closeForm}
+        />
+      )}
+
+      {credentialsClassId !== null && (
+        <ClassCredentials
+          key={credentialsClassId}
+          classId={credentialsClassId}
+          onClose={() => setCredentialsClassId(null)}
         />
       )}
 

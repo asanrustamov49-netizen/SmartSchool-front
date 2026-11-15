@@ -39,7 +39,7 @@ export function OlympiadCandidates() {
 
     return (
       <div className={adminStyles.tableWrap}>
-        <table className={adminStyles.table}>
+        <table className={cn(adminStyles.table, adminStyles.responsiveTable)}>
           <thead>
             <tr>
               <th>{t("subject")}</th>
@@ -53,9 +53,9 @@ export function OlympiadCandidates() {
           <tbody>
             {candidatesQuery.data.map((candidate) => (
               <tr key={candidate.id}>
-                <td>{candidate.subject_name ?? "—"}</td>
-                <td>{candidate.student_name ?? "—"}</td>
-                <td>
+                <td data-label={t("subject")}>{candidate.subject_name ?? "—"}</td>
+                <td data-label={t("student")}>{candidate.student_name ?? "—"}</td>
+                <td data-label={t("status")}>
                   <span
                     className={cn(
                       styles.badge,
@@ -65,7 +65,7 @@ export function OlympiadCandidates() {
                     {candidate.status === "SELECTED" ? t("selected") : t("suggested")}
                   </span>
                 </td>
-                <td>
+                <td data-actions>
                   <div className={adminStyles.rowActions}>
                     {confirmId === candidate.id ? (
                       <>

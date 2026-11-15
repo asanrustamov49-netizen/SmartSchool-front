@@ -60,3 +60,10 @@ export async function getRating(
   const response = await api.get<Rating>(url, { params: { limit } });
   return response.data;
 }
+
+// POST /ratings/recompute — пересчёт XP и наград по всему журналу школы (директор и завуч).
+// Нужен после массовых правок: обычно рейтинг пересчитывается сам при сохранении журнала.
+export async function recomputeRatings(): Promise<{ message: string; recomputed: number }> {
+  const response = await api.post<{ message: string; recomputed: number }>("/ratings/recompute");
+  return response.data;
+}
