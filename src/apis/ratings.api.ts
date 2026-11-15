@@ -23,3 +23,16 @@ export async function getSchoolRating(limit: number): Promise<SchoolRating> {
   });
   return response.data;
 }
+
+// GET /ratings/class/{class_id} (backend: mysite/api/ratings.py, class_rating).
+export type ClassRating = {
+  scope: "class";
+  class_id: number;
+  class_name: string | null;
+  items: RatingItem[];
+};
+
+export async function getClassRating(classId: number): Promise<ClassRating> {
+  const response = await api.get<ClassRating>(`/ratings/class/${classId}`);
+  return response.data;
+}

@@ -48,17 +48,18 @@ const adminItems: NavigationItem[] = [
   { key: "journal", href: "/journal", icon: NotebookPen },
   { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck },
   { key: "olympiad", href: "/admin/olympiad", icon: Medal },
-  { key: "announcements", href: "/announcements", icon: Megaphone },
+  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
   { key: "settings", href: "/admin/school", icon: School, available: true },
+  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 const studentItems: NavigationItem[] = [
   homeItem,
   { key: "daily", href: "/diary", icon: BookOpen },
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
-  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined },
-  { key: "announcements", href: "/announcements", icon: Megaphone },
-  { key: "profile", href: "/profile", icon: UserRound },
+  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
+  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 // Ученик не может подавать заявки на отсутствие (backend отвечает 403),
@@ -68,9 +69,9 @@ const parentItems: NavigationItem[] = [
   { key: "daily", href: "/diary", icon: BookOpen },
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
   { key: "absence", href: "/absence-requests", icon: ClipboardCheck },
-  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined },
-  { key: "announcements", href: "/announcements", icon: Megaphone },
-  { key: "profile", href: "/profile", icon: UserRound },
+  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
+  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
@@ -90,8 +91,8 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
   }
 
   items.push(
-    { key: "announcements", href: "/announcements", icon: Megaphone },
-    { key: "profile", href: "/profile", icon: UserRound },
+    { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+    { key: "profile", href: "/profile", icon: UserRound, available: true },
   );
 
   return items;

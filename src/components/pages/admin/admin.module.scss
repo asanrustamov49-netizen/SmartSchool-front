@@ -151,6 +151,16 @@
   }
 }
 
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.textarea {
+  min-height: 96px;
+  padding-top: 10px;
+  resize: vertical;
+}
+
 .fieldHint {
   color: var(--muted);
   font-size: 12px;
