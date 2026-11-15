@@ -45,9 +45,9 @@ const adminItems: NavigationItem[] = [
   { key: "students", href: "/admin/students", icon: GraduationCap, available: true },
   { key: "classes", href: "/admin/classes", icon: School, available: true },
   { key: "subjects", href: "/admin/subjects", icon: Library, available: true },
-  { key: "journal", href: "/journal", icon: NotebookPen },
-  { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck },
-  { key: "olympiad", href: "/admin/olympiad", icon: Medal },
+  { key: "journal", href: "/journal", icon: NotebookPen, available: true },
+  { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck, available: true },
+  { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
   { key: "settings", href: "/admin/school", icon: School, available: true },
   { key: "profile", href: "/profile", icon: UserRound, available: true },
@@ -68,7 +68,7 @@ const parentItems: NavigationItem[] = [
   homeItem,
   { key: "daily", href: "/diary", icon: BookOpen },
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
-  { key: "absence", href: "/absence-requests", icon: ClipboardCheck },
+  { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
   { key: "profile", href: "/profile", icon: UserRound, available: true },
@@ -77,7 +77,7 @@ const parentItems: NavigationItem[] = [
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
   const items: NavigationItem[] = [
     homeItem,
-    { key: "journal", href: "/journal", icon: NotebookPen },
+    { key: "journal", href: "/journal", icon: NotebookPen, available: true },
     { key: "assignments", href: "/homeworks", icon: ClipboardList },
   ];
 
@@ -87,6 +87,7 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
       key: "absenceRequests",
       href: "/absence-requests",
       icon: ClipboardCheck,
+      available: true,
     });
   }
 

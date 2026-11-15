@@ -1,0 +1,149 @@
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+
+.subject {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+}
+
+.subjectHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  button {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.rank {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rank1 {
+  background: #fbbf24;
+  color: #ffffff;
+}
+
+.rank2 {
+  background: #94a3b8;
+  color: #ffffff;
+}
+
+.rank3 {
+  background: #d97706;
+  color: #ffffff;
+}
+
+.name {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  strong {
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.badge {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badgeSelected {
+  background: color-mix(in srgb, var(--ss-success, #059669) 15%, transparent);
+  color: var(--ss-success, #059669);
+}
+
+.badgeSuggested {
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 15%, transparent);
+  color: var(--ss-warning, #d97706);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .subject {
+    animation: olympiad-rise 0.45s var(--ss-ease) backwards;
+  }
+}
+
+@keyframes olympiad-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}

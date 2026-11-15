@@ -1,0 +1,162 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+}
+
+.tabActive {
+  border-color: transparent;
+  background: var(--ss-gradient);
+  color: #ffffff;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+
+  p {
+    margin: 0;
+  }
+}
+
+.itemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+
+  div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  strong {
+    font-size: 15px;
+  }
+
+  span {
+    font-size: 12px;
+  }
+}
+
+.status {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusPENDING {
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 15%, transparent);
+  color: var(--ss-warning, #d97706);
+}
+
+.statusAPPROVED {
+  background: color-mix(in srgb, var(--ss-success, #059669) 15%, transparent);
+  color: var(--ss-success, #059669);
+}
+
+.statusREJECTED {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.statusCANCELLED {
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reason {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.comment {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+
+  input {
+    min-width: 0;
+    flex: 1 1 160px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .item {
+    animation: absence-rise 0.4s var(--ss-ease) backwards;
+  }
+}
+
+@keyframes absence-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

@@ -1,0 +1,119 @@
+.dateInput {
+  width: 180px;
+  flex: 0 0 auto;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  span {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--soft);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.gradeButtons {
+  display: flex;
+  gap: 4px;
+}
+
+.gradeButton {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+}
+
+.grade {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.grade5,
+.grade4,
+.grade3,
+.grade2 {
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.grade5 {
+  background: var(--ss-success, #059669);
+}
+
+.grade4 {
+  background: var(--ss-accent, #2f6bff);
+}
+
+.grade3 {
+  background: var(--ss-warning, #d97706);
+}
+
+.grade2 {
+  background: var(--danger);
+}
+
+.compactSelect,
+.commentInput {
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.commentInput {
+  width: 100%;
+  min-width: 160px;
+}
+
+.excused {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ss-success, #059669) 14%, transparent);
+  color: var(--ss-success, #059669);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
