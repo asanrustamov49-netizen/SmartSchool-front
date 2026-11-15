@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { Providers } from "@/components/layout/Providers";
 import "./globals.css";
@@ -8,11 +8,6 @@ import "./globals.css";
 const appFont = Manrope({
   variable: "--font-app",
   subsets: ["latin", "cyrillic", "cyrillic-ext"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -32,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="ky"
-      className={`${appFont.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${appFont.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

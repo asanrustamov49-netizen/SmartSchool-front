@@ -307,7 +307,8 @@
 }
 
 .secret {
-  font-family: var(--font-geist-mono), monospace;
+  // Системный моноширинный шрифт: отдельный веб-шрифт ради одного поля не нужен.
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 15px;
   font-weight: 700;
   user-select: all;

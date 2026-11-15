@@ -50,7 +50,7 @@ export function SchoolImages({ school }: { school: School }) {
                 {imageUrl ? (
                   // Файл лежит на сервере API, поэтому обычный img без оптимизации next/image.
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={getMediaUrl(imageUrl)} alt={t(`images.${imageType}`)} />
+                  <img src={getMediaUrl(imageUrl)} alt={t(`images.${imageType}`)} loading="lazy" />
                 ) : (
                   t("noImage")
                 )}

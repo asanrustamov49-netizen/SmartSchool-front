@@ -98,7 +98,12 @@ export function AnnouncementsPage() {
             {announcement.image_url && (
               // Файл лежит на сервере API, поэтому обычный img без оптимизации next/image.
               // eslint-disable-next-line @next/next/no-img-element
-              <img className={styles.image} src={getMediaUrl(announcement.image_url)} alt="" />
+              <img
+                className={styles.image}
+                src={getMediaUrl(announcement.image_url)}
+                alt=""
+                loading="lazy"
+              />
             )}
             <div className={styles.content}>
               <span className={styles.date}>
