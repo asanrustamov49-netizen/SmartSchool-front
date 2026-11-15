@@ -11,8 +11,11 @@ import { handleApiError } from "@/lib/errorHandler";
 import { downloadBlob } from "@/lib/utils";
 import styles from "./admin.module.scss";
 
-// Колонки и правила те же, что проверяет backend (student_import.py, teacher_import.py).
+// Заголовки и порядок, которые строго проверяет backend (student_import.py, teacher_import.py).
+// Файл пользователя может быть оформлен иначе: в backend уходит новый файл с этими заголовками.
 const TEMPLATE_HEADERS = ["ИНН", "Толук аты-жөнү", "Телефон"];
+// Заголовок ищется в первых строках листа: над ним может быть название таблицы.
+const HEADER_SEARCH_ROWS = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const INN_PATTERN = /^\d{14}$/;
 
@@ -25,6 +28,17 @@ type ParsedRow = {
   phone: string;
   problem: RowProblem | null;
 };
+
+type ColumnKey = "inn" | "fullName" | "phone";
+type ColumnMap = Record<ColumnKey, number | null>;
+
+// Слова, по которым узнаётся столбец (в уже нормализованном заголовке).
+// Проверяются по порядку: «Номер телефона» — это телефон, а не ФИО.
+const COLUMN_HINTS: [ColumnKey, string[]][] = [
+  ["inn", ["инн", "inn", "пин", "pin"]],
+  ["phone", ["тел", "phone", "номер", "mobile"]],
+  ["fullName", ["аты", "фио", "имя", "ысым", "жону", "фамилия", "name"]],
+];
 
 type ImportOutcome = {
   result: ExcelImportResult;
@@ -51,6 +65,60 @@ function cellToText(value: unknown) {
   }
 
   return "";
+}
+
+// Регистр, пробелы, дефисы и кыргызские буквы в заголовке не важны:
+// «Толук аты-жөнү», «аты жону» и «ФИО» распознаются одинаково.
+function normalizeHeader(value: unknown) {
+  return cellToText(value)
+    .toLowerCase()
+    .replace(/ө/g, "о")
+    .replace(/ү/g, "у")
+    .replace(/ң/g, "н")
+    .replace(/ё/g, "е")
+    .replace(/[^a-zа-я0-9]/g, "");
+}
+
+function findColumns(cells: unknown[]): ColumnMap {
+  const columns: ColumnMap = { inn: null, fullName: null, phone: null };
+
+  cells.forEach((cell, index) => {
+    const header = normalizeHeader(cell);
+    if (header === "") {
+      return;
+    }
+
+    const match = COLUMN_HINTS.find(
+      ([key, hints]) => columns[key] === null && hints.some((hint) => header.includes(hint)),
+    );
+    if (match) {
+      columns[match[0]] = index;
+    }
+  });
+
+  return columns;
+}
+
+// Находит строку заголовка. Если заголовка нет, но в первом столбце уже ИНН,
+// столбцы считаются в порядке шаблона: ИНН, ФИО, телефон.
+function findTableLayout(table: unknown[][]) {
+  for (let index = 0; index < Math.min(table.length, HEADER_SEARCH_ROWS); index += 1) {
+    const columns = findColumns(table[index] ?? []);
+    if (columns.inn !== null && columns.fullName !== null) {
+      return { columns, firstDataRow: index + 1 };
+    }
+  }
+
+  const firstFilledRow = table.findIndex((cells) => cells.some((cell) => cellToText(cell) !== ""));
+  if (firstFilledRow >= 0 && INN_PATTERN.test(cellToText(table[firstFilledRow][0]).replace(/\s/g, ""))) {
+    return { columns: { inn: 0, fullName: 1, phone: 2 }, firstDataRow: firstFilledRow };
+  }
+
+  return null;
+}
+
+function readCell(cells: unknown[], column: number | null) {
+  return column === null ? "" : cellToText(cells[column]);
 }
 
 function findProblem(
@@ -133,26 +201,21 @@ export function ExcelImport({
         ? XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null })
         : [];
 
-      const headers = (table[0] ?? [])
-        .slice(0, 3)
-        .map((cell) => cellToText(cell).toLowerCase());
-      const expectedHeaders = TEMPLATE_HEADERS.map((header) =>
-        header.toLowerCase(),
-      );
-      if (headers.join("|") !== expectedHeaders.join("|")) {
-        setFileError(
-          t("wrongHeaders", { columns: TEMPLATE_HEADERS.join(", ") }),
-        );
+      const layout = findTableLayout(table);
+      if (!layout) {
+        setFileError(t("wrongHeaders"));
         return;
       }
+      const { columns, firstDataRow } = layout;
 
       const seenInns = new Set<string>();
       const parsedRows: ParsedRow[] = [];
 
-      table.slice(1).forEach((cells, index) => {
-        const inn = cellToText(cells[0]);
-        const fullName = cellToText(cells[1]);
-        const phone = cellToText(cells[2]);
+      table.slice(firstDataRow).forEach((cells, index) => {
+        // В ИНН часто попадают пробелы-разделители: «115 031 985 00456».
+        const inn = readCell(cells, columns.inn).replace(/\s/g, "");
+        const fullName = readCell(cells, columns.fullName);
+        const phone = readCell(cells, columns.phone);
 
         if (inn === "" && fullName === "" && phone === "") {
           return;
@@ -164,7 +227,7 @@ export function ExcelImport({
         }
 
         parsedRows.push({
-          rowNumber: index + 2,
+          rowNumber: firstDataRow + index + 1,
           inn,
           fullName,
           phone,
@@ -251,7 +314,7 @@ export function ExcelImport({
     <section className={styles.card}>
       <h2 className={styles.cardTitle}>{t(`title.${userType}`)}</h2>
       <p className={styles.fieldHint}>
-        {t("description", { columns: TEMPLATE_HEADERS.join(", ") })}
+        {t("description")}
       </p>
 
       <div className={styles.form}>
