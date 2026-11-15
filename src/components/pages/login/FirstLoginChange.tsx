@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, LoaderCircle } from "lucide-react";
+import { CircleAlert, Eye, EyeOff, LoaderCircle, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,55 @@ type FirstLoginChangeFormValues = {
   newPassword: string;
   confirmPassword: string;
 };
+
+type PasswordFieldProps = {
+  id: string;
+  label: string;
+  autoComplete: "current-password" | "new-password";
+  error: string | undefined;
+  registration: UseFormRegisterReturn;
+};
+
+// Поле пароля с кнопкой «показать / скрыть», как на странице входа.
+function PasswordField({ id, label, autoComplete, error, registration }: PasswordFieldProps) {
+  const tAuth = useTranslations("auth");
+  const [visible, setVisible] = useState(false);
+  const errorId = `${id}-error`;
+
+  return (
+    <div className={styles.field}>
+      <Label htmlFor={id} className={styles.label}>
+        {label}
+      </Label>
+      <div className={styles.passwordWrap}>
+        <Lock className={styles.inputIcon} size={18} aria-hidden="true" />
+        <Input
+          id={id}
+          className={styles.input}
+          type={visible ? "text" : "password"}
+          autoComplete={autoComplete}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
+          {...registration}
+        />
+        <button
+          type="button"
+          className={styles.passwordToggle}
+          aria-label={visible ? tAuth("hidePassword") : tAuth("showPassword")}
+          aria-pressed={visible}
+          onClick={() => setVisible((value) => !value)}
+        >
+          {visible ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+        </button>
+      </div>
+      {error && (
+        <p id={errorId} className={styles.fieldError}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
 const FirstLoginChange = () => {
   const t = useTranslations("auth.firstLogin");
@@ -113,56 +162,27 @@ const FirstLoginChange = () => {
           </p>
         )}
 
-        <div className={styles.field}>
-          <Label htmlFor="current-password" className={styles.label}>
-            {t("currentPassword")}
-          </Label>
-          <Input
-            id="current-password"
-            className={styles.input}
-            type="password"
-            autoComplete="current-password"
-            aria-invalid={Boolean(errors.currentPassword)}
-            {...register("currentPassword")}
-          />
-          {errors.currentPassword && (
-            <p className={styles.fieldError}>{errors.currentPassword.message}</p>
-          )}
-        </div>
-
-        <div className={styles.field}>
-          <Label htmlFor="new-password" className={styles.label}>
-            {t("newPassword")}
-          </Label>
-          <Input
-            id="new-password"
-            className={styles.input}
-            type="password"
-            autoComplete="new-password"
-            aria-invalid={Boolean(errors.newPassword)}
-            {...register("newPassword")}
-          />
-          {errors.newPassword && (
-            <p className={styles.fieldError}>{errors.newPassword.message}</p>
-          )}
-        </div>
-
-        <div className={styles.field}>
-          <Label htmlFor="confirm-password" className={styles.label}>
-            {t("confirmPassword")}
-          </Label>
-          <Input
-            id="confirm-password"
-            className={styles.input}
-            type="password"
-            autoComplete="new-password"
-            aria-invalid={Boolean(errors.confirmPassword)}
-            {...register("confirmPassword")}
-          />
-          {errors.confirmPassword && (
-            <p className={styles.fieldError}>{errors.confirmPassword.message}</p>
-          )}
-        </div>
+        <PasswordField
+          id="current-password"
+          label={t("currentPassword")}
+          autoComplete="current-password"
+          error={errors.currentPassword?.message}
+          registration={register("currentPassword")}
+        />
+        <PasswordField
+          id="new-password"
+          label={t("newPassword")}
+          autoComplete="new-password"
+          error={errors.newPassword?.message}
+          registration={register("newPassword")}
+        />
+        <PasswordField
+          id="confirm-password"
+          label={t("confirmPassword")}
+          autoComplete="new-password"
+          error={errors.confirmPassword?.message}
+          registration={register("confirmPassword")}
+        />
 
         <Button type="submit" className={styles.submitButton} disabled={isSubmitting}>
           {isSubmitting && (
