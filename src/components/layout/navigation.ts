@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  CalendarClock,
   ChartNoAxesCombined,
   ClipboardCheck,
   ClipboardList,
@@ -41,6 +42,13 @@ const homeItem: NavigationItem = {
   available: true,
 };
 
+const scheduleItem: NavigationItem = {
+  key: "schedule",
+  href: "/schedule",
+  icon: CalendarClock,
+  available: true,
+};
+
 const profileItem: NavigationItem = {
   key: "profile",
   href: "/profile",
@@ -66,6 +74,7 @@ const schoolSettingsItem: NavigationItem = {
 // available: true ставится только после того, как страница реально сделана.
 const adminItems: NavigationItem[] = [
   homeItem,
+  scheduleItem,
   { key: "teachers", href: "/admin/teachers", icon: UserRound, available: true },
   { key: "students", href: "/admin/students", icon: GraduationCap, available: true },
   { key: "classes", href: "/admin/classes", icon: School, available: true },
@@ -78,6 +87,7 @@ const adminItems: NavigationItem[] = [
 
 const studentItems: NavigationItem[] = [
   homeItem,
+  scheduleItem,
   { key: "daily", href: "/diary", icon: BookOpen },
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
@@ -88,6 +98,7 @@ const studentItems: NavigationItem[] = [
 // поэтому этот пункт есть только у родителя.
 const parentItems: NavigationItem[] = [
   homeItem,
+  scheduleItem,
   { key: "daily", href: "/diary", icon: BookOpen },
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
   { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true },
@@ -98,6 +109,7 @@ const parentItems: NavigationItem[] = [
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
   const items: NavigationItem[] = [
     homeItem,
+    scheduleItem,
     { key: "journal", href: "/journal", icon: NotebookPen, available: true },
     { key: "assignments", href: "/homeworks", icon: ClipboardList },
   ];

@@ -11,6 +11,7 @@ import { RecentEventsPanel } from "./RecentEventsPanel";
 import { SchoolRatingPanel } from "./SchoolRatingPanel";
 import { StudentDashboard } from "./StudentDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
+import { TodayLessonsPanel } from "./TodayLessonsPanel";
 import scss from "./home.module.scss";
 
 // Роль известна только после /me на клиенте. AppShell показывает страницу,
@@ -44,6 +45,10 @@ export function RoleDashboard() {
   return (
     <>
       <DashboardHero currentUser={currentUser} />
+      {/* Расписание есть у учителя, ученика и родителя; директор смотрит его в разделе «Расписание». */}
+      {["TEACHER", "CLASS_TEACHER", "STUDENT", "PARENT"].includes(currentUser.role) && (
+        <TodayLessonsPanel currentUser={currentUser} />
+      )}
       {renderRoleContent()}
       <div className={scss.panelsGrid3}>
         <SchoolRatingPanel />
