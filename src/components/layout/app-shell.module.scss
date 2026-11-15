@@ -70,34 +70,16 @@
   padding: 2px 4px 20px;
   text-align: center;
 
-  strong,
-  span {
-    display: block;
-  }
-
-  strong {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  span {
-    margin-top: 3px;
-    color: var(--sidebar-muted);
-    font-size: 9px;
-  }
 }
 
-.brandMark {
-  display: grid;
-  width: 54px;
-  height: 54px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: 16px;
-  background: var(--ss-gradient);
-  color: #ffffff;
-  box-shadow: var(--ss-glow);
+.brandDescription {
+  color: var(--sidebar-muted);
+  font-size: 9px;
+}
+
+// Компактный знак в шапке нужен только на планшете и телефоне, где sidebar скрыт.
+.headerLogo {
+  display: none !important;
 }
 
 .nav {
@@ -728,6 +710,10 @@
 }
 
 @media (max-width: 1024px) {
+  .headerLogo {
+    display: inline-flex !important;
+  }
+
   .sidebar {
     position: fixed;
     z-index: 40;

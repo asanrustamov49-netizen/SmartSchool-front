@@ -1,11 +1,12 @@
 "use client";
 
-import { GraduationCap, Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { Logo } from "@/components/ui/Logo";
 import styles from "./landing.module.scss";
 
 const SECTION_LINKS = [
@@ -39,10 +40,8 @@ export function LandingHeader() {
     <header className={styles.header}>
       <div className={styles.headerInner}>
         <a href="#top" className={styles.brand} onClick={closeMenu}>
-          <span className={styles.brandMark} aria-hidden="true">
-            <GraduationCap size={20} strokeWidth={1.9} />
-          </span>
-          Smart School
+          <Logo size="sm" theme="dark" className={styles.brandFull} />
+          <Logo variant="icon" size="sm" className={styles.brandCompact} />
         </a>
 
         <nav

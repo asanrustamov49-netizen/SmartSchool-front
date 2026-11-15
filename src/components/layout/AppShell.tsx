@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
+import { Logo } from "@/components/ui/Logo";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { handleApiError } from "@/lib/errorHandler";
 import {
@@ -168,13 +169,8 @@ function AuthenticatedShell({
         id="primary-navigation"
       >
         <div className={styles.brand}>
-          <div className={styles.brandMark}>
-            <GraduationCap size={21} strokeWidth={1.8} aria-hidden="true" />
-          </div>
-          <div>
-            <strong>Smart School</strong>
-            <span>{t("productDescription")}</span>
-          </div>
+          <Logo theme="dark" />
+          <span className={styles.brandDescription}>{t("productDescription")}</span>
         </div>
 
         <nav className={styles.nav} aria-label={t("navLabel")}>
@@ -236,6 +232,7 @@ function AuthenticatedShell({
                 <Menu size={20} aria-hidden="true" />
               )}
             </button>
+            <Logo variant="icon" size="sm" className={styles.headerLogo} />
             <div className={styles.headerContext}>
               <span>{roleLabel}</span>
               <strong>{pageTitle}</strong>

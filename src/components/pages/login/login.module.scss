@@ -98,23 +98,6 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 36px;
-
-  strong {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-}
-
-.brandMark {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--ss-gradient);
-  box-shadow: var(--ss-glow);
-  color: #ffffff;
 }
 
 .title {

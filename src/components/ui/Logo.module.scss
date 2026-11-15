@@ -1,0 +1,85 @@
+.logo {
+  --logo-ink: #0f1b3d;
+  --logo-mark: 40px;
+  --logo-text: 20px;
+
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: calc(var(--logo-mark) * 0.22);
+  line-height: 1;
+}
+
+.sm {
+  --logo-mark: 30px;
+  --logo-text: 17px;
+}
+
+.md {
+  --logo-mark: 40px;
+  --logo-text: 20px;
+}
+
+.lg {
+  --logo-mark: 56px;
+  --logo-text: 26px;
+}
+
+.dark {
+  --logo-ink: #ffffff;
+}
+
+:global(.dark) .auto {
+  --logo-ink: #ffffff;
+}
+
+.mark {
+  display: block;
+  width: var(--logo-mark);
+  height: var(--logo-mark);
+  flex: 0 0 auto;
+}
+
+.ink {
+  fill: var(--logo-ink);
+  transition: fill 0.2s ease;
+}
+
+.wordmark {
+  color: var(--logo-ink);
+  font-family: var(--font-app), sans-serif;
+  font-size: var(--logo-text);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.wordmarkAccent {
+  background: linear-gradient(90deg, #38bdf8 0%, #2f6bff 50%, #7c5cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+// Звезда достижений мягко мерцает.
+@media (prefers-reduced-motion: no-preference) {
+  .star {
+    animation: logo-twinkle 3.2s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+}
+
+@keyframes logo-twinkle {
+  0%,
+  80%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  88% {
+    opacity: 0.75;
+    transform: scale(0.82);
+  }
+}

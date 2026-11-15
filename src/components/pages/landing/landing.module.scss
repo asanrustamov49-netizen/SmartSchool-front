@@ -164,14 +164,9 @@
   letter-spacing: -0.02em;
 }
 
-.brandMark {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--accent);
-  color: var(--accent-ink);
+// На самых узких экранах в шапке остаётся только компактный знак.
+.brandCompact {
+  display: none !important;
 }
 
 .nav {
@@ -1332,9 +1327,12 @@
 }
 
 @media (max-width: 380px) {
-  .brand {
-    gap: 0;
-    font-size: 0;
+  .brandFull {
+    display: none !important;
+  }
+
+  .brandCompact {
+    display: inline-flex !important;
   }
 }
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, GraduationCap } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { Logo } from "@/components/ui/Logo";
 import { LoginIllustration } from "./LoginIllustration";
 import styles from "./login.module.scss";
 
@@ -57,10 +58,7 @@ export function AuthLayout({ title, subtitle, showBackLink = false, children }: 
 
         <main className={styles.card}>
           <div className={styles.brand}>
-            <span className={styles.brandMark}>
-              <GraduationCap size={21} strokeWidth={1.8} aria-hidden="true" />
-            </span>
-            <strong>Smart School</strong>
+            <Logo />
           </div>
 
           <h1 className={styles.title}>{title}</h1>

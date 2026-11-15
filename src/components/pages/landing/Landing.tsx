@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { Logo } from "@/components/ui/Logo";
 import { Link } from "@/i18n/navigation";
 import { HeroPreview } from "./HeroPreview";
 import { LandingEffects } from "./LandingEffects";
@@ -232,12 +233,7 @@ const Landing = async () => {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <div className={styles.footerBrand}>
-            <span className={styles.brand}>
-              <span className={styles.brandMark} aria-hidden="true">
-                <GraduationCap size={20} strokeWidth={1.9} />
-              </span>
-              Smart School
-            </span>
+            <Logo theme="dark" />
             <p>{t("footer.description")}</p>
           </div>
           <nav aria-label={t("footer.navLabel")} className={styles.footerNav}>
