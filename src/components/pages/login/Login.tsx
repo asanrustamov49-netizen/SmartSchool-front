@@ -68,7 +68,8 @@ const Login = () => {
   };
 
   // Backend отвечает на /auth/login только по-кыргызски, поэтому известные статусы
-  // показываются своим переводом: 401 — неверный ИНН или пароль, 403 — аккаунт закрыт.
+  // показываются своим переводом: 401 — неверный ИНН или пароль, 403 — аккаунт закрыт,
+  // 429 — слишком много неудачных попыток.
   const getLoginErrorMessage = (error: Error) => {
     const status = getApiErrorStatus(error);
 
@@ -78,6 +79,11 @@ const Login = () => {
 
     if (status === 403) {
       return t("errors.accountDisabled");
+    }
+
+    // Защита от подбора пароля: после 10 неудачных попыток вход на время закрыт.
+    if (status === 429) {
+      return t("errors.tooManyAttempts");
     }
 
     return handleApiError(error, tApiErrors);

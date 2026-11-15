@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { getApiErrorDetail } from "@/lib/errorHandler";
+import { getApiErrorDetail, getApiErrorStatus } from "@/lib/errorHandler";
 
 // POST /parents/register — схема ParentRegister (backend: mysite/api/parents.py).
 // Родитель регистрируется сам и сразу привязывает первого ребёнка
@@ -50,12 +50,19 @@ export type ParentLinkErrorKey =
   | "childPasswordUsed"
   | "wrongChildCredentials"
   | "childAlreadyLinked"
+  | "childLinkLimit"
+  | "tooManyAttempts"
   | "innTaken";
 
 // Backend отвечает на эти ошибки только по-кыргызски и одним статусом 400,
 // поэтому причина определяется по тексту detail из mysite/api/parents.py.
 export function getParentLinkErrorKey(error: unknown): ParentLinkErrorKey | null {
   const detail = getApiErrorDetail(error) ?? "";
+
+  // Защита от подбора пароля ребёнка: после 10 неудачных попыток проверка на время закрыта.
+  if (getApiErrorStatus(error) === 429) {
+    return "tooManyAttempts";
+  }
 
   if (detail.includes("Окуучу табылган жок")) {
     return "studentNotFound";
@@ -66,7 +73,11 @@ export function getParentLinkErrorKey(error: unknown): ParentLinkErrorKey | null
   if (detail.includes("ИННи же паролу туура эмес")) {
     return "wrongChildCredentials";
   }
-  if (detail.includes("ата-энеге байланышкан") || detail.includes("байланыштырылган")) {
+  // У ребёнка может быть не больше двух родителей (backend: MAX_PARENTS_PER_STUDENT).
+  if (detail.includes("эки ата-эне байланган")) {
+    return "childLinkLimit";
+  }
+  if (detail.includes("аккаунтуңузга мурда байланган") || detail.includes("байланыштырылган")) {
     return "childAlreadyLinked";
   }
   if (detail.includes("ИНН мурда катталган")) {
