@@ -10,6 +10,7 @@ import { useResetUserPassword } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, downloadBlob } from "@/lib/utils";
 import { ExcelImport } from "./ExcelImport";
+import { TeacherAssignments } from "./TeacherAssignments";
 import { TeacherForm } from "./TeacherForm";
 import styles from "./admin.module.scss";
 
@@ -17,6 +18,8 @@ type Panel =
   | { type: "none" }
   | { type: "form"; teacher: Teacher | null }
   | { type: "import" }
+  // Храним id, а не объект: после назначения список обновится и панель покажет свежие данные.
+  | { type: "assignments"; teacherId: number }
   | { type: "confirm"; action: "reset" | "deactivate"; teacher: Teacher };
 
 type StatusFilter = "all" | "active" | "inactive";
@@ -46,6 +49,10 @@ export function TeachersPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const allTeachers = teachersQuery.data ?? [];
+  const assignmentTeacher =
+    panel.type === "assignments"
+      ? allTeachers.find((teacher) => teacher.id === panel.teacherId)
+      : undefined;
   const existingInns = new Set(allTeachers.map((teacher) => teacher.inn));
   const normalizedSearch = search.trim().toLowerCase();
   const teachers = allTeachers.filter((teacher) => {
@@ -194,6 +201,13 @@ export function TeachersPage() {
                       </button>
                       {teacher.is_active ? (
                         <>
+                          <button
+                            type="button"
+                            className={styles.linkButton}
+                            onClick={() => openPanel({ type: "assignments", teacherId: teacher.id })}
+                          >
+                            {t("subjectsAction")}
+                          </button>
                           <button
                             type="button"
                             className={styles.linkButton}
@@ -346,6 +360,14 @@ export function TeachersPage() {
               password: teacher.temporary_password,
             });
           }}
+          onClose={() => setPanel({ type: "none" })}
+        />
+      )}
+
+      {panel.type === "assignments" && assignmentTeacher && (
+        <TeacherAssignments
+          teacher={assignmentTeacher}
+          allTeachers={allTeachers}
           onClose={() => setPanel({ type: "none" })}
         />
       )}

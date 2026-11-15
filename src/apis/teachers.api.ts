@@ -60,7 +60,14 @@ export type Teacher = {
   created_at: string;
   is_class_teacher: boolean;
   classes_led: { id: number; name: string | null; academic_year: string }[];
-  assignments: { id: number; class_name: string | null; subject_name: string | null }[];
+  assignments: {
+    id: number;
+    class_id: number;
+    class_name: string | null;
+    subject_id: number;
+    subject_name: string | null;
+    academic_year: string;
+  }[];
 };
 
 // Схема TeacherUpdate: full_name 3–200 символов, phone до 20.
@@ -86,4 +93,23 @@ export async function deactivateTeacher(teacherId: number) {
 
 export async function activateTeacher(teacherId: number) {
   await api.post(`/teachers/${teacherId}/activate`);
+}
+
+// Назначение: учитель ведёт предмет в классе (backend: mysite/api/teacher_assignments.py).
+// Схема TeacherAssignmentCreate; учебный год берётся из класса.
+export type AssignmentCreate = {
+  teacher_id: number;
+  class_id: number;
+  subject_id: number;
+  school_id: number;
+  academic_year: string;
+};
+
+export async function createAssignment(data: AssignmentCreate) {
+  await api.post("/teacher-assignments/", data);
+}
+
+// Внимание: в базе оценки журнала удаляются вместе с назначением (ON DELETE CASCADE).
+export async function deleteAssignment(assignmentId: number) {
+  await api.delete(`/teacher-assignments/${assignmentId}`);
 }

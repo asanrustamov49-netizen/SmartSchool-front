@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   activateTeacher,
+  createAssignment,
   createTeacher,
   deactivateTeacher,
+  deleteAssignment,
   getTeachers,
   importTeachersExcel,
   updateTeacher,
@@ -61,4 +63,25 @@ export function useSetTeacherActive() {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
     },
   });
+}
+
+// Назначения меняют список предметов учителя, журналы и главную учителя.
+function useInvalidateAssignments() {
+  const queryClient = useQueryClient();
+  const invalidateTeachers = useInvalidateTeachers();
+
+  return () => {
+    invalidateTeachers();
+    queryClient.invalidateQueries({ queryKey: ["journal"] });
+  };
+}
+
+export function useCreateAssignment() {
+  const invalidateAssignments = useInvalidateAssignments();
+  return useMutation({ mutationFn: createAssignment, onSuccess: invalidateAssignments });
+}
+
+export function useDeleteAssignment() {
+  const invalidateAssignments = useInvalidateAssignments();
+  return useMutation({ mutationFn: deleteAssignment, onSuccess: invalidateAssignments });
 }

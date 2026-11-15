@@ -602,3 +602,63 @@
   color: var(--muted);
   font-size: 13px;
 }
+
+// ---------- Назначения учителя (класс + предмет) ----------
+.subTitle {
+  margin: 18px 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.assignmentList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assignmentItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 13px;
+
+  small {
+    margin-left: 6px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+}
+
+.assignmentConfirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  small {
+    color: var(--danger);
+  }
+}
+
+.iconTextButton {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--danger) 14%, transparent);
+    color: var(--danger);
+  }
+}
