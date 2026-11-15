@@ -121,3 +121,33 @@ export async function resetSchoolAdminPassword(userId: number): Promise<AdminPas
 export async function setSchoolAdminActive(userId: number, active: boolean) {
   await api.post(`/system/users/${userId}/${active ? "activate" : "deactivate"}`);
 }
+
+// Правило школы: один директор и не больше пяти завучей.
+// Считаются только активные аккаунты: отключённого можно заменить новым.
+// Backend это правило пока не проверяет, поэтому интерфейс не даёт его нарушить.
+export const MAX_DIRECTORS = 1;
+export const MAX_DEPUTIES = 5;
+
+export type AdminLimits = {
+  directors: number;
+  deputies: number;
+  canAddDirector: boolean;
+  canAddDeputy: boolean;
+};
+
+export function getAdminLimits(admins: SchoolAdmin[]): AdminLimits {
+  const active = admins.filter((person) => person.is_active);
+  const directors = active.filter((person) => person.role === "DIRECTOR").length;
+  const deputies = active.filter((person) => person.role === "DEPUTY").length;
+  return {
+    directors,
+    deputies,
+    canAddDirector: directors < MAX_DIRECTORS,
+    canAddDeputy: deputies < MAX_DEPUTIES,
+  };
+}
+
+// Можно ли снова включить отключённого руководителя, не превысив лимит его роли.
+export function canActivateAdmin(person: SchoolAdmin, limits: AdminLimits) {
+  return person.role === "DIRECTOR" ? limits.canAddDirector : limits.canAddDeputy;
+}

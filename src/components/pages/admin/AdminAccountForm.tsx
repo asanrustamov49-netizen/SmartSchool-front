@@ -20,8 +20,8 @@ type AdminAccountFormValues = {
 
 type AdminAccountFormProps = {
   title: string;
-  // Выбор роли нужен системному администратору; директор добавляет только завучей.
-  withRole: boolean;
+  // Роли, которые сейчас можно добавить (с учётом лимитов школы). Если роль одна — выбора нет.
+  allowedRoles: SchoolAdminRole[];
   isPending: boolean;
   error: unknown;
   onSubmit: (data: SchoolAdminFields & { role: SchoolAdminRole }) => void;
@@ -29,7 +29,7 @@ type AdminAccountFormProps = {
 };
 
 // Новый директор или завуч: схема SchoolAdminCreate (ИНН 14 цифр, ФИО 3–200 символов).
-export function AdminAccountForm({ title, withRole, isPending, error, onSubmit, onClose }: AdminAccountFormProps) {
+export function AdminAccountForm({ title, allowedRoles, isPending, error, onSubmit, onClose }: AdminAccountFormProps) {
   const t = useTranslations("people");
   const tRole = useTranslations("app.role");
   const tForm = useTranslations("admin.form");
@@ -43,7 +43,7 @@ export function AdminAccountForm({ title, withRole, isPending, error, onSubmit, 
       .min(3, tForm("minLength", { count: 3 }))
       .max(200, tForm("maxLength", { count: 200 })),
     phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
-    role: z.enum(["DIRECTOR", "DEPUTY"]),
+    role: z.enum(["DIRECTOR", "DEPUTY"]).refine((role) => allowedRoles.includes(role)),
   });
 
   const {
@@ -53,7 +53,7 @@ export function AdminAccountForm({ title, withRole, isPending, error, onSubmit, 
     formState: { errors },
   } = useForm<AdminAccountFormValues>({
     resolver: zodResolver(accountSchema),
-    defaultValues: { inn: "", fullName: "", phone: "", role: "DEPUTY" },
+    defaultValues: { inn: "", fullName: "", phone: "", role: allowedRoles[0] ?? "DEPUTY" },
   });
 
   const fieldErrors = getApiFieldErrors(error);
@@ -92,12 +92,15 @@ export function AdminAccountForm({ title, withRole, isPending, error, onSubmit, 
           </p>
         )}
 
-        {withRole && (
+        {allowedRoles.length > 1 && (
           <div className={styles.field}>
             <label htmlFor="account-role">{t("role")}</label>
             <select id="account-role" className={styles.select} {...register("role")}>
-              <option value="DEPUTY">{tRole("DEPUTY")}</option>
-              <option value="DIRECTOR">{tRole("DIRECTOR")}</option>
+              {allowedRoles.map((role) => (
+                <option key={role} value={role}>
+                  {tRole(role)}
+                </option>
+              ))}
             </select>
           </div>
         )}

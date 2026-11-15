@@ -248,3 +248,25 @@
     flex: 1 1 auto;
   }
 }
+
+// Счётчики «директор 1 из 1 · завучи 3 из 5» в карточке школы.
+.limits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+
+  > span {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.limitFull {
+  background: var(--soft) !important;
+  color: var(--muted) !important;
+}

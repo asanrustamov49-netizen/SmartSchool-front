@@ -3,7 +3,7 @@
 import { AlertCircle, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { SchoolAdmin } from "@/apis/system.api";
+import { getAdminLimits, MAX_DEPUTIES, type SchoolAdmin } from "@/apis/system.api";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
@@ -42,6 +42,7 @@ export function DeputiesPage() {
   const [secret, setSecret] = useState<SecretState | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [actionError, setActionError] = useState("");
+  const limits = getAdminLimits(deputiesQuery.data ?? []);
 
   const openPanel = (nextPanel: Panel) => {
     setSecret(null);
@@ -138,7 +139,7 @@ export function DeputiesPage() {
           <h1>{t("deputiesTitle")}</h1>
           <p>{isDirector ? t("deputiesDescription") : t("deputiesDescriptionReadonly")}</p>
         </div>
-        {isDirector && (
+        {isDirector && limits.canAddDeputy && (
           <button type="button" className={styles.primaryButton} onClick={() => openPanel({ type: "form" })}>
             <UserPlus size={16} aria-hidden="true" />
             {t("addDeputy")}
@@ -190,10 +191,10 @@ export function DeputiesPage() {
         </section>
       )}
 
-      {panel.type === "form" && (
+      {panel.type === "form" && limits.canAddDeputy && (
         <AdminAccountForm
           title={t("addDeputy")}
-          withRole={false}
+          allowedRoles={["DEPUTY"]}
           isPending={createDeputy.isPending}
           error={createDeputy.error}
           onSubmit={({ inn, full_name, phone }) =>
@@ -214,6 +215,14 @@ export function DeputiesPage() {
           }
           onClose={() => setPanel({ type: "none" })}
         />
+      )}
+
+      {deputiesQuery.data && (
+        <p className={limits.canAddDeputy ? styles.notice : styles.formError}>
+          {limits.canAddDeputy
+            ? t("deputiesCount", { count: limits.deputies, max: MAX_DEPUTIES })
+            : t("deputiesFull", { max: MAX_DEPUTIES })}
+        </p>
       )}
 
       <section className={styles.card}>{renderList()}</section>

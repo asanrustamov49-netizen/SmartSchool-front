@@ -16,7 +16,14 @@ import {
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { SchoolAdmin } from "@/apis/system.api";
+import {
+  canActivateAdmin,
+  getAdminLimits,
+  MAX_DEPUTIES,
+  MAX_DIRECTORS,
+  type SchoolAdmin,
+  type SchoolAdminRole,
+} from "@/apis/system.api";
 import { DataState } from "@/components/ui/DataState";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import {
@@ -90,6 +97,11 @@ export function SchoolDetailsPage() {
 
   const school = schoolQuery.data;
   const admins = school.admins ?? [];
+  const limits = getAdminLimits(admins);
+  const allowedRoles: SchoolAdminRole[] = [
+    ...(limits.canAddDirector ? (["DIRECTOR"] as const) : []),
+    ...(limits.canAddDeputy ? (["DEPUTY"] as const) : []),
+  ];
   const onError = (error: unknown) => setActionError(handleApiError(error, tApiErrors));
 
   const confirmSchool = () => {
@@ -145,8 +157,15 @@ export function SchoolDetailsPage() {
 
   const renderAdminActions = (person: SchoolAdmin) => {
     if (!person.is_active) {
+      const canActivate = canActivateAdmin(person, limits);
       return (
-        <button type="button" className={adminStyles.linkButton} onClick={() => activateAdmin(person)}>
+        <button
+          type="button"
+          className={adminStyles.linkButton}
+          disabled={!canActivate}
+          title={canActivate ? undefined : t(person.role === "DIRECTOR" ? "directorLimit" : "deputyLimit")}
+          onClick={() => activateAdmin(person)}
+        >
           {tPeople("activate")}
         </button>
       );
@@ -310,7 +329,7 @@ export function SchoolDetailsPage() {
         <section className={adminStyles.card}>
           <div className={styles.sectionHead}>
             <h2 className={adminStyles.cardTitle}>{t("admins")}</h2>
-            {panel.type !== "addAdmin" && (
+            {panel.type !== "addAdmin" && allowedRoles.length > 0 && (
               <button
                 type="button"
                 className={adminStyles.secondaryButton}
@@ -322,10 +341,21 @@ export function SchoolDetailsPage() {
             )}
           </div>
 
-          {panel.type === "addAdmin" && (
+          <p className={styles.limits}>
+            <span className={cn(!limits.canAddDirector && styles.limitFull)}>
+              {t("directorsCount", { count: limits.directors, max: MAX_DIRECTORS })}
+            </span>
+            <span className={cn(!limits.canAddDeputy && styles.limitFull)}>
+              {t("deputiesCount", { count: limits.deputies, max: MAX_DEPUTIES })}
+            </span>
+          </p>
+
+          {allowedRoles.length === 0 && <p className={adminStyles.notice}>{t("limitsReached")}</p>}
+
+          {panel.type === "addAdmin" && allowedRoles.length > 0 && (
             <AdminAccountForm
               title={t("addAdmin")}
-              withRole
+              allowedRoles={allowedRoles}
               isPending={addAdmin.isPending}
               error={addAdmin.error}
               onSubmit={(data) =>
