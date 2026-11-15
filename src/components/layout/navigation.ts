@@ -82,6 +82,7 @@ const adminItems: NavigationItem[] = [
   { key: "journal", href: "/journal", icon: NotebookPen, available: true },
   { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true },
+  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
 ];
 
@@ -124,7 +125,10 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
     });
   }
 
-  items.push({ key: "announcements", href: "/announcements", icon: Megaphone, available: true });
+  items.push(
+    { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
+    { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+  );
 
   return items;
 }

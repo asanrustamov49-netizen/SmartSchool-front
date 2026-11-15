@@ -24,15 +24,39 @@ export async function getSchoolRating(limit: number): Promise<SchoolRating> {
   return response.data;
 }
 
-// GET /ratings/class/{class_id} (backend: mysite/api/ratings.py, class_rating).
-export type ClassRating = {
-  scope: "class";
-  class_id: number;
-  class_name: string | null;
+// Общий запрос рейтинга для страницы «Рейтинг» (backend: mysite/api/ratings.py).
+// Без предмета места считаются по общему XP, с предметом — по XP этого предмета.
+export type RatingScope =
+  | { kind: "school" }
+  | { kind: "class"; classId: number }
+  | { kind: "parallel"; grade: number };
+
+export type Rating = {
   items: RatingItem[];
 };
 
-export async function getClassRating(classId: number): Promise<ClassRating> {
-  const response = await api.get<ClassRating>(`/ratings/class/${classId}`);
+export async function getRating(
+  scope: RatingScope,
+  subjectId: number | null,
+  limit: number,
+): Promise<Rating> {
+  const subjectParam = subjectId ?? undefined;
+
+  if (scope.kind === "class") {
+    const response = await api.get<Rating>(`/ratings/class/${scope.classId}`, {
+      params: { subject_id: subjectParam },
+    });
+    return response.data;
+  }
+
+  if (scope.kind === "parallel") {
+    const response = await api.get<Rating>(`/ratings/parallel/${scope.grade}`, {
+      params: { subject_id: subjectParam, limit },
+    });
+    return response.data;
+  }
+
+  const url = subjectId === null ? "/ratings/school" : `/ratings/subjects/${subjectId}`;
+  const response = await api.get<Rating>(url, { params: { limit } });
   return response.data;
 }

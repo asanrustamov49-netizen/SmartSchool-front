@@ -203,3 +203,51 @@
     box-shadow: 0 0 0 6px rgb(251 191 36 / 0);
   }
 }
+
+// ---------- Области и выбор предмета ----------
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+
+  .tabs {
+    margin-bottom: 0;
+  }
+}
+
+.subjectSelect {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--accent);
+
+  &:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  select {
+    min-height: 36px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.caption {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+}

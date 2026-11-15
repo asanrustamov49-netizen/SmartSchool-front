@@ -8,10 +8,12 @@ import {
 
 const classesQueryKey = ["classes"];
 
-export function useClasses() {
+// enabled = false — когда список классов роли не нужен (например, ученику на странице рейтинга).
+export function useClasses(enabled = true) {
   return useQuery({
     queryKey: classesQueryKey,
     queryFn: getClasses,
+    enabled,
   });
 }
 

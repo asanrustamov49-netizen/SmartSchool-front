@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getClassRating } from "@/apis/ratings.api";
+import { getRating, type RatingScope } from "@/apis/ratings.api";
 
-export function useClassRating(classId: number | null) {
+export function useRating(scope: RatingScope, subjectId: number | null, limit: number) {
   return useQuery({
-    queryKey: ["ratings", "class", classId],
-    queryFn: () => getClassRating(classId ?? 0),
-    enabled: classId !== null,
+    queryKey: ["ratings", "page", scope, subjectId, limit],
+    queryFn: () => getRating(scope, subjectId, limit),
   });
 }

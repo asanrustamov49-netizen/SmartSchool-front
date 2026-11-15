@@ -1,42 +1,68 @@
 "use client";
 
-import { Trophy } from "lucide-react";
+import { BookOpen, Layers, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
-import type { RatingItem } from "@/apis/ratings.api";
+import { getClassName, type SchoolClass } from "@/apis/classes.api";
+import type { RatingItem, RatingScope } from "@/apis/ratings.api";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
-import { useSchoolRating } from "@/hooks/useDashboard";
-import { useClassRating } from "@/hooks/useRatings";
+import { useClasses } from "@/hooks/useClasses";
+import { useRating } from "@/hooks/useRatings";
+import { useSubjects } from "@/hooks/useSubjects";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./ratings.module.scss";
 
-const SCHOOL_RATING_LIMIT = 100;
+const RATING_LIMIT = 100;
 
-type ClassOption = { id: number; name: string };
+type ClassOption = { id: number; name: string; grade: number | null };
 
-// Ученик видит рейтинг своего класса, родитель — классов своих детей.
-function getClassOptions(user: CurrentUser): ClassOption[] {
+// Номер параллели из названия класса «11-А» → 11.
+function gradeFromName(name: string | null) {
+  const grade = Number.parseInt(name ?? "", 10);
+  return Number.isNaN(grade) ? null : grade;
+}
+
+function isAdmin(user: CurrentUser) {
+  return user.role === "DIRECTOR" || user.role === "DEPUTY";
+}
+
+// Классы, рейтинг которых показывается вкладками:
+// директор и завуч — все классы школы, учитель — классы, где ведёт уроки или руководит,
+// ученик — свой класс, родитель — классы детей.
+function getClassOptions(user: CurrentUser, schoolClasses: SchoolClass[]): ClassOption[] {
   const options: ClassOption[] = [];
 
-  const addOption = (classId: number | null, className: string | null) => {
-    if (classId !== null && !options.some((option) => option.id === classId)) {
-      options.push({ id: classId, name: className ?? "—" });
+  const addOption = (id: number | null, name: string | null, grade: number | null) => {
+    if (id !== null && !options.some((option) => option.id === id)) {
+      options.push({ id, name: name ?? "—", grade: grade ?? gradeFromName(name) });
     }
   };
 
+  if (isAdmin(user)) {
+    for (const schoolClass of schoolClasses) {
+      addOption(schoolClass.id, getClassName(schoolClass), schoolClass.grade_number);
+    }
+    return options;
+  }
+
+  for (const schoolClass of user.classes_led ?? []) {
+    addOption(schoolClass.id, schoolClass.name, null);
+  }
+  for (const assignment of user.assignments ?? []) {
+    addOption(assignment.class_id, assignment.class_name, null);
+  }
   if (user.student) {
-    addOption(user.student.class_id, user.student.class_name);
+    addOption(user.student.class_id, user.student.class_name, user.student.grade_number ?? null);
   }
-
   for (const child of user.children ?? []) {
-    addOption(child.class_id, child.class_name);
+    addOption(child.class_id, child.class_name, null);
   }
 
-  return options;
+  return options.sort((first, second) => first.name.localeCompare(second.name, "ru"));
 }
 
 function getOwnStudentIds(user: CurrentUser) {
@@ -53,18 +79,48 @@ function getOwnStudentIds(user: CurrentUser) {
   return ids;
 }
 
+function scopeKey(scope: RatingScope) {
+  if (scope.kind === "class") {
+    return `class-${scope.classId}`;
+  }
+  if (scope.kind === "parallel") {
+    return `parallel-${scope.grade}`;
+  }
+  return "school";
+}
+
 export function RatingsPage() {
   const t = useTranslations("ratings");
   const tApiErrors = useTranslations("apiErrors");
-  const currentUserQuery = useCurrentUser();
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
-  const schoolRatingQuery = useSchoolRating(SCHOOL_RATING_LIMIT);
-  const classRatingQuery = useClassRating(selectedClassId);
+  const user = useCurrentUser().data;
+  const classesQuery = useClasses(user ? isAdmin(user) : false);
+  const subjectsQuery = useSubjects();
+  const [scope, setScope] = useState<RatingScope>({ kind: "school" });
+  const [subjectId, setSubjectId] = useState<number | null>(null);
+  const ratingQuery = useRating(scope, subjectId, RATING_LIMIT);
 
-  const user = currentUserQuery.data;
-  const classOptions = user ? getClassOptions(user) : [];
+  // Список всех классов нужен только директору и завучу; остальным он может быть недоступен.
+  const schoolClasses = user && isAdmin(user) ? (classesQuery.data ?? []) : [];
+  const classOptions = user ? getClassOptions(user, schoolClasses) : [];
+  const grades = [...new Set(classOptions.map((option) => option.grade).filter((grade) => grade !== null))].sort(
+    (first, second) => (first ?? 0) - (second ?? 0),
+  );
   const ownStudentIds = user ? getOwnStudentIds(user) : new Set<number>();
-  const ratingQuery = selectedClassId === null ? schoolRatingQuery : classRatingQuery;
+  const subjects = subjectsQuery.data ?? [];
+  const selectedSubject = subjects.find((subject) => subject.id === subjectId);
+
+  const scopeTabs: { scope: RatingScope; label: string; icon?: typeof Trophy }[] = [
+    { scope: { kind: "school" }, label: t("school"), icon: Trophy },
+    ...grades.map((grade) => ({
+      scope: { kind: "parallel" as const, grade: grade ?? 0 },
+      label: t("parallel", { grade: grade ?? 0 }),
+      icon: Layers,
+    })),
+    ...classOptions.map((option) => ({
+      scope: { kind: "class" as const, classId: option.id },
+      label: t("class", { name: option.name }),
+    })),
+  ];
 
   const renderRows = (items: RatingItem[]) => {
     const maxXp = Math.max(...items.map((item) => item.xp), 1);
@@ -108,11 +164,19 @@ export function RatingsPage() {
       );
     }
 
-    if (ratingQuery.data.items.length === 0) {
-      return <DataState status="empty" message={t("empty")} />;
+    // Ученики без XP по выбранному предмету в рейтинге предмета не нужны.
+    const items = subjectId === null ? ratingQuery.data.items : ratingQuery.data.items.filter((item) => item.xp > 0);
+
+    if (items.length === 0) {
+      return (
+        <DataState
+          status="empty"
+          message={selectedSubject ? t("emptySubject", { subject: selectedSubject.name }) : t("empty")}
+        />
+      );
     }
 
-    return renderRows(ratingQuery.data.items);
+    return renderRows(items);
   };
 
   return (
@@ -125,30 +189,50 @@ export function RatingsPage() {
       </header>
 
       <section className={adminStyles.card}>
-        <div className={styles.tabs} role="tablist" aria-label={t("scope")}>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={selectedClassId === null}
-            className={cn(styles.tab, selectedClassId === null && styles.tabActive)}
-            onClick={() => setSelectedClassId(null)}
-          >
-            <Trophy size={15} aria-hidden="true" />
-            {t("school")}
-          </button>
-          {classOptions.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              role="tab"
-              aria-selected={selectedClassId === option.id}
-              className={cn(styles.tab, selectedClassId === option.id && styles.tabActive)}
-              onClick={() => setSelectedClassId(option.id)}
+        <div className={styles.controls}>
+          <div className={styles.tabs} role="tablist" aria-label={t("scope")}>
+            {scopeTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = scopeKey(tab.scope) === scopeKey(scope);
+              return (
+                <button
+                  key={scopeKey(tab.scope)}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={cn(styles.tab, isActive && styles.tabActive)}
+                  onClick={() => setScope(tab.scope)}
+                >
+                  {Icon && <Icon size={15} aria-hidden="true" />}
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <label className={styles.subjectSelect}>
+            <BookOpen size={16} aria-hidden="true" />
+            <select
+              aria-label={t("subject")}
+              value={subjectId ?? ""}
+              onChange={(event) =>
+                setSubjectId(event.target.value === "" ? null : Number(event.target.value))
+              }
             >
-              {t("class", { name: option.name })}
-            </button>
-          ))}
+              <option value="">{t("allSubjects")}</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
+
+        <p className={styles.caption}>
+          {selectedSubject ? t("captionSubject", { subject: selectedSubject.name }) : t("captionAll")}
+        </p>
+
         {renderContent()}
       </section>
     </div>
