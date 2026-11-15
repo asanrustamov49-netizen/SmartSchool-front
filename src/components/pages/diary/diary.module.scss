@@ -1,0 +1,318 @@
+// ---------- Итоги ----------
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ss-accent) 5%, transparent), transparent),
+    var(--surface);
+  box-shadow: var(--ss-shadow);
+
+  span:last-child {
+    color: var(--muted);
+    font-size: 13px;
+  }
+}
+
+.summaryValue {
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.toneGreat {
+  color: var(--ss-success, #059669);
+}
+
+.toneGood {
+  color: #2f6bff;
+}
+
+.toneOk {
+  color: var(--ss-warning, #d97706);
+}
+
+.toneBad {
+  color: var(--danger);
+}
+
+// ---------- Раскладка ----------
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+// ---------- Неделя ----------
+.weekNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.weekButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+}
+
+.weekTitle {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+
+  strong {
+    font-size: 15px;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.days {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+
+  h3 {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+.dayEmpty {
+  background: transparent;
+
+  h3 {
+    color: var(--muted);
+  }
+}
+
+.dayNote {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+.lessonMain {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 14px;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.comment {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 13px;
+  font-style: italic;
+
+  svg {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    color: var(--accent);
+  }
+}
+
+.lessonSide {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.attendance {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.attendanceAbsent {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.attendanceLate {
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 15%, transparent);
+  color: var(--ss-warning, #d97706);
+}
+
+.attendanceExcused {
+  background: color-mix(in srgb, var(--ss-success, #059669) 14%, transparent);
+  color: var(--ss-success, #059669);
+}
+
+.xp {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+// ---------- Предметы ----------
+.subjects {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+  }
+}
+
+.subjectHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  strong {
+    font-size: 14px;
+  }
+}
+
+.subjectAverage {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.lastGrades {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+
+  small {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.subjectXp {
+  margin-left: auto;
+  color: var(--accent) !important;
+  font-weight: 700;
+}
+
+@media (max-width: 1000px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .summaryCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lesson {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .day {
+    animation: diary-rise 0.4s var(--ss-ease) backwards;
+  }
+
+  @for $i from 2 through 7 {
+    .day:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 40}ms;
+    }
+  }
+}
+
+@keyframes diary-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

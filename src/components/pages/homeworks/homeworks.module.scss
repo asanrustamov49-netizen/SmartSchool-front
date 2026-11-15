@@ -1,0 +1,280 @@
+.topActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.filter {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+}
+
+.filterActive {
+  border-color: transparent;
+  background: var(--ss-gradient);
+  color: #ffffff;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 12px;
+}
+
+// ---------- Карточка задания ----------
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s var(--ss-ease);
+
+  &:hover {
+    box-shadow: var(--ss-shadow-md);
+  }
+}
+
+.card_submitted {
+  border-left-color: var(--ss-success, #059669);
+}
+
+.card_overdue {
+  border-left-color: var(--danger);
+}
+
+.card_pending {
+  border-left-color: var(--ss-warning, #d97706);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cardTitle {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12px;
+  }
+}
+
+.subject {
+  align-self: flex-start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status_submitted {
+  background: color-mix(in srgb, var(--ss-success, #059669) 14%, transparent);
+  color: var(--ss-success, #059669);
+}
+
+.status_overdue {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.status_pending {
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 15%, transparent);
+  color: var(--ss-warning, #d97706);
+}
+
+.status_noDeadline {
+  background: var(--soft);
+  color: var(--muted);
+}
+
+.due {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+
+  svg {
+    color: var(--accent);
+  }
+}
+
+.description {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+// ---------- Вложения ----------
+.attachments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+}
+
+.imageLink {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: var(--soft);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--ss-ease);
+  }
+
+  &:hover img {
+    transform: scale(1.05);
+  }
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// ---------- Ответы ----------
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ss-success, #059669) 8%, var(--soft));
+
+  strong {
+    font-size: 12px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.submissions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.submitForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.submitRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    animation: homework-rise 0.4s var(--ss-ease) backwards;
+  }
+}
+
+@keyframes homework-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

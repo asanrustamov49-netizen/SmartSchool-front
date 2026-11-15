@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getJournalAssignments, getJournalDay, saveJournalDay } from "@/apis/journal.api";
+import {
+  getDiary,
+  getGradesSummary,
+  getJournalAssignments,
+  getJournalDay,
+  saveJournalDay,
+} from "@/apis/journal.api";
 
 export function useJournalAssignments() {
   return useQuery({
@@ -27,5 +33,21 @@ export function useSaveJournalDay() {
       queryClient.invalidateQueries({ queryKey: ["ratings"] });
       queryClient.invalidateQueries({ queryKey: ["olympiad"] });
     },
+  });
+}
+
+export function useDiary(studentId: number | null, dateFrom: string, dateTo: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["journal", "diary", studentId, dateFrom, dateTo],
+    queryFn: () => getDiary(studentId, dateFrom, dateTo),
+    enabled,
+  });
+}
+
+export function useGradesSummary(studentId: number | null, enabled: boolean) {
+  return useQuery({
+    queryKey: ["journal", "summary", studentId],
+    queryFn: () => getGradesSummary(studentId),
+    enabled,
   });
 }

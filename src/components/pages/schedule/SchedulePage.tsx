@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { getClassName } from "@/apis/classes.api";
 import type { ScheduleBells, ScheduleWeek } from "@/apis/schedule.api";
+import { ChildTabs } from "@/components/ui/ChildTabs";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
@@ -14,7 +15,6 @@ import { handleApiError } from "@/lib/errorHandler";
 import { LessonForm, type LessonDraft } from "./LessonForm";
 import { ScheduleGrid } from "./ScheduleGrid";
 import adminStyles from "../admin/admin.module.scss";
-import styles from "./schedule.module.scss";
 
 type WeekQuery = {
   isPending: boolean;
@@ -131,22 +131,13 @@ function PersonalSchedule({ user, bells }: { user: CurrentUser; bells: ScheduleB
 
   return (
     <>
-      {isParent && children.length > 1 && (
-        <div className={styles.childTabs} role="tablist" aria-label={t("child")}>
-          {children.map((child) => (
-            <button
-              key={child.id}
-              type="button"
-              role="tab"
-              aria-selected={child.id === studentId}
-              className={child.id === studentId ? styles.childTabActive : styles.childTab}
-              onClick={() => setChildId(child.id)}
-            >
-              {child.full_name}
-              {child.class_name ? ` · ${child.class_name}` : ""}
-            </button>
-          ))}
-        </div>
+      {isParent && (
+        <ChildTabs
+          childrenList={children}
+          selectedId={studentId}
+          onSelect={setChildId}
+          label={t("child")}
+        />
       )}
 
       <WeekState query={scheduleQuery}>

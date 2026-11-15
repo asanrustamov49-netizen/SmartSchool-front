@@ -88,8 +88,8 @@ const adminItems: NavigationItem[] = [
 const studentItems: NavigationItem[] = [
   homeItem,
   scheduleItem,
-  { key: "daily", href: "/diary", icon: BookOpen },
-  { key: "assignments", href: "/homeworks", icon: ClipboardList },
+  { key: "daily", href: "/diary", icon: BookOpen, available: true },
+  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
 ];
@@ -99,8 +99,8 @@ const studentItems: NavigationItem[] = [
 const parentItems: NavigationItem[] = [
   homeItem,
   scheduleItem,
-  { key: "daily", href: "/diary", icon: BookOpen },
-  { key: "assignments", href: "/homeworks", icon: ClipboardList },
+  { key: "daily", href: "/diary", icon: BookOpen, available: true },
+  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
   { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
@@ -111,7 +111,7 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
     homeItem,
     scheduleItem,
     { key: "journal", href: "/journal", icon: NotebookPen, available: true },
-    { key: "assignments", href: "/homeworks", icon: ClipboardList },
+    { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
   ];
 
   // Классный руководитель определяется не ролью, а привязкой к классу (is_class_teacher).

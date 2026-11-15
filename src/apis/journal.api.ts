@@ -64,3 +64,58 @@ export async function saveJournalDay(data: {
 }) {
   await api.put("/journal", data);
 }
+
+// ---------- Дневник ученика (backend: get_diary, get_summary) ----------
+// Ученик видит свой дневник, родитель — дневник выбранного ребёнка (studentId).
+
+export type DiaryLesson = {
+  entry_id: number;
+  subject_id: number;
+  subject_name: string;
+  teacher_name: string;
+  grade_value: number | null;
+  attendance: AttendanceCode | null;
+  comment: string | null;
+  xp: number;
+};
+
+export type Diary = {
+  student_id: number;
+  full_name: string;
+  date_from: string;
+  date_to: string;
+  days: { date: string; lessons: DiaryLesson[] }[];
+};
+
+export type SubjectSummary = {
+  subject_id: number;
+  subject_name: string;
+  grades_count: number;
+  average: number | null;
+  last_grades: number[];
+  attendance: Partial<Record<AttendanceCode, number>>;
+  xp: number;
+  trend: { month: string; average: number }[];
+};
+
+export type GradesSummary = {
+  student_id: number;
+  full_name: string;
+  overall_average: number | null;
+  attendance: Partial<Record<AttendanceCode, number>>;
+  subjects: SubjectSummary[];
+};
+
+export async function getDiary(studentId: number | null, dateFrom: string, dateTo: string): Promise<Diary> {
+  const response = await api.get<Diary>("/journal/diary", {
+    params: { student_id: studentId ?? undefined, date_from: dateFrom, date_to: dateTo },
+  });
+  return response.data;
+}
+
+export async function getGradesSummary(studentId: number | null): Promise<GradesSummary> {
+  const response = await api.get<GradesSummary>("/journal/summary", {
+    params: { student_id: studentId ?? undefined },
+  });
+  return response.data;
+}
