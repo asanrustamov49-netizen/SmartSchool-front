@@ -32,8 +32,11 @@ export async function generateMetadata({ params }: WelcomePageProps): Promise<Me
   };
 }
 
-const page = () => {
-  return <Landing />;
+// locale передаётся явно: без этого при переключении языка на клиенте
+// лендинг оставался на прежнем языке до перезагрузки страницы.
+const page = async ({ params }: WelcomePageProps) => {
+  const { locale } = await params;
+  return <Landing locale={locale} />;
 };
 
 export default page;

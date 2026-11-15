@@ -62,8 +62,8 @@ const BENEFITS: Item[] = [
   { key: "transparency", icon: Globe2 },
 ];
 
-const Landing = async () => {
-  const t = await getTranslations("landing");
+const Landing = async ({ locale }: { locale: string }) => {
+  const t = await getTranslations({ locale, namespace: "landing" });
 
   return (
     <div className={styles.page} id="top" data-landing>
@@ -95,7 +95,7 @@ const Landing = async () => {
               ))}
             </ul>
           </div>
-          <HeroPreview />
+          <HeroPreview locale={locale} />
         </section>
 
         <section id="features" className={styles.section} aria-labelledby="features-title">

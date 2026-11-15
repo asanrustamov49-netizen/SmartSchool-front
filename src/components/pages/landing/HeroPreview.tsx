@@ -41,8 +41,8 @@ function getCellClassName(value: string) {
   return styles.cellEmpty;
 }
 
-export async function HeroPreview() {
-  const t = await getTranslations("landing.preview");
+export async function HeroPreview({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "landing.preview" });
 
   return (
     <figure className={styles.preview}>
