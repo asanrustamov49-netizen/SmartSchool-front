@@ -5,8 +5,8 @@ import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import type { TeacherCreated } from "@/apis/teachers.api";
-import { useCreateTeacher } from "@/hooks/useTeachers";
+import type { Teacher, TeacherCreated } from "@/apis/teachers.api";
+import { useCreateTeacher, useUpdateTeacher } from "@/hooks/useTeachers";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
 import styles from "./admin.module.scss";
@@ -18,19 +18,24 @@ type TeacherFormValues = {
 };
 
 type TeacherFormProps = {
+  // null — новый учитель, иначе редактирование (ИНН менять нельзя).
+  teacher: Teacher | null;
   onCreated: (teacher: TeacherCreated) => void;
   onClose: () => void;
 };
 
-export function TeacherForm({ onCreated, onClose }: TeacherFormProps) {
+export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
   const t = useTranslations("admin.teachers");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
   const createTeacher = useCreateTeacher();
+  const updateTeacher = useUpdateTeacher();
+  const isEditing = teacher !== null;
+  const activeMutation = isEditing ? updateTeacher : createTeacher;
 
-  // Правила из схемы TeacherCreate: inn — 14 цифр, full_name — 3–200 символов.
+  // Правила из схем TeacherCreate и TeacherUpdate: inn — 14 цифр, full_name — 3–200 символов.
   const teacherSchema = z.object({
-    inn: z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
+    inn: isEditing ? z.string() : z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
     fullName: z
       .string()
       .trim()
@@ -46,10 +51,25 @@ export function TeacherForm({ onCreated, onClose }: TeacherFormProps) {
     formState: { errors },
   } = useForm<TeacherFormValues>({
     resolver: zodResolver(teacherSchema),
-    defaultValues: { inn: "", fullName: "", phone: "" },
+    defaultValues: {
+      inn: teacher?.inn ?? "",
+      fullName: teacher?.full_name ?? "",
+      phone: teacher?.phone ?? "",
+    },
   });
 
   const onSubmit = (values: TeacherFormValues) => {
+    if (teacher) {
+      updateTeacher.mutate(
+        {
+          teacherId: teacher.id,
+          data: { full_name: values.fullName.trim(), phone: emptyToNull(values.phone) },
+        },
+        { onSuccess: onClose },
+      );
+      return;
+    }
+
     createTeacher.mutate(
       {
         inn: values.inn.trim(),
@@ -71,15 +91,15 @@ export function TeacherForm({ onCreated, onClose }: TeacherFormProps) {
     );
   };
 
-  const hasFieldErrors = Object.keys(getApiFieldErrors(createTeacher.error)).length > 0;
+  const hasFieldErrors = Object.keys(getApiFieldErrors(activeMutation.error)).length > 0;
   const formError =
-    createTeacher.isError && !hasFieldErrors
-      ? handleApiError(createTeacher.error, tApiErrors)
+    activeMutation.isError && !hasFieldErrors
+      ? handleApiError(activeMutation.error, tApiErrors)
       : null;
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{t("createTitle")}</h2>
+      <h2 className={styles.cardTitle}>{isEditing ? t("editTitle") : t("createTitle")}</h2>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
           <p className={styles.formError} role="alert">
@@ -94,10 +114,12 @@ export function TeacherForm({ onCreated, onClose }: TeacherFormProps) {
             id="teacher-inn"
             inputMode="numeric"
             maxLength={14}
+            readOnly={isEditing}
             className={styles.input}
             aria-invalid={Boolean(errors.inn)}
             {...register("inn")}
           />
+          {isEditing && <span className={styles.fieldHint}>{t("innReadonly")}</span>}
           {errors.inn && <p className={styles.fieldError}>{errors.inn.message}</p>}
         </div>
 
@@ -122,8 +144,8 @@ export function TeacherForm({ onCreated, onClose }: TeacherFormProps) {
           <button type="button" className={styles.secondaryButton} onClick={onClose}>
             {tForm("cancel")}
           </button>
-          <button type="submit" className={styles.primaryButton} disabled={createTeacher.isPending}>
-            {createTeacher.isPending && (
+          <button type="submit" className={styles.primaryButton} disabled={activeMutation.isPending}>
+            {activeMutation.isPending && (
               <LoaderCircle className={styles.spinner} size={16} aria-hidden="true" />
             )}
             {tForm("save")}

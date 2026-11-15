@@ -66,7 +66,6 @@ const schoolSettingsItem: NavigationItem = {
 // available: true ставится только после того, как страница реально сделана.
 const adminItems: NavigationItem[] = [
   homeItem,
-  // Список учителей ждёт GET /teachers на backend; создание и импорт уже работают.
   { key: "teachers", href: "/admin/teachers", icon: UserRound, available: true },
   { key: "students", href: "/admin/students", icon: GraduationCap, available: true },
   { key: "classes", href: "/admin/classes", icon: School, available: true },

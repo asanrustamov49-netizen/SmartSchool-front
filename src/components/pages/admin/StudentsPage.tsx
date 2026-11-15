@@ -7,7 +7,8 @@ import { getClassName } from "@/apis/classes.api";
 import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
 import { useClasses } from "@/hooks/useClasses";
-import { useDeactivateStudent, useResetStudentPassword, useStudents } from "@/hooks/useStudents";
+import { useDeactivateStudent, useStudents } from "@/hooks/useStudents";
+import { useResetUserPassword } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
 import { downloadBlob } from "@/lib/utils";
 import { StudentForm } from "./StudentForm";
@@ -30,7 +31,7 @@ export function StudentsPage() {
   const studentsQuery = useStudents();
   const classesQuery = useClasses();
   const deactivateMutation = useDeactivateStudent();
-  const resetPasswordMutation = useResetStudentPassword();
+  const resetPasswordMutation = useResetUserPassword();
   const [panel, setPanel] = useState<Panel>({ type: "none" });
   const [secretNotice, setSecretNotice] = useState<SecretNotice | null>(null);
   const [statusMessage, setStatusMessage] = useState("");

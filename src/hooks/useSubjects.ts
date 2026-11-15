@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createSubject, getSubjects } from "@/apis/subjects.api";
+import {
+  createSubject,
+  deleteSubject,
+  getSubjects,
+  updateSubject,
+  type SubjectCreate,
+} from "@/apis/subjects.api";
 
 const subjectsQueryKey = ["subjects"];
 
@@ -15,6 +21,25 @@ export function useCreateSubject() {
 
   return useMutation({
     mutationFn: createSubject,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: subjectsQueryKey }),
+  });
+}
+
+export function useUpdateSubject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ subjectId, data }: { subjectId: number; data: SubjectCreate }) =>
+      updateSubject(subjectId, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: subjectsQueryKey }),
+  });
+}
+
+export function useDeleteSubject() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteSubject,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: subjectsQueryKey }),
   });
 }

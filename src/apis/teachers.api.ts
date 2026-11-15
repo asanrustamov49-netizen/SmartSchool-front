@@ -45,3 +45,45 @@ export async function importTeachersExcel(file: Blob): Promise<ExcelImportResult
   const { total_added, added_teachers, errors } = response.data;
   return { total_added, added_users: added_teachers, errors };
 }
+
+// GET /teachers (backend: mysite/api/teachers.py, serialize_teachers).
+export type Teacher = {
+  id: number;
+  inn: string;
+  full_name: string;
+  phone: string | null;
+  avatar_url: string | null;
+  role: string;
+  is_active: boolean;
+  // true — учитель ещё ни разу не входил и не сменил временный пароль.
+  is_temp_password: boolean;
+  created_at: string;
+  is_class_teacher: boolean;
+  classes_led: { id: number; name: string | null; academic_year: string }[];
+  assignments: { id: number; class_name: string | null; subject_name: string | null }[];
+};
+
+// Схема TeacherUpdate: full_name 3–200 символов, phone до 20.
+export type TeacherUpdate = {
+  full_name: string;
+  phone: string | null;
+};
+
+export async function getTeachers(): Promise<Teacher[]> {
+  const response = await api.get<Teacher[]>("/teachers", { params: { include_inactive: true } });
+  return response.data;
+}
+
+export async function updateTeacher(teacherId: number, data: TeacherUpdate): Promise<Teacher> {
+  const response = await api.put<Teacher>(`/teachers/${teacherId}`, data);
+  return response.data;
+}
+
+// Деактивация не удаляет учителя: он не может войти, а его классное руководство снимается.
+export async function deactivateTeacher(teacherId: number) {
+  await api.delete(`/teachers/${teacherId}`);
+}
+
+export async function activateTeacher(teacherId: number) {
+  await api.post(`/teachers/${teacherId}/activate`);
+}

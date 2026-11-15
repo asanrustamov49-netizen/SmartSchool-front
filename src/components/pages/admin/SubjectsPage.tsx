@@ -1,20 +1,32 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
-import { useSubjects } from "@/hooks/useSubjects";
+import type { Subject } from "@/apis/subjects.api";
+import { useDeleteSubject, useSubjects } from "@/hooks/useSubjects";
 import { handleApiError } from "@/lib/errorHandler";
 import { SubjectForm } from "./SubjectForm";
 import styles from "./admin.module.scss";
+
+type Panel =
+  | { type: "none" }
+  | { type: "form"; subject: Subject | null }
+  | { type: "delete"; subject: Subject };
 
 export function SubjectsPage() {
   const t = useTranslations("admin.subjects");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
   const subjectsQuery = useSubjects();
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const deleteSubject = useDeleteSubject();
+  const [panel, setPanel] = useState<Panel>({ type: "none" });
+
+  const openPanel = (nextPanel: Panel) => {
+    deleteSubject.reset();
+    setPanel(nextPanel);
+  };
   const [search, setSearch] = useState("");
 
   // Backend не поддерживает поиск, список фильтруется на клиенте.
@@ -56,6 +68,9 @@ export function SubjectsPage() {
             <tr>
               <th>{t("name")}</th>
               <th>{t("code")}</th>
+              <th>
+                <span className="sr-only">{tForm("actions")}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -63,6 +78,24 @@ export function SubjectsPage() {
               <tr key={subject.id}>
                 <td>{subject.name}</td>
                 <td className={styles.cellMuted}>{subject.code ?? "—"}</td>
+                <td>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.linkButton}
+                      onClick={() => openPanel({ type: "form", subject })}
+                    >
+                      {tForm("edit")}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.dangerLink}
+                      onClick={() => openPanel({ type: "delete", subject })}
+                    >
+                      {t("delete")}
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -78,11 +111,11 @@ export function SubjectsPage() {
           <h1>{t("title")}</h1>
           <p>{t("description")}</p>
         </div>
-        {!isFormOpen && (
+        {panel.type !== "form" && (
           <button
             type="button"
             className={styles.primaryButton}
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => openPanel({ type: "form", subject: null })}
           >
             <Plus size={16} aria-hidden="true" />
             {t("add")}
@@ -90,7 +123,46 @@ export function SubjectsPage() {
         )}
       </header>
 
-      {isFormOpen && <SubjectForm onClose={() => setIsFormOpen(false)} />}
+      {panel.type === "form" && (
+        <SubjectForm
+          key={panel.subject?.id ?? "new"}
+          subject={panel.subject}
+          onClose={() => setPanel({ type: "none" })}
+        />
+      )}
+
+      {panel.type === "delete" && (
+        <section className={styles.card} role="alertdialog" aria-labelledby="subject-delete">
+          <p id="subject-delete" className={styles.notice}>
+            {t("confirmDelete", { name: panel.subject.name })}
+          </p>
+          {deleteSubject.isError && (
+            <p className={styles.formError} role="alert">
+              <AlertCircle size={16} aria-hidden="true" />
+              {handleApiError(deleteSubject.error, tApiErrors)}
+            </p>
+          )}
+          <div className={styles.formActions}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => openPanel({ type: "none" })}
+            >
+              {tForm("cancel")}
+            </button>
+            <button
+              type="button"
+              className={`${styles.primaryButton} ${styles.dangerButton}`}
+              disabled={deleteSubject.isPending}
+              onClick={() =>
+                deleteSubject.mutate(panel.subject.id, { onSuccess: () => setPanel({ type: "none" }) })
+              }
+            >
+              {t("delete")}
+            </button>
+          </div>
+        </section>
+      )}
 
       <section className={styles.card}>
         <div className={styles.toolbar}>

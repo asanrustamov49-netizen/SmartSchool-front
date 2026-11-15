@@ -1,22 +1,64 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTeacher, importTeachersExcel } from "@/apis/teachers.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  activateTeacher,
+  createTeacher,
+  deactivateTeacher,
+  getTeachers,
+  importTeachersExcel,
+  updateTeacher,
+  type TeacherUpdate,
+} from "@/apis/teachers.api";
 
-// Списка учителей backend не отдаёт (нет GET /teachers), поэтому обновлять
-// после создания можно только счётчик на главной.
-export function useCreateTeacher() {
-  const queryClient = useQueryClient();
+const teachersQueryKey = ["teachers"];
 
-  return useMutation({
-    mutationFn: createTeacher,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] }),
+export function useTeachers() {
+  return useQuery({
+    queryKey: teachersQueryKey,
+    queryFn: getTeachers,
   });
 }
 
-export function useImportTeachers() {
+// Список учителей и их число на главной обновляются после любых изменений.
+function useInvalidateTeachers() {
   const queryClient = useQueryClient();
 
+  return () => {
+    queryClient.invalidateQueries({ queryKey: teachersQueryKey });
+    queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] });
+  };
+}
+
+export function useCreateTeacher() {
+  const invalidateTeachers = useInvalidateTeachers();
+  return useMutation({ mutationFn: createTeacher, onSuccess: invalidateTeachers });
+}
+
+export function useImportTeachers() {
+  const invalidateTeachers = useInvalidateTeachers();
+  return useMutation({ mutationFn: importTeachersExcel, onSuccess: invalidateTeachers });
+}
+
+export function useUpdateTeacher() {
+  const invalidateTeachers = useInvalidateTeachers();
+
   return useMutation({
-    mutationFn: importTeachersExcel,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["dashboard", "stats"] }),
+    mutationFn: ({ teacherId, data }: { teacherId: number; data: TeacherUpdate }) =>
+      updateTeacher(teacherId, data),
+    onSuccess: invalidateTeachers,
+  });
+}
+
+export function useSetTeacherActive() {
+  const queryClient = useQueryClient();
+  const invalidateTeachers = useInvalidateTeachers();
+
+  return useMutation({
+    mutationFn: ({ teacherId, active }: { teacherId: number; active: boolean }) =>
+      active ? activateTeacher(teacherId) : deactivateTeacher(teacherId),
+    onSuccess: () => {
+      invalidateTeachers();
+      // Деактивация снимает классное руководство — меняются и классы.
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+    },
   });
 }

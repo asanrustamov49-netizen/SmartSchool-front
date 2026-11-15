@@ -5,7 +5,8 @@ import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCreateSubject } from "@/hooks/useSubjects";
+import type { Subject } from "@/apis/subjects.api";
+import { useCreateSubject, useUpdateSubject } from "@/hooks/useSubjects";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
 import styles from "./admin.module.scss";
@@ -15,12 +16,19 @@ type SubjectFormValues = {
   code: string;
 };
 
-// Backend позволяет только создать предмет: endpoint'ов изменения и удаления нет.
-export function SubjectForm({ onClose }: { onClose: () => void }) {
+type SubjectFormProps = {
+  // null — новый предмет, иначе изменение существующего.
+  subject: Subject | null;
+  onClose: () => void;
+};
+
+export function SubjectForm({ subject, onClose }: SubjectFormProps) {
   const t = useTranslations("admin.subjects");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
   const createSubject = useCreateSubject();
+  const updateSubject = useUpdateSubject();
+  const activeMutation = subject ? updateSubject : createSubject;
 
   // Правила из схемы SubjectCreate: name — от 2 до 100 символов.
   const subjectSchema = z.object({
@@ -35,38 +43,43 @@ export function SubjectForm({ onClose }: { onClose: () => void }) {
     formState: { errors },
   } = useForm<SubjectFormValues>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: { name: "", code: "" },
+    defaultValues: { name: subject?.name ?? "", code: subject?.code ?? "" },
   });
 
   const onSubmit = (values: SubjectFormValues) => {
-    createSubject.mutate(
-      { name: values.name.trim(), code: emptyToNull(values.code) },
-      {
-        onSuccess: onClose,
-        onError: (error) => {
-          const fieldErrors = getApiFieldErrors(error);
+    const data = { name: values.name.trim(), code: emptyToNull(values.code) };
+    const handleError = (error: unknown) => {
+      const fieldErrors = getApiFieldErrors(error);
 
-          if (fieldErrors.name) {
-            setError("name", { message: fieldErrors.name });
-          }
+      if (fieldErrors.name) {
+        setError("name", { message: fieldErrors.name });
+      }
 
-          if (fieldErrors.code) {
-            setError("code", { message: fieldErrors.code });
-          }
-        },
-      },
-    );
+      if (fieldErrors.code) {
+        setError("code", { message: fieldErrors.code });
+      }
+    };
+
+    if (subject) {
+      updateSubject.mutate(
+        { subjectId: subject.id, data },
+        { onSuccess: onClose, onError: handleError },
+      );
+      return;
+    }
+
+    createSubject.mutate(data, { onSuccess: onClose, onError: handleError });
   };
 
-  const hasFieldErrors = Object.keys(getApiFieldErrors(createSubject.error)).length > 0;
+  const hasFieldErrors = Object.keys(getApiFieldErrors(activeMutation.error)).length > 0;
   const formError =
-    createSubject.isError && !hasFieldErrors
-      ? handleApiError(createSubject.error, tApiErrors)
+    activeMutation.isError && !hasFieldErrors
+      ? handleApiError(activeMutation.error, tApiErrors)
       : null;
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{t("createTitle")}</h2>
+      <h2 className={styles.cardTitle}>{subject ? t("editTitle") : t("createTitle")}</h2>
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
         {formError && (
           <p className={styles.formError} role="alert">
@@ -105,9 +118,9 @@ export function SubjectForm({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             className={styles.primaryButton}
-            disabled={createSubject.isPending}
+            disabled={activeMutation.isPending}
           >
-            {createSubject.isPending && (
+            {activeMutation.isPending && (
               <LoaderCircle className={styles.spinner} size={16} aria-hidden="true" />
             )}
             {tForm("save")}

@@ -23,3 +23,14 @@ export async function createSubject(data: SubjectCreate): Promise<Subject> {
   const response = await api.post<Subject>("/subjects/", data);
   return response.data;
 }
+
+// Схема SubjectUpdate: name 2–100 символов, code до 30.
+export async function updateSubject(subjectId: number, data: SubjectCreate): Promise<Subject> {
+  const response = await api.put<Subject>(`/subjects/${subjectId}`, data);
+  return response.data;
+}
+
+// Backend отказывает (400), если к предмету ещё привязаны учителя.
+export async function deleteSubject(subjectId: number) {
+  await api.delete(`/subjects/${subjectId}`);
+}

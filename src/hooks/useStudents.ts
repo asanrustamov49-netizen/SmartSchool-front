@@ -5,7 +5,6 @@ import {
   getClassStudents,
   getStudents,
   importStudentsExcel,
-  resetStudentPassword,
   updateStudent,
   type StudentUpdate,
 } from "@/apis/students.api";
@@ -75,8 +74,4 @@ export function useDeactivateStudent() {
     mutationFn: deactivateStudent,
     onSuccess: invalidateStudents,
   });
-}
-
-export function useResetStudentPassword() {
-  return useMutation({ mutationFn: resetStudentPassword });
 }

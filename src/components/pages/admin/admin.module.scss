@@ -584,3 +584,21 @@
   gap: 8px;
   margin-top: 4px;
 }
+
+// Небольшая пометка рядом с именем (например, «ещё не входил»).
+.tag {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 14%, transparent);
+  color: var(--ss-warning, #d97706);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.toolbarCount {
+  align-self: center;
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+}

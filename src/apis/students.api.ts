@@ -80,15 +80,6 @@ type StudentImportResponse = Omit<ExcelImportResult, "added_users"> & {
   added_students: ExcelImportResult["added_users"];
 };
 
-// Ответ POST /admin/users/{id}/reset-password (backend: admin.py).
-export type PasswordResetResult = {
-  message: string;
-  user_id: number;
-  inn: string;
-  full_name: string;
-  temporary_password: string;
-};
-
 // Шаблон с правильными колонками отдаёт backend: ИНН | Толук аты-жөнү | Телефон.
 export async function downloadStudentsTemplate(): Promise<Blob> {
   const response = await api.get<Blob>("/admin/excel/templates/students", {
@@ -115,7 +106,3 @@ export async function deactivateStudent(studentId: number) {
   await api.delete(`/students/${studentId}`);
 }
 
-export async function resetStudentPassword(studentId: number): Promise<PasswordResetResult> {
-  const response = await api.post<PasswordResetResult>(`/admin/users/${studentId}/reset-password`);
-  return response.data;
-}
