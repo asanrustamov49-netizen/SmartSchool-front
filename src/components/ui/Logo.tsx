@@ -18,15 +18,16 @@ type LogoProps = {
 function FullMark({ id }: { id: string }) {
   return (
     <svg className={styles.mark} viewBox="0 0 64 64" aria-hidden="true">
+      {/* Градиенты следуют акцентному цвету из настроек; без токенов — фирменные цвета. */}
       <defs>
         <linearGradient id={`${id}-book`} x1="4" y1="40" x2="60" y2="58" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#38BDF8" />
-          <stop offset=".5" stopColor="#2F6BFF" />
-          <stop offset="1" stopColor="#7C5CFF" />
+          <stop offset="0" style={{ stopColor: "var(--ss-logo-light, #38BDF8)" }} />
+          <stop offset=".5" style={{ stopColor: "var(--ss-accent, #2F6BFF)" }} />
+          <stop offset="1" style={{ stopColor: "var(--ss-violet, #7C5CFF)" }} />
         </linearGradient>
         <linearGradient id={`${id}-cap`} x1="4" y1="12" x2="48" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#38BDF8" />
-          <stop offset="1" stopColor="#2F6BFF" />
+          <stop offset="0" style={{ stopColor: "var(--ss-logo-light, #38BDF8)" }} />
+          <stop offset="1" style={{ stopColor: "var(--ss-accent, #2F6BFF)" }} />
         </linearGradient>
       </defs>
       <path d="M3 21 27 11l23 8-24 10Z" fill={`url(#${id}-cap)`} />

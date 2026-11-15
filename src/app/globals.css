@@ -143,6 +143,8 @@
   --ss-sidebar: linear-gradient(180deg, #0b1230 0%, #131a45 55%, #1e1b4b 100%);
   --ss-sidebar-accent: #9db8ff;
   --ss-sidebar-glow: rgb(124 92 255 / 35%);
+  /* Светлый край градиента логотипа (шапка и книга). */
+  --ss-logo-light: #38bdf8;
   --ss-shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);
   --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 8px 20px -12px rgb(15 23 42 / 14%);
   --ss-shadow-md: 0 2px 4px rgb(15 23 42 / 4%), 0 16px 32px -16px rgb(15 23 42 / 22%);
@@ -185,6 +187,7 @@
 /* Акцентные палитры из личных настроек (/settings). Меняют акцент, градиенты, свечение,
    боковое меню и баннер главной. Фоны и цвет текста остаются прежними. Синяя — палитра по умолчанию выше. */
 :root[data-accent="violet"] {
+  --ss-logo-light: #c4b5fd;
   --ss-accent: #7c3aed;
   --ss-accent-strong: #6d28d9;
   --ss-accent-soft: #f3edff;
@@ -210,6 +213,7 @@
 }
 
 :root[data-accent="emerald"] {
+  --ss-logo-light: #6ee7b7;
   --ss-accent: #059669;
   --ss-accent-strong: #047857;
   --ss-accent-soft: #e7f8f1;
@@ -235,6 +239,7 @@
 }
 
 :root[data-accent="amber"] {
+  --ss-logo-light: #fcd34d;
   --ss-accent: #d97706;
   --ss-accent-strong: #b45309;
   --ss-accent-soft: #fff6e5;
@@ -260,6 +265,7 @@
 }
 
 :root[data-accent="rose"] {
+  --ss-logo-light: #fda4af;
   --ss-accent: #e11d48;
   --ss-accent-strong: #be123c;
   --ss-accent-soft: #ffeef2;
@@ -285,6 +291,7 @@
 }
 
 :root[data-accent="graphite"] {
+  --ss-logo-light: #cbd5e1;
   --ss-accent: #475569;
   --ss-accent-strong: #334155;
   --ss-accent-soft: #eef1f5;
