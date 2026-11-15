@@ -1,18 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Eye, EyeOff, LoaderCircle, Lock } from "lucide-react";
+import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useCurrentUser, useFirstLoginChange, useLogout } from "@/hooks/useAuth";
 import { useRouter } from "@/i18n/navigation";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { AuthLayout } from "./AuthLayout";
+import { PasswordField } from "./PasswordField";
 import styles from "./login.module.scss";
 
 type FirstLoginChangeFormValues = {
@@ -20,55 +19,6 @@ type FirstLoginChangeFormValues = {
   newPassword: string;
   confirmPassword: string;
 };
-
-type PasswordFieldProps = {
-  id: string;
-  label: string;
-  autoComplete: "current-password" | "new-password";
-  error: string | undefined;
-  registration: UseFormRegisterReturn;
-};
-
-// Поле пароля с кнопкой «показать / скрыть», как на странице входа.
-function PasswordField({ id, label, autoComplete, error, registration }: PasswordFieldProps) {
-  const tAuth = useTranslations("auth");
-  const [visible, setVisible] = useState(false);
-  const errorId = `${id}-error`;
-
-  return (
-    <div className={styles.field}>
-      <Label htmlFor={id} className={styles.label}>
-        {label}
-      </Label>
-      <div className={styles.passwordWrap}>
-        <Lock className={styles.inputIcon} size={18} aria-hidden="true" />
-        <Input
-          id={id}
-          className={styles.input}
-          type={visible ? "text" : "password"}
-          autoComplete={autoComplete}
-          aria-invalid={Boolean(error)}
-          aria-describedby={error ? errorId : undefined}
-          {...registration}
-        />
-        <button
-          type="button"
-          className={styles.passwordToggle}
-          aria-label={visible ? tAuth("hidePassword") : tAuth("showPassword")}
-          aria-pressed={visible}
-          onClick={() => setVisible((value) => !value)}
-        >
-          {visible ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
-        </button>
-      </div>
-      {error && (
-        <p id={errorId} className={styles.fieldError}>
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 const FirstLoginChange = () => {
   const t = useTranslations("auth.firstLogin");

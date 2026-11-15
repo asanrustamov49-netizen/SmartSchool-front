@@ -345,3 +345,25 @@ html::-webkit-scrollbar {
     transform: scale(0.97);
   }
 }
+
+/* Нативные элементы (раскрытый список <select>, календарь, полосы прокрутки) берут
+   цвета из color-scheme. Без этого в тёмной теме список открывался белым
+   со светлым текстом. Пункты списка дополнительно окрашены в цвета темы. */
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+select option,
+select optgroup {
+  background-color: var(--ss-surface);
+  color: var(--ss-ink);
+}
+
+select option:checked {
+  background-color: color-mix(in srgb, var(--ss-accent) 22%, var(--ss-surface));
+  color: var(--ss-ink);
+}

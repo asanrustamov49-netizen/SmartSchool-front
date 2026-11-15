@@ -1289,3 +1289,102 @@
   border-radius: inherit;
   object-fit: cover;
 }
+
+// ---------- Родитель: выбранный ребёнок и привязка нового ----------
+.childCardActive {
+  border-color: color-mix(in srgb, var(--ss-accent) 55%, var(--ss-line));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--ss-accent) 14%, transparent),
+    var(--ss-shadow);
+}
+
+.childAction {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: auto;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--ss-surface);
+  color: var(--ss-accent);
+  font-size: 14px;
+  font-weight: 650;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--ss-accent);
+    background: var(--ss-accent-soft);
+  }
+}
+
+.addChildPanel {
+  margin-bottom: 14px;
+  padding: 16px;
+  border: 1px dashed color-mix(in srgb, var(--ss-accent) 40%, var(--ss-line));
+  border-radius: var(--ss-radius);
+  background: color-mix(in srgb, var(--ss-accent) 4%, var(--ss-surface));
+}
+
+.addChildLead {
+  margin: 0 0 12px;
+  color: var(--ss-ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.addChildSuccess {
+  margin-bottom: 12px;
+  background: var(--ss-success-soft);
+
+  svg {
+    color: var(--ss-success);
+  }
+}
+
+.addChildForm {
+  align-items: start;
+}
+
+.passwordInput {
+  position: relative;
+
+  input {
+    padding-right: 44px;
+  }
+
+  button {
+    position: absolute;
+    top: 3px;
+    right: 4px;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 8px;
+    color: var(--ss-muted);
+
+    &:hover {
+      background: var(--ss-accent-soft);
+      color: var(--ss-accent);
+    }
+  }
+}
+
+.spin {
+  animation: orbit-spin 0.9s linear infinite;
+}
+
+@media (max-width: 640px) {
+  .addChildForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panelHeading > button {
+    min-height: 36px;
+    padding: 0 12px;
+  }
+}

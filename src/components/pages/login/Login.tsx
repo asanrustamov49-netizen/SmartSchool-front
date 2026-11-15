@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/useAuth";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getApiErrorStatus, getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { AuthLayout } from "./AuthLayout";
 import styles from "./login.module.scss";
@@ -167,6 +167,11 @@ const Login = () => {
           )}
           {isSubmitting ? t("submitting") : t("submit")}
         </Button>
+
+        <p className={styles.switchAuth}>
+          {t("parentQuestion")}
+          <Link href="/register">{t("parentRegister")}</Link>
+        </p>
       </form>
     </AuthLayout>
   );

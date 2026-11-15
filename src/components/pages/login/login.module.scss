@@ -220,6 +220,76 @@
   font-size: 12.5px;
 }
 
+.fieldHint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+// ---------- Регистрация родителя ----------
+.formSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.formSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  padding: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+
+  svg {
+    color: var(--accent);
+  }
+}
+
+.infoNote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--accent);
+  }
+}
+
+.switchAuth {
+  margin: 4px 0 0;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13.5px;
+
+  a {
+    margin-left: 4px;
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .formError {
   display: flex;
   gap: 8px;

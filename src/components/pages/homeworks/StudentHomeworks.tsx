@@ -9,6 +9,7 @@ import { ChildTabs } from "@/components/ui/ChildTabs";
 import { DataState } from "@/components/ui/DataState";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import { useHomeworks, useSubmitHomework } from "@/hooks/useHomeworks";
+import { useSelectedChild } from "@/hooks/useSelectedChild";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import { AttachmentList, HomeworkCard, getHomeworkStatus } from "./HomeworkCard";
@@ -87,10 +88,10 @@ export function StudentHomeworks({ user }: { user: CurrentUser }) {
   const { formatDateTime } = useDateFormat();
   const isParent = user.role === "PARENT";
   const children = user.children ?? [];
-  const [childId, setChildId] = useState<number | null>(null);
+  const { selectedChildId, selectChild } = useSelectedChild(children);
   const [filter, setFilter] = useState<Filter>("all");
   const [openFormId, setOpenFormId] = useState<number | null>(null);
-  const studentId = isParent ? (childId ?? children[0]?.id ?? null) : null;
+  const studentId = isParent ? selectedChildId : null;
   const homeworksQuery = useHomeworks(studentId, !isParent || studentId !== null);
 
   if (isParent && children.length === 0) {
@@ -173,7 +174,7 @@ export function StudentHomeworks({ user }: { user: CurrentUser }) {
   return (
     <>
       {isParent && (
-        <ChildTabs childrenList={children} selectedId={studentId} onSelect={setChildId} label={t("child")} />
+        <ChildTabs childrenList={children} selectedId={studentId} onSelect={selectChild} label={t("child")} />
       )}
       <section className={adminStyles.card}>
         <div className={styles.filters} role="tablist" aria-label={t("filterLabel")}>

@@ -10,6 +10,7 @@ import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import { useDiary, useGradesSummary } from "@/hooks/useJournal";
+import { useSelectedChild } from "@/hooks/useSelectedChild";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
@@ -161,9 +162,9 @@ function StudentDiary({ user }: { user: CurrentUser }) {
   const { formatLongDate, formatDate } = useDateFormat();
   const isParent = user.role === "PARENT";
   const children = user.children ?? [];
-  const [childId, setChildId] = useState<number | null>(null);
+  const { selectedChildId, selectChild } = useSelectedChild(children);
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
-  const studentId = isParent ? (childId ?? children[0]?.id ?? null) : null;
+  const studentId = isParent ? selectedChildId : null;
   const enabled = !isParent || studentId !== null;
 
   const weekEnd = addDays(weekStart, DAYS_IN_WEEK - 1);
@@ -224,7 +225,7 @@ function StudentDiary({ user }: { user: CurrentUser }) {
         <ChildTabs
           childrenList={children}
           selectedId={studentId}
-          onSelect={setChildId}
+          onSelect={selectChild}
           label={t("child")}
         />
       )}

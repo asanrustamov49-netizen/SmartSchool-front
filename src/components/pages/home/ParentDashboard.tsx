@@ -1,9 +1,17 @@
-import { Award, Users } from "lucide-react";
+"use client";
+
+import { Award, BookOpen, CircleCheck, UserPlus, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { DataState } from "@/components/ui/DataState";
 import { useSchoolRating } from "@/hooks/useDashboard";
+import { useSelectedChild } from "@/hooks/useSelectedChild";
+import { useRouter } from "@/i18n/navigation";
 import { handleApiError } from "@/lib/errorHandler";
+import { cn } from "@/lib/utils";
+import adminStyles from "../admin/admin.module.scss";
+import { AddChildForm } from "./AddChildForm";
 import { XpRing } from "./XpRing";
 import scss from "./home.module.scss";
 
@@ -21,13 +29,31 @@ function getInitials(fullName: string) {
 }
 
 // Список детей приходит в /me (children), их XP и место в школе — из /ratings/school.
+// Привязка хранится на backend (parent_students), поэтому после выхода и нового входа дети остаются.
 export function ParentDashboard({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.parent");
+  const tLink = useTranslations("parentLink");
   const tApiErrors = useTranslations("apiErrors");
+  const router = useRouter();
   const children = currentUser.children ?? [];
+  const { selectedChildId, selectChild } = useSelectedChild(children);
+  const [formOpen, setFormOpen] = useState(false);
+  const [addedChildName, setAddedChildName] = useState<string | null>(null);
   const ratingQuery = useSchoolRating(SCHOOL_RATING_LIMIT);
   const ratingItems = ratingQuery.data?.items ?? [];
   const leaderXp = ratingItems[0]?.xp ?? 0;
+  const showForm = formOpen || children.length === 0;
+
+  const handleChildAdded = (childId: number, fullName: string) => {
+    selectChild(childId);
+    setAddedChildName(fullName);
+    setFormOpen(false);
+  };
+
+  const openChildDiary = (childId: number) => {
+    selectChild(childId);
+    router.push("/diary");
+  };
 
   return (
     <section className={scss.panel}>
@@ -36,7 +62,38 @@ export function ParentDashboard({ currentUser }: { currentUser: CurrentUser }) {
           <Users size={20} aria-hidden="true" />
           <h2>{t("children")}</h2>
         </div>
+        {children.length > 0 && !formOpen && (
+          <button
+            type="button"
+            className={adminStyles.secondaryButton}
+            onClick={() => {
+              setAddedChildName(null);
+              setFormOpen(true);
+            }}
+          >
+            <UserPlus size={16} aria-hidden="true" />
+            {tLink("addChild")}
+          </button>
+        )}
       </div>
+
+      {addedChildName && (
+        <p className={cn(adminStyles.notice, scss.addChildSuccess)} role="status">
+          <CircleCheck size={16} aria-hidden="true" />
+          {tLink("added", { name: addedChildName })}
+        </p>
+      )}
+
+      {showForm && (
+        <div className={scss.addChildPanel}>
+          {children.length === 0 && <p className={scss.addChildLead}>{t("noChildren")}</p>}
+          <AddChildForm
+            onAdded={handleChildAdded}
+            onCancel={children.length > 0 ? () => setFormOpen(false) : undefined}
+          />
+        </div>
+      )}
+
       {ratingQuery.isError && children.length > 0 && (
         <DataState
           status="error"
@@ -44,15 +101,15 @@ export function ParentDashboard({ currentUser }: { currentUser: CurrentUser }) {
           onRetry={() => ratingQuery.refetch()}
         />
       )}
-      {children.length === 0 ? (
-        <DataState status="empty" message={t("noChildren")} />
-      ) : (
+
+      {children.length > 0 && (
         <ul className={scss.childGrid}>
           {children.map((child) => {
             const rating = ratingItems.find((item) => item.student_id === child.id);
+            const isSelected = child.id === selectedChildId && children.length > 1;
 
             return (
-              <li key={child.id} className={scss.childCard}>
+              <li key={child.id} className={cn(scss.childCard, isSelected && scss.childCardActive)}>
                 <div className={scss.childHead}>
                   <span className={scss.childAvatar} aria-hidden="true">
                     {getInitials(child.full_name)}
@@ -80,6 +137,15 @@ export function ParentDashboard({ currentUser }: { currentUser: CurrentUser }) {
                 ) : (
                   <p className={scss.childEmpty}>{t("noRating")}</p>
                 )}
+
+                <button
+                  type="button"
+                  className={scss.childAction}
+                  onClick={() => openChildDiary(child.id)}
+                >
+                  <BookOpen size={16} aria-hidden="true" />
+                  {tLink("openDiary")}
+                </button>
               </li>
             );
           })}

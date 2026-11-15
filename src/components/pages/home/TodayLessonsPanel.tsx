@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import type { CurrentUser } from "@/apis/auth.api";
 import { DataState } from "@/components/ui/DataState";
 import { useTodaySchedule } from "@/hooks/useSchedule";
+import { useSelectedChild } from "@/hooks/useSelectedChild";
 import { Link } from "@/i18n/navigation";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
@@ -16,12 +17,14 @@ function currentTimeString() {
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 }
 
-// «Уроки сегодня» для учителя, ученика и родителя (у родителя — первый ребёнок).
+// «Уроки сегодня» для учителя, ученика и родителя (у родителя — выбранный ребёнок).
 // Идущий сейчас урок подсвечивается.
 export function TodayLessonsPanel({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("schedule");
   const tApiErrors = useTranslations("apiErrors");
-  const child = currentUser.role === "PARENT" ? currentUser.children?.[0] : undefined;
+  const children = currentUser.role === "PARENT" ? (currentUser.children ?? []) : [];
+  const { selectedChildId } = useSelectedChild(children);
+  const child = children.find((item) => item.id === selectedChildId);
   const todayQuery = useTodaySchedule(child?.id ?? null);
   const now = currentTimeString();
   const isTeacher = currentUser.role === "TEACHER" || currentUser.role === "CLASS_TEACHER";

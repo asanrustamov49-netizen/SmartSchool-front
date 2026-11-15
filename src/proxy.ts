@@ -6,7 +6,7 @@ import { getLocaleFromPathname, TOKEN_COOKIE_NAME } from "./lib/auth";
 const handleI18nRouting = createMiddleware(routing);
 
 const LANDING_PATH = "/welcome";
-const GUEST_ONLY_PATHS = ["/login", LANDING_PATH];
+const GUEST_ONLY_PATHS = ["/login", "/register", LANDING_PATH];
 
 function getPathWithoutLocale(pathname: string, locale: string) {
   const path = pathname.replace(new RegExp(`^/${locale}(?=/|$)`), "");

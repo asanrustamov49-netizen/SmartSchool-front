@@ -11,6 +11,7 @@ import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
 import { useJournalAssignments } from "@/hooks/useJournal";
 import { useClassSchedule, useMySchedule, useScheduleBells } from "@/hooks/useSchedule";
+import { useSelectedChild } from "@/hooks/useSelectedChild";
 import { handleApiError } from "@/lib/errorHandler";
 import { LessonForm, type LessonDraft } from "./LessonForm";
 import { ScheduleGrid } from "./ScheduleGrid";
@@ -120,9 +121,9 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
 function PersonalSchedule({ user, bells }: { user: CurrentUser; bells: ScheduleBells }) {
   const t = useTranslations("schedule");
   const children = user.children ?? [];
-  const [childId, setChildId] = useState<number | null>(null);
+  const { selectedChildId, selectChild } = useSelectedChild(children);
   const isParent = user.role === "PARENT";
-  const studentId = isParent ? (childId ?? children[0]?.id ?? null) : null;
+  const studentId = isParent ? selectedChildId : null;
   const scheduleQuery = useMySchedule(studentId, !isParent || studentId !== null);
 
   if (isParent && children.length === 0) {
@@ -135,7 +136,7 @@ function PersonalSchedule({ user, bells }: { user: CurrentUser; bells: ScheduleB
         <ChildTabs
           childrenList={children}
           selectedId={studentId}
-          onSelect={setChildId}
+          onSelect={selectChild}
           label={t("child")}
         />
       )}

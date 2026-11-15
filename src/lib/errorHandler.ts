@@ -49,7 +49,17 @@ export const handleApiError = (
   return t("unknown");
 };
 
-export const getApiErrorStatus = (error: unknown): number | undefined => {
+// Текст detail без перевода — когда ошибку нужно распознать по смыслу.
+export const getApiErrorDetail = (error: unknown): string | undefined => {
+  if (!(error instanceof AxiosError)) {
+    return undefined;
+  }
+
+  const detail = getErrorDetail(error);
+  return typeof detail === "string" ? detail : undefined;
+};
+
+export const getApiErrorStatus =(error: unknown): number | undefined => {
   return error instanceof AxiosError ? error.response?.status : undefined;
 };
 
