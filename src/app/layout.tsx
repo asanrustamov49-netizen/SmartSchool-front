@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { Suspense } from "react";
 import { Providers } from "@/components/layout/Providers";
+import { APPEARANCE_INIT_SCRIPT } from "@/lib/appearance";
 import "./globals.css";
 
 // Основной шрифт приложения: дружелюбный гротеск с поддержкой кыргызских букв (ң, ө, ү).
@@ -31,6 +32,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        {/* Акцентный цвет и вид меню применяются до отрисовки, без мигания. */}
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_INIT_SCRIPT }} />
         <Providers>
           <Suspense fallback={<div className="min-h-screen" aria-hidden="true" />}>
             {children}

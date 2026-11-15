@@ -10,6 +10,7 @@ import {
   Megaphone,
   NotebookPen,
   School,
+  Settings2,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
@@ -24,15 +25,40 @@ export type NavigationItem = {
 
 export type RoleNavigation = {
   sectionKey: string;
+  // Разделы бокового меню.
   items: NavigationItem[];
+  // Личные страницы из меню аккаунта (профиль, настройки). В боковом меню их нет,
+  // но они тоже разрешены для роли и попадают в быстрый поиск.
+  accountItems: NavigationItem[];
 };
 
-const MOBILE_ITEMS_COUNT = 4;
+const MOBILE_ITEMS_COUNT = 5;
 
 const homeItem: NavigationItem = {
   key: "home",
   href: "/",
   icon: LayoutDashboard,
+  available: true,
+};
+
+const profileItem: NavigationItem = {
+  key: "profile",
+  href: "/profile",
+  icon: UserRound,
+  available: true,
+};
+
+const settingsItem: NavigationItem = {
+  key: "settings",
+  href: "/settings",
+  icon: Settings2,
+  available: true,
+};
+
+const schoolSettingsItem: NavigationItem = {
+  key: "schoolSettings",
+  href: "/admin/school",
+  icon: School,
   available: true,
 };
 
@@ -49,8 +75,6 @@ const adminItems: NavigationItem[] = [
   { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-  { key: "settings", href: "/admin/school", icon: School, available: true },
-  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 const studentItems: NavigationItem[] = [
@@ -59,7 +83,6 @@ const studentItems: NavigationItem[] = [
   { key: "assignments", href: "/homeworks", icon: ClipboardList },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 // Ученик не может подавать заявки на отсутствие (backend отвечает 403),
@@ -71,7 +94,6 @@ const parentItems: NavigationItem[] = [
   { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
   { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-  { key: "profile", href: "/profile", icon: UserRound, available: true },
 ];
 
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
@@ -91,38 +113,51 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
     });
   }
 
-  items.push(
-    { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-    { key: "profile", href: "/profile", icon: UserRound, available: true },
-  );
+  items.push({ key: "announcements", href: "/announcements", icon: Megaphone, available: true });
 
   return items;
 }
 
 export function getRoleNavigation(user: CurrentUser): RoleNavigation {
+  const accountItems = [profileItem, settingsItem];
+
   switch (user.role) {
     case "DIRECTOR":
     case "DEPUTY":
-      return { sectionKey: "admin", items: adminItems };
+      return {
+        sectionKey: "admin",
+        items: adminItems,
+        accountItems: [profileItem, schoolSettingsItem, settingsItem],
+      };
     case "TEACHER":
     case "CLASS_TEACHER":
       return {
         sectionKey: "teacher",
         items: getTeacherItems(Boolean(user.is_class_teacher)),
+        accountItems,
       };
     case "STUDENT":
-      return { sectionKey: "student", items: studentItems };
+      return { sectionKey: "student", items: studentItems, accountItems };
     case "PARENT":
-      return { sectionKey: "parent", items: parentItems };
+      return { sectionKey: "parent", items: parentItems, accountItems };
     default:
       // SYSTEM_ADMIN: в API нет отдельных экранов системного администратора.
-      return { sectionKey: "system", items: [homeItem] };
+      return { sectionKey: "system", items: [homeItem], accountItems };
   }
 }
 
-// В нижнюю панель попадают только готовые разделы: разделы «Скоро» остаются в меню.
+// Нижняя панель на телефоне: готовые разделы, затем профиль, всего не больше пяти.
+// Разделы «Скоро» остаются только в боковом меню.
 export function getMobileItems(navigation: RoleNavigation): NavigationItem[] {
-  return navigation.items.filter((item) => item.available).slice(0, MOBILE_ITEMS_COUNT);
+  return [...navigation.items.filter((item) => item.available), profileItem].slice(
+    0,
+    MOBILE_ITEMS_COUNT,
+  );
+}
+
+// Все страницы, доступные роли: для проверки доступа, заголовка и быстрого поиска.
+export function getAllowedItems(navigation: RoleNavigation): NavigationItem[] {
+  return [...navigation.items, ...navigation.accountItems].filter((item) => item.available);
 }
 
 export function isPathAllowed(navigation: RoleNavigation, pathname: string) {
@@ -134,7 +169,7 @@ export function getCurrentNavigationItem(
   navigation: RoleNavigation,
   pathname: string,
 ): NavigationItem | undefined {
-  return navigation.items.find(
+  return getAllowedItems(navigation).find(
     (item) =>
       pathname === item.href ||
       (item.href !== "/" && pathname.startsWith(`${item.href}/`)),

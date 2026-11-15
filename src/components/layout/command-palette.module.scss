@@ -1,0 +1,185 @@
+.overlay {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 16px 16px;
+  background: rgb(8 12 28 / 45%);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  display: flex;
+  width: min(580px, 100%);
+  max-height: min(560px, 76vh);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--ss-line);
+  border-radius: 18px;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-shadow-lg);
+  color: var(--ss-ink);
+}
+
+.inputWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ss-line);
+  color: var(--ss-muted);
+
+  input {
+    min-width: 0;
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ss-ink);
+    font: inherit;
+    font-size: 16px;
+
+    &::placeholder {
+      color: var(--ss-muted);
+    }
+  }
+}
+
+// CSS-модули требуют локальный класс в селекторе, поэтому kbd — внутри .dialog.
+.dialog kbd {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  padding: 0 6px;
+  border: 1px solid var(--ss-line);
+  border-radius: 6px;
+  background: var(--ss-surface-2);
+  color: var(--ss-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.list {
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 8px;
+}
+
+.groupLabel {
+  padding: 6px 10px;
+  color: var(--ss-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entry {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px;
+  border-radius: 10px;
+  color: var(--ss-ink);
+  font-size: 14px;
+  font-weight: 550;
+  text-align: left;
+}
+
+.entryActive {
+  background: var(--ss-accent-soft);
+
+  .entryIcon {
+    background: var(--ss-gradient);
+    color: #ffffff;
+  }
+}
+
+.entryIcon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--ss-surface-2);
+  color: var(--ss-muted);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.entryLabel {
+  flex: 1;
+}
+
+.entryHint {
+  color: var(--ss-accent);
+}
+
+.empty {
+  margin: 0;
+  padding: 28px 16px;
+  color: var(--ss-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+.footer {
+  display: flex;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--ss-line);
+  color: var(--ss-muted);
+  font-size: 12px;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding-top: 12px;
+  }
+
+  .footer {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .overlay {
+    animation: palette-fade 0.18s ease backwards;
+  }
+
+  .dialog {
+    animation: palette-in 0.24s var(--ss-ease) backwards;
+  }
+}
+
+@keyframes palette-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+}

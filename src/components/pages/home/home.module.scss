@@ -17,10 +17,12 @@
   overflow: hidden;
   padding: 30px 34px;
   border-radius: var(--ss-radius-lg);
-  background:
+  background: var(
+    --ss-hero,
     radial-gradient(ellipse 50% 90% at 85% 10%, rgb(124 92 255 / 55%), transparent 70%),
     radial-gradient(ellipse 40% 80% at 60% 120%, rgb(56 189 248 / 35%), transparent 70%),
-    linear-gradient(120deg, #0b1230 0%, #1a2a7a 55%, #2f3fb8 100%);
+    linear-gradient(120deg, #0b1230 0%, #1a2a7a 55%, #2f3fb8 100%)
+  );
   box-shadow: var(--ss-shadow-md);
   color: #ffffff;
   isolation: isolate;
@@ -120,30 +122,38 @@
 
 // Оттенок баннера подчёркивает характер кабинета каждой роли.
 .hero[data-tone="teacher"] {
-  background:
+  background: var(
+    --ss-hero,
     radial-gradient(ellipse 50% 90% at 85% 10%, rgb(124 92 255 / 55%), transparent 70%),
     radial-gradient(ellipse 40% 80% at 60% 120%, rgb(45 212 191 / 30%), transparent 70%),
-    linear-gradient(120deg, #0f1236 0%, #2a2378 55%, #4c3bc4 100%);
+    linear-gradient(120deg, #0f1236 0%, #2a2378 55%, #4c3bc4 100%)
+  );
 }
 
 .hero[data-tone="student"] {
-  background:
+  background: var(
+    --ss-hero,
     radial-gradient(ellipse 50% 90% at 85% 10%, rgb(244 114 182 / 40%), transparent 70%),
     radial-gradient(ellipse 40% 80% at 60% 120%, rgb(251 191 36 / 28%), transparent 70%),
-    linear-gradient(120deg, #1a1040 0%, #4b2a9a 55%, #7c5cff 100%);
+    linear-gradient(120deg, #1a1040 0%, #4b2a9a 55%, #7c5cff 100%)
+  );
 }
 
 .hero[data-tone="parent"] {
-  background:
+  background: var(
+    --ss-hero,
     radial-gradient(ellipse 50% 90% at 85% 10%, rgb(56 189 248 / 45%), transparent 70%),
     radial-gradient(ellipse 40% 80% at 60% 120%, rgb(47 107 255 / 35%), transparent 70%),
-    linear-gradient(120deg, #071a33 0%, #0f3a7a 55%, #2563eb 100%);
+    linear-gradient(120deg, #071a33 0%, #0f3a7a 55%, #2563eb 100%)
+  );
 }
 
 .hero[data-tone="system"] {
-  background:
+  background: var(
+    --ss-hero,
     radial-gradient(ellipse 50% 90% at 85% 10%, rgb(148 163 184 / 30%), transparent 70%),
-    linear-gradient(120deg, #0b1020 0%, #1e293b 60%, #334155 100%);
+    linear-gradient(120deg, #0b1020 0%, #1e293b 60%, #334155 100%)
+  );
 }
 
 .heroArtwork {

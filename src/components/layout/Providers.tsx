@@ -18,7 +18,7 @@ export function Providers({ children }: ProvidersProps) {
       <ThemeProvider
         attribute="class"
         defaultTheme="light"
-        enableSystem={false}
+        enableSystem
         storageKey="smart-school-theme"
       >
         {children}

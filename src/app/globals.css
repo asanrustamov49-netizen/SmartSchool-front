@@ -141,6 +141,8 @@
   --ss-gradient: linear-gradient(135deg, #2f6bff 0%, #7c5cff 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(47 107 255 / 12%), rgb(124 92 255 / 12%));
   --ss-sidebar: linear-gradient(180deg, #0b1230 0%, #131a45 55%, #1e1b4b 100%);
+  --ss-sidebar-accent: #9db8ff;
+  --ss-sidebar-glow: rgb(124 92 255 / 35%);
   --ss-shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);
   --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 8px 20px -12px rgb(15 23 42 / 14%);
   --ss-shadow-md: 0 2px 4px rgb(15 23 42 / 4%), 0 16px 32px -16px rgb(15 23 42 / 22%);
@@ -178,6 +180,133 @@
   --ss-shadow-md: 0 16px 32px -16px rgb(0 0 0 / 60%);
   --ss-shadow-lg: 0 30px 60px -30px rgb(0 0 0 / 70%);
   --ss-glow: 0 10px 28px -10px rgb(91 140 255 / 55%);
+}
+
+/* Акцентные палитры из личных настроек (/settings). Меняют акцент, градиенты, свечение,
+   боковое меню и баннер главной. Фоны и цвет текста остаются прежними. Синяя — палитра по умолчанию выше. */
+:root[data-accent="violet"] {
+  --ss-accent: #7c3aed;
+  --ss-accent-strong: #6d28d9;
+  --ss-accent-soft: #f3edff;
+  --ss-violet: #c026d3;
+  --ss-gradient: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(124 58 237 / 12%), color-mix(in srgb, #c026d3 12%, transparent));
+  --ss-glow: 0 10px 28px -10px rgb(124 58 237 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #140a2e 0%, #22104a 55%, #2e1065 100%);
+  --ss-sidebar-accent: #d8b4fe;
+  --ss-sidebar-glow: color-mix(in srgb, #c026d3 35%, transparent);
+  --ss-hero: radial-gradient(ellipse 50% 90% at 85% 10%, color-mix(in srgb, #c026d3 55%, transparent), transparent 70%),
+    linear-gradient(120deg, #140a2e 0%, #4c1d95 55%, #7c3aed 100%);
+}
+
+:root.dark[data-accent="violet"] {
+  --ss-accent: #a78bfa;
+  --ss-accent-strong: #c4b5fd;
+  --ss-accent-soft: rgb(167 139 250 / 14%);
+  --ss-violet: #e879f9;
+  --ss-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+  --ss-glow: 0 10px 28px -10px rgb(139 92 246 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #0c0620 0%, #180a38 55%, #22094f 100%);
+}
+
+:root[data-accent="emerald"] {
+  --ss-accent: #059669;
+  --ss-accent-strong: #047857;
+  --ss-accent-soft: #e7f8f1;
+  --ss-violet: #0d9488;
+  --ss-gradient: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(16 185 129 / 12%), color-mix(in srgb, #0d9488 12%, transparent));
+  --ss-glow: 0 10px 28px -10px rgb(16 185 129 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #04140f 0%, #062a20 55%, #073b2c 100%);
+  --ss-sidebar-accent: #6ee7b7;
+  --ss-sidebar-glow: color-mix(in srgb, #0d9488 35%, transparent);
+  --ss-hero: radial-gradient(ellipse 50% 90% at 85% 10%, color-mix(in srgb, #0d9488 55%, transparent), transparent 70%),
+    linear-gradient(120deg, #04140f 0%, #065f46 55%, #059669 100%);
+}
+
+:root.dark[data-accent="emerald"] {
+  --ss-accent: #34d399;
+  --ss-accent-strong: #6ee7b7;
+  --ss-accent-soft: rgb(52 211 153 / 14%);
+  --ss-violet: #2dd4bf;
+  --ss-gradient: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  --ss-glow: 0 10px 28px -10px rgb(52 211 153 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #020d0a 0%, #041e17 55%, #052c21 100%);
+}
+
+:root[data-accent="amber"] {
+  --ss-accent: #d97706;
+  --ss-accent-strong: #b45309;
+  --ss-accent-soft: #fff6e5;
+  --ss-violet: #ea580c;
+  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(245 158 11 / 12%), color-mix(in srgb, #ea580c 12%, transparent));
+  --ss-glow: 0 10px 28px -10px rgb(245 158 11 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #1c1203 0%, #2b1a05 55%, #3d2306 100%);
+  --ss-sidebar-accent: #fcd34d;
+  --ss-sidebar-glow: color-mix(in srgb, #ea580c 35%, transparent);
+  --ss-hero: radial-gradient(ellipse 50% 90% at 85% 10%, color-mix(in srgb, #ea580c 55%, transparent), transparent 70%),
+    linear-gradient(120deg, #1c1203 0%, #92400e 55%, #d97706 100%);
+}
+
+:root.dark[data-accent="amber"] {
+  --ss-accent: #fbbf24;
+  --ss-accent-strong: #fcd34d;
+  --ss-accent-soft: rgb(251 191 36 / 14%);
+  --ss-violet: #fb923c;
+  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  --ss-glow: 0 10px 28px -10px rgb(251 191 36 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #120b02 0%, #1f1304 55%, #2c1a05 100%);
+}
+
+:root[data-accent="rose"] {
+  --ss-accent: #e11d48;
+  --ss-accent-strong: #be123c;
+  --ss-accent-soft: #ffeef2;
+  --ss-violet: #db2777;
+  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, #db2777 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(244 63 94 / 12%), color-mix(in srgb, #db2777 12%, transparent));
+  --ss-glow: 0 10px 28px -10px rgb(244 63 94 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #1f0710 0%, #300b1a 55%, #420f26 100%);
+  --ss-sidebar-accent: #fda4af;
+  --ss-sidebar-glow: color-mix(in srgb, #db2777 35%, transparent);
+  --ss-hero: radial-gradient(ellipse 50% 90% at 85% 10%, color-mix(in srgb, #db2777 55%, transparent), transparent 70%),
+    linear-gradient(120deg, #1f0710 0%, #9f1239 55%, #e11d48 100%);
+}
+
+:root.dark[data-accent="rose"] {
+  --ss-accent: #fb7185;
+  --ss-accent-strong: #fda4af;
+  --ss-accent-soft: rgb(251 113 133 / 14%);
+  --ss-violet: #f472b6;
+  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
+  --ss-glow: 0 10px 28px -10px rgb(251 113 133 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #14040a 0%, #220712 55%, #300a1b 100%);
+}
+
+:root[data-accent="graphite"] {
+  --ss-accent: #475569;
+  --ss-accent-strong: #334155;
+  --ss-accent-soft: #eef1f5;
+  --ss-violet: #64748b;
+  --ss-gradient: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+  --ss-gradient-soft: linear-gradient(135deg, rgb(71 85 105 / 12%), color-mix(in srgb, #1e293b 12%, transparent));
+  --ss-glow: 0 10px 28px -10px rgb(71 85 105 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #0b0f17 0%, #111827 55%, #1f2937 100%);
+  --ss-sidebar-accent: #cbd5e1;
+  --ss-sidebar-glow: color-mix(in srgb, #1e293b 35%, transparent);
+  --ss-hero: radial-gradient(ellipse 50% 90% at 85% 10%, color-mix(in srgb, #1e293b 55%, transparent), transparent 70%),
+    linear-gradient(120deg, #0b0f17 0%, #1f2937 55%, #475569 100%);
+}
+
+:root.dark[data-accent="graphite"] {
+  --ss-accent: #94a3b8;
+  --ss-accent-strong: #cbd5e1;
+  --ss-accent-soft: rgb(148 163 184 / 14%);
+  --ss-violet: #cbd5e1;
+  --ss-gradient: linear-gradient(135deg, #64748b 0%, #334155 100%);
+  --ss-glow: 0 10px 28px -10px rgb(100 116 139 / 55%);
+  --ss-sidebar: linear-gradient(180deg, #05070b 0%, #0b0f17 55%, #151c28 100%);
 }
 
 @layer base {

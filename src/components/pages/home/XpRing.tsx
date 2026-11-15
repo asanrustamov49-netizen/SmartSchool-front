@@ -20,8 +20,9 @@ export function XpRing({ value, max, size = 132, children }: XpRingProps) {
       <svg viewBox="0 0 120 120" aria-hidden="true">
         <defs>
           <linearGradient id="xp-ring-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#2f6bff" />
-            <stop offset="1" stopColor="#a855f7" />
+            {/* Кольцо следует акцентному цвету из настроек. */}
+            <stop offset="0" style={{ stopColor: "var(--ss-accent, #2f6bff)" }} />
+            <stop offset="1" style={{ stopColor: "var(--ss-violet, #a855f7)" }} />
           </linearGradient>
         </defs>
         <circle className={scss.xpRingTrack} cx="60" cy="60" r="50" pathLength={100} />

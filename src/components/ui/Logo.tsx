@@ -51,9 +51,10 @@ function IconMark({ id }: { id: string }) {
   return (
     <svg className={styles.mark} viewBox="0 0 64 64" aria-hidden="true">
       <defs>
+        {/* Плашка следует акцентному цвету из настроек; без токенов — фирменный градиент. */}
         <linearGradient id={`${id}-plate`} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#2F6BFF" />
-          <stop offset="1" stopColor="#7C5CFF" />
+          <stop offset="0" style={{ stopColor: "var(--ss-accent, #2F6BFF)" }} />
+          <stop offset="1" style={{ stopColor: "var(--ss-violet, #7C5CFF)" }} />
         </linearGradient>
       </defs>
       <rect width="64" height="64" rx="15" fill={`url(#${id}-plate)`} />
