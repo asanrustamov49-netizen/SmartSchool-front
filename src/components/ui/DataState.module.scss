@@ -87,3 +87,21 @@
     background-position: -100% 0;
   }
 }
+
+// Иконка пустого состояния и ошибки мягко «парит».
+@media (prefers-reduced-motion: no-preference) {
+  .icon {
+    animation: data-state-float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes data-state-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}

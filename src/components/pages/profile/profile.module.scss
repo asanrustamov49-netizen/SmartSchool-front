@@ -73,3 +73,33 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .avatar {
+    animation: profile-pop 0.6s var(--ss-ease) backwards;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .avatar:hover {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .identity > * {
+    animation: profile-fade 0.5s var(--ss-ease) backwards;
+    animation-delay: 120ms;
+  }
+}
+
+@keyframes profile-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes profile-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}

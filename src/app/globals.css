@@ -190,3 +190,21 @@
     @apply font-sans;
   }
 }
+
+/* Полоса прокрутки страницы скрыта на всех экранах (лендинг, вход, кабинет).
+   Прокрутка колесом, клавиатурой и жестами продолжает работать. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+/* Кнопки слегка «нажимаются» при клике. */
+@media (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):active {
+    transform: scale(0.97);
+  }
+}

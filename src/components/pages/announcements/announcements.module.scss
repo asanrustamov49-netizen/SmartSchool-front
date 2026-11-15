@@ -100,3 +100,42 @@
     height: 160px;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .item {
+    animation: announcements-rise 0.5s var(--ss-ease) backwards;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.25s var(--ss-ease);
+  }
+
+  @for $i from 2 through 6 {
+    .item:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 60}ms;
+    }
+  }
+
+  .item:hover {
+    transform: translateY(-2px);
+  }
+
+  .image {
+    transition: transform 0.4s var(--ss-ease);
+  }
+
+  .item:hover .image {
+    transform: scale(1.03);
+  }
+
+  .confirm {
+    animation: announcements-rise 0.3s var(--ss-ease) backwards;
+  }
+}
+
+@keyframes announcements-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

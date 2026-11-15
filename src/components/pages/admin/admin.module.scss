@@ -145,7 +145,8 @@
   flex-direction: column;
   gap: 6px;
 
-  label {
+  label,
+  > span:first-child {
     font-size: 13px;
     font-weight: 600;
   }
@@ -464,5 +465,55 @@
 @keyframes admin-fade {
   from {
     opacity: 0;
+  }
+}
+
+// Кнопки приподнимаются при наведении, уведомления и ошибки «выпрыгивают».
+@media (prefers-reduced-motion: no-preference) {
+  .primaryButton,
+  .secondaryButton {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s var(--ss-ease);
+  }
+
+  .primaryButton:hover:not(:disabled),
+  .secondaryButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .notice,
+  .formError {
+    animation: admin-pop 0.35s var(--ss-ease) backwards;
+  }
+
+  .headerActions > * {
+    animation: admin-rise 0.4s var(--ss-ease) backwards;
+  }
+
+  @for $i from 2 through 4 {
+    .headerActions > :nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 50}ms;
+    }
+  }
+
+  .fileLabel {
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .fileLabel:hover {
+    border-color: var(--accent);
+    background: var(--soft);
+  }
+}
+
+@keyframes admin-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
   }
 }

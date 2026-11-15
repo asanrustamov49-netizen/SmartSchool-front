@@ -157,3 +157,49 @@
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .row {
+    animation: ratings-slide 0.45s var(--ss-ease) backwards;
+  }
+
+  @for $i from 2 through 10 {
+    .row:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 40}ms;
+    }
+  }
+
+  .rank1 {
+    animation: ratings-glow 2.4s ease-in-out infinite;
+  }
+
+  .tab {
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s var(--ss-ease);
+  }
+
+  .tab:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes ratings-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes ratings-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(251 191 36 / 0.45);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgb(251 191 36 / 0);
+  }
+}
