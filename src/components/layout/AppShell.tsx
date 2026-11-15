@@ -21,6 +21,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { Logo } from "@/components/ui/Logo";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { useNavIndicator } from "@/hooks/useNavIndicator";
 import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, getMediaUrl } from "@/lib/utils";
@@ -118,6 +119,7 @@ function AuthenticatedShell({
   const currentItem = getCurrentNavigationItem(navigation, pathname);
   const pageTitle = currentItem ? t(`nav.${currentItem.key}`) : t("title");
   const roleLabel = t(`role.${currentUser.role}`);
+  const { listRef, indicatorRef } = useNavIndicator(currentItem?.key, collapsed ? "collapsed" : "expanded");
 
   useEffect(() => {
     applySavedAppearance();
@@ -142,7 +144,8 @@ function AuthenticatedShell({
 
   const renderNavItem = (item: NavigationItem) => {
     const Icon = item.icon;
-    const isActive = pathname === item.href;
+    // Вложенные страницы (например, карточка школы) подсвечивают свой раздел.
+    const isActive = currentItem?.key === item.key;
     const label = t(`nav.${item.key}`);
     const className = cn(styles.navItem, isActive && styles.navItemActive);
     const content = (
@@ -209,8 +212,9 @@ function AuthenticatedShell({
         </div>
 
         <nav className={styles.nav} aria-label={t("navLabel")}>
-          <div className={styles.navBlock}>
+          <div className={styles.navBlock} ref={listRef}>
             <span className={styles.navLabel}>{t(`sections.${navigation.sectionKey}`)}</span>
+            <span className={styles.navIndicator} ref={indicatorRef} aria-hidden="true" />
             {navigation.items.map(renderNavItem)}
           </div>
         </nav>
@@ -327,7 +331,7 @@ function AuthenticatedShell({
       <nav className={styles.mobileNav} aria-label={t("mobileNavLabel")}>
         {mobileItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = currentItem?.key === item.key;
 
           return (
             <Link

@@ -38,11 +38,8 @@
   width: var(--logo-mark);
   height: var(--logo-mark);
   flex: 0 0 auto;
-}
-
-.ink {
-  fill: var(--logo-ink);
-  transition: fill 0.2s ease;
+  border-radius: 24%;
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--ss-accent, #4c6fff) 70%, transparent);
 }
 
 .wordmark {
@@ -66,8 +63,13 @@
   color: transparent;
 }
 
-// Звезда достижений мягко мерцает.
+// Звезда достижений мягко мерцает, стрелка роста один раз «прорисовывается».
 @media (prefers-reduced-motion: no-preference) {
+  .arrow {
+    animation: logo-arrow 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s backwards;
+    stroke-dasharray: 48;
+  }
+
   .star {
     animation: logo-twinkle 3.2s ease-in-out infinite;
     transform-box: fill-box;
@@ -86,5 +88,15 @@
   88% {
     opacity: 0.75;
     transform: scale(0.82);
+  }
+}
+
+@keyframes logo-arrow {
+  from {
+    stroke-dashoffset: 48;
+  }
+
+  to {
+    stroke-dashoffset: 0;
   }
 }

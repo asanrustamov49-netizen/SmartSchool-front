@@ -1,13 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="b" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2F6BFF"/><stop offset="1" stop-color="#7C5CFF"/>
+    <linearGradient id="p" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4C6FFF"/><stop offset="1" stop-color="#7B5CFA"/>
+    </linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="g" x1="0" y1="20" x2="0" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#E4E3FF"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="15" fill="url(#b)"/>
-  <circle cx="25" cy="24" r="5.5" fill="#fff"/>
-  <path d="M10 31c6 0 11.5 3 16 9C32 26 39.5 15 49.5 6.5 43 19 36.5 32 31 45.5c-1.4 3.5-4.8 3.5-6.5.5C21 39 16 33.5 10 31Z" fill="#fff"/>
-  <path d="M6 44c9-3.5 18-2 26 6.5v5C24 48 15 47 6 50Z" fill="#fff" fill-opacity=".85"/>
-  <path d="M58 44c-9-3.5-18-2-26 6.5v5C40 48 49 47 58 50Z" fill="#fff" fill-opacity=".85"/>
-  <path d="m52 7 2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2Z" fill="#FFC83D"/>
+  <rect width="64" height="64" rx="15" fill="url(#p)"/>
+  <rect width="64" height="64" rx="15" fill="url(#s)"/>
+  <path d="M7 46.5C17 42.5 26 44 32 50.5 38 44 47 42.5 57 46.5V52C47 49 38 50 32 56 26 50 17 49 7 52Z" fill="#fff" fill-opacity=".45"/>
+  <path d="M10 43c8-3.5 16-2.5 22 4v4.5c-6-5.5-14-6.5-22-4Z" fill="url(#g)"/>
+  <path d="M54 43c-8-3.5-16-2.5-22 4v4.5c6-5.5 14-6.5 22-4Z" fill="url(#g)"/>
+  <path d="M13 22.5c8 0 14.5 4 17.5 11V45c-4-4.5-10.5-6.2-17.5-5.8Z" fill="url(#g)"/>
+  <rect x="34.5" y="36" width="5" height="9.5" rx="1.4" fill="#fff"/>
+  <rect x="41.5" y="30.5" width="5" height="14" rx="1.4" fill="#fff"/>
+  <rect x="48.5" y="24.5" width="5" height="19.5" rx="1.4" fill="#fff"/>
+  <path d="M17 40c11-2.5 23-10 33.5-23.5" fill="none" stroke="#FFC83D" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M53.8 12.3 53.4 20.2 46.4 14.6Z" fill="#FFC83D" stroke="#FFC83D" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M18 7.5Q19.2 13.8 25.5 15 19.2 16.2 18 22.5 16.8 16.2 10.5 15 16.8 13.8 18 7.5Z" fill="#FFC83D"/>
 </svg>
