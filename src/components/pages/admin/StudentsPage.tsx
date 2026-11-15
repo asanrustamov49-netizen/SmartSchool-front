@@ -11,7 +11,7 @@ import { useDeactivateStudent, useResetStudentPassword, useStudents } from "@/ho
 import { handleApiError } from "@/lib/errorHandler";
 import { downloadBlob } from "@/lib/utils";
 import { StudentForm } from "./StudentForm";
-import { StudentsImport } from "./StudentsImport";
+import { ExcelImport } from "./ExcelImport";
 import styles from "./admin.module.scss";
 
 type Panel =
@@ -342,7 +342,8 @@ export function StudentsPage() {
       )}
 
       {panel.type === "import" && (
-        <StudentsImport
+        <ExcelImport
+          userType="students"
           classes={classes}
           existingInns={existingInns}
           onClose={() => setPanel({ type: "none" })}

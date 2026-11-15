@@ -67,15 +67,17 @@ export async function updateStudent(studentId: number, data: StudentUpdate) {
   await api.put(`/students/${studentId}`, data);
 }
 
-// Ответ POST /students/import-excel/{class_id} (backend: student_import.py).
+// Результат Excel-импорта учеников и учителей в одном виде.
 // row в errors — номер строки в загруженном файле. Временные пароли приходят один раз.
-export type StudentImportResult = {
-  message: string;
-  class_id: number;
+export type ExcelImportResult = {
   total_added: number;
-  total_errors: number;
-  added_students: { inn: string; full_name: string; temporary_password: string }[];
+  added_users: { inn: string; full_name: string; temporary_password: string }[];
   errors: { row: number; error: string }[];
+};
+
+// Ответ POST /students/import-excel/{class_id} (backend: student_import.py).
+type StudentImportResponse = Omit<ExcelImportResult, "added_users"> & {
+  added_students: ExcelImportResult["added_users"];
 };
 
 // Ответ POST /admin/users/{id}/reset-password (backend: admin.py).
@@ -95,16 +97,17 @@ export async function downloadStudentsTemplate(): Promise<Blob> {
   return response.data;
 }
 
-export async function importStudentsExcel(classId: number, file: Blob): Promise<StudentImportResult> {
+export async function importStudentsExcel(classId: number, file: Blob): Promise<ExcelImportResult> {
   const formData = new FormData();
   formData.append("file", file, "students.xlsx");
 
-  const response = await api.post<StudentImportResult>(
+  const response = await api.post<StudentImportResponse>(
     `/students/import-excel/${classId}`,
     formData,
     { headers: { "Content-Type": "multipart/form-data" } },
   );
-  return response.data;
+  const { total_added, added_students, errors } = response.data;
+  return { total_added, added_users: added_students, errors };
 }
 
 // DELETE /students/{id} не удаляет ученика, а делает его неактивным.

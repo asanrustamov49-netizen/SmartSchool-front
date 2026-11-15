@@ -4,13 +4,14 @@ import { AlertCircle, CheckCircle2, Download, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, type ChangeEvent } from "react";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
-import type { StudentImportResult } from "@/apis/students.api";
+import type { ExcelImportResult } from "@/apis/students.api";
 import { useImportStudents } from "@/hooks/useStudents";
+import { useImportTeachers } from "@/hooks/useTeachers";
 import { handleApiError } from "@/lib/errorHandler";
 import { downloadBlob } from "@/lib/utils";
 import styles from "./admin.module.scss";
 
-// Колонки и правила те же, что проверяет backend (student_import.py).
+// Колонки и правила те же, что проверяет backend (student_import.py, teacher_import.py).
 const TEMPLATE_HEADERS = ["ИНН", "Толук аты-жөнү", "Телефон"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const INN_PATTERN = /^\d{14}$/;
@@ -26,13 +27,15 @@ type ParsedRow = {
 };
 
 type ImportOutcome = {
-  result: StudentImportResult;
+  result: ExcelImportResult;
   // Backend нумерует строки отправленного файла, а в нём только валидные строки.
   // Здесь номера уже переведены в строки исходного файла пользователя.
   failedRows: { rowNumber: number; error: string }[];
 };
 
-type StudentsImportProps = {
+type ExcelImportProps = {
+  userType: "students" | "teachers";
+  // Ученики импортируются в выбранный класс, учителя — без класса.
   classes: SchoolClass[];
   existingInns: Set<string>;
   onClose: () => void;
@@ -50,7 +53,12 @@ function cellToText(value: unknown) {
   return "";
 }
 
-function findProblem(inn: string, fullName: string, seenInns: Set<string>, existingInns: Set<string>) {
+function findProblem(
+  inn: string,
+  fullName: string,
+  seenInns: Set<string>,
+  existingInns: Set<string>,
+) {
   if (!INN_PATTERN.test(inn)) {
     return "innFormat";
   }
@@ -70,11 +78,20 @@ function findProblem(inn: string, fullName: string, seenInns: Set<string>, exist
   return null;
 }
 
-export function StudentsImport({ classes, existingInns, onClose }: StudentsImportProps) {
-  const t = useTranslations("admin.students.import");
+export function ExcelImport({
+  userType,
+  classes,
+  existingInns,
+  onClose,
+}: ExcelImportProps) {
+  const t = useTranslations("admin.excelImport");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
-  const importMutation = useImportStudents();
+  const importStudents = useImportStudents();
+  const importTeachers = useImportTeachers();
+  const importMutation =
+    userType === "students" ? importStudents : importTeachers;
+  const needsClass = userType === "students";
   const [classId, setClassId] = useState("");
   const [fileName, setFileName] = useState("");
   const [rows, setRows] = useState<ParsedRow[]>([]);
@@ -112,12 +129,20 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
       const XLSX = await import("xlsx");
       const workbook = XLSX.read(await file.arrayBuffer());
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const table: unknown[][] = sheet ? XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null }) : [];
+      const table: unknown[][] = sheet
+        ? XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null })
+        : [];
 
-      const headers = (table[0] ?? []).slice(0, 3).map((cell) => cellToText(cell).toLowerCase());
-      const expectedHeaders = TEMPLATE_HEADERS.map((header) => header.toLowerCase());
+      const headers = (table[0] ?? [])
+        .slice(0, 3)
+        .map((cell) => cellToText(cell).toLowerCase());
+      const expectedHeaders = TEMPLATE_HEADERS.map((header) =>
+        header.toLowerCase(),
+      );
       if (headers.join("|") !== expectedHeaders.join("|")) {
-        setFileError(t("wrongHeaders", { columns: TEMPLATE_HEADERS.join(", ") }));
+        setFileError(
+          t("wrongHeaders", { columns: TEMPLATE_HEADERS.join(", ") }),
+        );
         return;
       }
 
@@ -138,7 +163,13 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
           seenInns.add(inn);
         }
 
-        parsedRows.push({ rowNumber: index + 2, inn, fullName, phone, problem });
+        parsedRows.push({
+          rowNumber: index + 2,
+          inn,
+          fullName,
+          phone,
+          problem,
+        });
       });
 
       if (parsedRows.length === 0) {
@@ -155,7 +186,7 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
   // В backend уходит новый файл только с валидными строками.
   // ИНН записывается текстом, чтобы не потерять ведущие нули.
   const handleSubmit = async () => {
-    if (classId === "" || validRows.length === 0) {
+    if ((needsClass && classId === "") || validRows.length === 0) {
       return;
     }
 
@@ -165,23 +196,28 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
       ...validRows.map((row) => [row.inn, row.fullName, row.phone]),
     ]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, sheet, "Students");
-    const fileData: ArrayBuffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
+    XLSX.utils.book_append_sheet(workbook, sheet, "Import");
+    const fileData: ArrayBuffer = XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+    });
+    const file = new Blob([fileData]);
 
-    importMutation.mutate(
-      { classId: Number(classId), file: new Blob([fileData]) },
-      {
-        onSuccess: (result) => {
-          const failedRows = result.errors.map((error) => ({
-            rowNumber: validRows[error.row - 2]?.rowNumber ?? error.row,
-            error: error.error,
-          }));
-          setOutcome({ result, failedRows });
-          setRows([]);
-          setFileName("");
-        },
-      },
-    );
+    try {
+      const result = needsClass
+        ? await importStudents.mutateAsync({ classId: Number(classId), file })
+        : await importTeachers.mutateAsync(file);
+
+      const failedRows = result.errors.map((error) => ({
+        rowNumber: validRows[error.row - 2]?.rowNumber ?? error.row,
+        error: error.error,
+      }));
+      setOutcome({ result, failedRows });
+      setRows([]);
+      setFileName("");
+    } catch {
+      // Ошибка запроса показывается из состояния мутации.
+    }
   };
 
   const downloadPasswords = async () => {
@@ -191,40 +227,51 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
 
     const XLSX = await import("xlsx");
     const sheet = XLSX.utils.aoa_to_sheet([
-      [t("passwordColumns.inn"), t("passwordColumns.fullName"), t("passwordColumns.password")],
-      ...outcome.result.added_students.map((student) => [
-        student.inn,
-        student.full_name,
-        student.temporary_password,
+      [
+        t("passwordColumns.inn"),
+        t("passwordColumns.fullName"),
+        t("passwordColumns.password"),
+      ],
+      ...outcome.result.added_users.map((user) => [
+        user.inn,
+        user.full_name,
+        user.temporary_password,
       ]),
     ]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Passwords");
-    const fileData: ArrayBuffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
-    downloadBlob(new Blob([fileData]), "students-passwords.xlsx");
+    const fileData: ArrayBuffer = XLSX.write(workbook, {
+      type: "array",
+      bookType: "xlsx",
+    });
+    downloadBlob(new Blob([fileData]), `${userType}-passwords.xlsx`);
   };
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{t("title")}</h2>
-      <p className={styles.fieldHint}>{t("description", { columns: TEMPLATE_HEADERS.join(", ") })}</p>
+      <h2 className={styles.cardTitle}>{t(`title.${userType}`)}</h2>
+      <p className={styles.fieldHint}>
+        {t("description", { columns: TEMPLATE_HEADERS.join(", ") })}
+      </p>
 
       <div className={styles.form}>
-        <label className={styles.field}>
-          <span>{t("classLabel")}</span>
-          <select
-            className={styles.select}
-            value={classId}
-            onChange={(event) => setClassId(event.target.value)}
-          >
-            <option value="">{tForm("choose")}</option>
-            {classes.map((schoolClass) => (
-              <option key={schoolClass.id} value={schoolClass.id}>
-                {getClassName(schoolClass)}
-              </option>
-            ))}
-          </select>
-        </label>
+        {needsClass && (
+          <label className={styles.field}>
+            <span>{t("classLabel")}</span>
+            <select
+              className={styles.select}
+              value={classId}
+              onChange={(event) => setClassId(event.target.value)}
+            >
+              <option value="">{tForm("choose")}</option>
+              {classes.map((schoolClass) => (
+                <option key={schoolClass.id} value={schoolClass.id}>
+                  {getClassName(schoolClass)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <div className={styles.field}>
           <span>{t("fileLabel")}</span>
@@ -257,7 +304,10 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
       {rows.length > 0 && (
         <>
           <p className={styles.notice}>
-            {t("summary", { valid: validRows.length, invalid: invalidRows.length })}
+            {t("summary", {
+              valid: validRows.length,
+              invalid: invalidRows.length,
+            })}
           </p>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
@@ -277,7 +327,11 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
                     <td>{row.inn || "—"}</td>
                     <td>{row.fullName || "—"}</td>
                     <td className={styles.cellMuted}>{row.phone || "—"}</td>
-                    <td className={row.problem ? styles.statusInactive : styles.statusOk}>
+                    <td
+                      className={
+                        row.problem ? styles.statusInactive : styles.statusOk
+                      }
+                    >
                       {row.problem ? t(`problems.${row.problem}`) : t("ready")}
                     </td>
                   </tr>
@@ -311,7 +365,7 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
             </div>
           )}
 
-          {outcome.result.added_students.length > 0 && (
+          {outcome.result.added_users.length > 0 && (
             <>
               <p className={styles.fieldHint}>{t("passwordsNotice")}</p>
               <div className={styles.tableWrap}>
@@ -324,11 +378,13 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
                     </tr>
                   </thead>
                   <tbody>
-                    {outcome.result.added_students.map((student) => (
-                      <tr key={student.inn}>
-                        <td className={styles.cellMuted}>{student.inn}</td>
-                        <td>{student.full_name}</td>
-                        <td className={styles.secret}>{student.temporary_password}</td>
+                    {outcome.result.added_users.map((user) => (
+                      <tr key={user.inn}>
+                        <td className={styles.cellMuted}>{user.inn}</td>
+                        <td>{user.full_name}</td>
+                        <td className={styles.secret}>
+                          {user.temporary_password}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -340,11 +396,19 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
       )}
 
       <div className={styles.formActions}>
-        <button type="button" className={styles.secondaryButton} onClick={onClose}>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={onClose}
+        >
           {tForm("close")}
         </button>
-        {outcome && outcome.result.added_students.length > 0 && (
-          <button type="button" className={styles.secondaryButton} onClick={downloadPasswords}>
+        {outcome && outcome.result.added_users.length > 0 && (
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={downloadPasswords}
+          >
             <Download size={16} aria-hidden="true" />
             {t("downloadPasswords")}
           </button>
@@ -353,7 +417,11 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
           <button
             type="button"
             className={styles.primaryButton}
-            disabled={classId === "" || validRows.length === 0 || importMutation.isPending}
+            disabled={
+              (needsClass && classId === "") ||
+              validRows.length === 0 ||
+              importMutation.isPending
+            }
             onClick={handleSubmit}
           >
             {importMutation.isPending
@@ -362,7 +430,9 @@ export function StudentsImport({ classes, existingInns, onClose }: StudentsImpor
           </button>
         )}
       </div>
-      {rows.length > 0 && classId === "" && <p className={styles.fieldHint}>{t("chooseClassFirst")}</p>}
+      {rows.length > 0 && needsClass && classId === "" && (
+        <p className={styles.fieldHint}>{t("chooseClassFirst")}</p>
+      )}
     </section>
   );
 }
