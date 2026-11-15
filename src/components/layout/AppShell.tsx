@@ -21,7 +21,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { Logo } from "@/components/ui/Logo";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
-import { setSidebarCollapsed } from "@/lib/appearance";
+import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
@@ -117,6 +117,10 @@ function AuthenticatedShell({
   const currentItem = getCurrentNavigationItem(navigation, pathname);
   const pageTitle = currentItem ? t(`nav.${currentItem.key}`) : t("title");
   const roleLabel = t(`role.${currentUser.role}`);
+
+  useEffect(() => {
+    applySavedAppearance();
+  }, []);
 
   // Ctrl+K / ⌘K открывает быстрый поиск с любой страницы кабинета.
   useEffect(() => {

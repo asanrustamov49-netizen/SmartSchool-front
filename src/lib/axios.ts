@@ -1,4 +1,5 @@
 import axios from "axios";
+import { resetAppearance } from "./appearance";
 import { getToken, redirectToLogin, removeToken } from "./auth";
 
 const LOGIN_URL = "/auth/login";
@@ -32,6 +33,7 @@ api.interceptors.response.use(
 
       if (isSessionExpired && typeof window !== "undefined") {
         removeToken();
+        resetAppearance();
         redirectToLogin();
       }
     }

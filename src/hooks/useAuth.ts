@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   login,
 } from "@/apis/auth.api";
+import { resetAppearance } from "@/lib/appearance";
 import { redirectToLogin, removeToken, saveToken } from "@/lib/auth";
 
 export const currentUserQueryKey = ["current-user"];
@@ -49,6 +50,7 @@ export function useLogout() {
 
   return () => {
     removeToken();
+    resetAppearance();
     queryClient.clear();
     redirectToLogin();
   };
