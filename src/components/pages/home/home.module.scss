@@ -1254,3 +1254,10 @@
     padding: 14px;
   }
 }
+
+// Едва заметный оттенок выбранной палитры в верхней части панелей (как у карточек страниц).
+.panel {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ss-accent) 4%, transparent) 0%, transparent 140px),
+    var(--ss-surface);
+}

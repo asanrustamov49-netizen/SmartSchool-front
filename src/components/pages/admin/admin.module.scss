@@ -518,3 +518,43 @@
     transform: translateY(-4px) scale(0.98);
   }
 }
+
+// ---------- Акцент палитры на страницах кабинета ----------
+// Цвет берётся из выбранной палитры (/settings), поэтому страницы перекрашиваются вместе с меню.
+
+// Цветная полоса-маркер слева от заголовка страницы.
+.pageHeader > div:first-child {
+  position: relative;
+  padding-left: 16px;
+
+  &::before {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    width: 4px;
+    border-radius: 4px;
+    background: var(--ss-gradient);
+    box-shadow: var(--ss-glow);
+    content: "";
+  }
+}
+
+// Едва заметный оттенок палитры в верхней части карточки.
+.card {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ss-accent) 4%, transparent) 0%, transparent 140px),
+    var(--surface);
+}
+
+.cardTitle {
+  color: var(--text);
+}
+
+.table th {
+  background: color-mix(in srgb, var(--ss-accent) 7%, var(--soft));
+}
+
+.table tbody tr:hover {
+  background: color-mix(in srgb, var(--ss-accent) 5%, var(--soft));
+}

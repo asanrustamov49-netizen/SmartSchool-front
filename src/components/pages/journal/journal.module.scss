@@ -71,8 +71,9 @@
   background: var(--ss-success, #059669);
 }
 
+// Цвета оценок смысловые и не зависят от палитры в настройках.
 .grade4 {
-  background: var(--ss-accent, #2f6bff);
+  background: #2f6bff;
 }
 
 .grade3 {
