@@ -711,16 +711,6 @@
   text-wrap: balance;
 }
 
-.groupTitle {
-  margin: 0 0 18px;
-  font-size: 17px;
-  font-weight: 650;
-
-  & ~ & {
-    margin-top: 48px;
-  }
-}
-
 .featureIcon {
   display: inline-grid;
   width: 44px;
@@ -754,49 +744,6 @@
     margin: 0;
     color: var(--muted);
   }
-}
-
-.soonList {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 40px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    display: grid;
-    grid-template-columns: 20px minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 14px;
-    padding: 18px 0;
-    border-bottom: 1px solid var(--line);
-    color: var(--muted);
-    font-size: 15px;
-  }
-
-  svg {
-    margin-top: 2px;
-    color: var(--muted);
-  }
-
-  strong {
-    display: block;
-    margin-bottom: 2px;
-    color: var(--ink);
-    font-size: 16px;
-    font-weight: 600;
-  }
-}
-
-.soonBadge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--gold-soft);
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
 }
 
 .audienceGrid {
@@ -1169,7 +1116,6 @@
     }
   }
 
-  .soonList,
   .audienceGrid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1317,7 +1263,7 @@
     border-radius: 22px;
   }
 
-  .accessCopy a {
+  .accessActions a {
     width: 100%;
   }
 
@@ -1532,6 +1478,24 @@
   box-shadow: 0 40px 80px -40px rgb(47 107 255 / 55%);
 }
 
+.accessActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .buttonGhost {
+    border-color: rgb(255 255 255 / 35%);
+    background: rgb(255 255 255 / 8%);
+    color: #ffffff;
+    backdrop-filter: blur(6px);
+
+    &:hover {
+      border-color: rgb(255 255 255 / 70%);
+      background: rgb(255 255 255 / 16%);
+    }
+  }
+}
+
 .accessCopy p,
 .accessPaths p {
   color: rgb(255 255 255 / 80%);
@@ -1627,5 +1591,190 @@
 
   .ratingCard {
     animation: none;
+  }
+}
+
+// ---------- Карточки секций «Для кого», «Как начать», «Преимущества» ----------
+// Раньше это были строки текста без фона; карточки дают глубину и место для света за курсором.
+.audienceGrid {
+  gap: 18px;
+}
+
+.audienceItem,
+.steps li,
+.benefits li {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--ss-shadow);
+  transition:
+    transform 0.3s var(--ss-ease),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    box-shadow: var(--ss-shadow-md);
+    transform: translateY(-4px);
+  }
+}
+
+.audienceItem {
+  padding: 28px;
+}
+
+.steps li {
+  padding: 24px;
+}
+
+// Линия-связка идёт от номера шага через промежуток к следующей карточке.
+.steps li:not(:last-child)::after {
+  top: 46px;
+  right: -25px;
+  left: 80px;
+}
+
+.benefits {
+  gap: 16px;
+
+  li {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .benefits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .audienceItem,
+  .steps li,
+  .benefits li {
+    padding: 20px;
+  }
+
+  .benefits {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audienceItem,
+  .steps li,
+  .benefits li {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// ---------- Hero: подписи вместо заглушек и свет за курсором ----------
+.journalDay {
+  width: auto;
+  height: auto;
+  background: none;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+}
+
+.notifyText {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.hero {
+  --spot-color: rgb(120 160 255 / 20%);
+  --spot-size: 640px;
+}
+
+.accessInner {
+  --spot-color: rgb(255 255 255 / 16%);
+  --spot-size: 560px;
+  --spot-ring: rgb(255 255 255 / 55%);
+}
+
+// ---------- Hero на телефоне ----------
+// Макет журнала на всю ширину, под ним две карточки рядом — композиция как на ноутбуке,
+// только собранная в колонку. Роли — аккуратные «плитки» 2×2 вместо переноса строк.
+@media (max-width: 640px) {
+  .hero {
+    gap: 40px;
+    padding-top: 32px;
+  }
+
+  .heroTitle {
+    font-size: clamp(2rem, 1.4rem + 4vw, 2.5rem);
+  }
+
+  .heroText {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+
+  .heroActions {
+    margin-top: 28px;
+  }
+
+  .heroRoles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 24px;
+
+    li {
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid rgb(255 255 255 / 12%);
+      border-radius: 12px;
+      background: rgb(255 255 255 / 5%);
+      color: rgb(255 255 255 / 85%);
+      backdrop-filter: blur(6px);
+    }
+  }
+
+  .previewStage {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .previewWindow {
+    grid-column: 1 / -1;
+    border-radius: 18px;
+  }
+
+  .notifyCard {
+    order: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    gap: 10px;
+    padding: 14px;
+
+    strong {
+      font-size: 13px;
+      line-height: 1.3;
+      white-space: normal;
+    }
+  }
+
+  .ratingCard {
+    order: 2;
+    padding: 14px;
+  }
+
+  .journalDay {
+    font-size: 10px;
+  }
+
+  .previewCaption {
+    font-size: 12px;
   }
 }

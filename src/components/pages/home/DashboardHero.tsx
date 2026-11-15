@@ -98,7 +98,14 @@ export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
   const logoUrl = currentUser.school?.logo_url;
 
   return (
-    <header className={scss.hero} data-tone={tone} data-banner={bannerUrl ? "true" : undefined}>
+    <header
+      className={scss.hero}
+      data-tone={tone}
+      data-banner={bannerUrl ? "true" : undefined}
+      data-spotlight={bannerUrl ? undefined : "layer"}
+    >
+      {/* Свет за курсором — только на градиентном баннере, не поверх фото школы. */}
+      {!bannerUrl && <span data-spotlight-glow aria-hidden="true" />}
       {/* Баннер школы из «Настроек школы»: фон с затемнением, чтобы текст оставался читаемым. */}
       {bannerUrl && (
         <>

@@ -43,6 +43,7 @@ function getCellClassName(value: string) {
 
 export async function HeroPreview({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: "landing.preview" });
+  const weekDays = t("days").split(",");
 
   return (
     <figure className={styles.preview}>
@@ -75,8 +76,10 @@ export async function HeroPreview({ locale }: { locale: string }) {
             <div className={styles.journal}>
               <div className={styles.journalHead}>
                 <span className={styles.skeletonShort} />
-                {JOURNAL_ROWS[0].cells.map((_, index) => (
-                  <span key={index} className={styles.journalDay} />
+                {weekDays.map((day) => (
+                  <span key={day} className={styles.journalDay}>
+                    {day}
+                  </span>
                 ))}
               </div>
               {JOURNAL_ROWS.map((row, rowIndex) => (
@@ -126,7 +129,7 @@ export async function HeroPreview({ locale }: { locale: string }) {
           </span>
           <span>
             <strong>{t("notificationTitle")}</strong>
-            <span className={styles.skeletonShort} />
+            <span className={styles.notifyText}>{t("notificationText")}</span>
           </span>
         </div>
       </div>

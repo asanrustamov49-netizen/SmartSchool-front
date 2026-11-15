@@ -25,6 +25,7 @@ import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
+import { CabinetSpotlight } from "./CabinetSpotlight";
 import { CommandPalette } from "./CommandPalette";
 import {
   getAllowedItems,
@@ -182,6 +183,7 @@ function AuthenticatedShell({
 
   return (
     <div className={styles.shell}>
+      <CabinetSpotlight />
       <aside
         className={cn(styles.sidebar, mobileNavOpen && styles.sidebarOpen)}
         id="primary-navigation"

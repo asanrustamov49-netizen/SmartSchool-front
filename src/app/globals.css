@@ -367,3 +367,69 @@ select option:checked {
   background-color: color-mix(in srgb, var(--ss-accent) 22%, var(--ss-surface));
   color: var(--ss-ink);
 }
+
+/* Подсветка за курсором (src/hooks/useSpotlight.ts).
+   Обычный блок рисует свет своим ::before под содержимым.
+   Блоки, у которых ::before уже занят (баннеры), получают data-spotlight="layer"
+   и отдельный дочерний слой [data-spotlight-glow]. */
+:root {
+  --spot-color: color-mix(in srgb, var(--ss-accent) 13%, transparent);
+  --spot-ring: color-mix(in srgb, var(--ss-accent) 45%, transparent);
+}
+
+:root.dark {
+  --spot-color: color-mix(in srgb, var(--ss-accent) 20%, transparent);
+  --spot-ring: color-mix(in srgb, var(--ss-accent) 60%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-spotlight]) {
+    position: relative;
+  }
+
+  [data-spotlight]:not([data-spotlight="layer"]) {
+    isolation: isolate;
+  }
+
+  [data-spotlight]:not([data-spotlight="layer"])::before,
+  [data-spotlight-glow] {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      var(--spot-size, 380px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--spot-color),
+      transparent 70%
+    );
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  /* Тонкая светящаяся кромка рядом с курсором. */
+  [data-spotlight]:not([data-spotlight="layer"])::before {
+    padding: 1px;
+    background:
+      radial-gradient(
+          var(--spot-size, 380px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+          var(--spot-color),
+          transparent 70%
+        )
+        padding-box,
+      radial-gradient(
+          220px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+          var(--spot-ring),
+          transparent 70%
+        )
+        border-box;
+    border: 1px solid transparent;
+    inset: -1px;
+  }
+
+  [data-spotlight]:hover::before,
+  [data-spotlight]:hover > [data-spotlight-glow] {
+    opacity: 1;
+  }
+}

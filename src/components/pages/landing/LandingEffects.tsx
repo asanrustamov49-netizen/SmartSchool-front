@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSpotlight } from "@/hooks/useSpotlight";
 
 // Эффекты Landing без библиотек:
 // 1) элементы с data-reveal плавно появляются при прокрутке (IntersectionObserver, один раз);
-// 2) элемент с data-tilt слегка наклоняется за курсором (только мышь, через requestAnimationFrame).
+// 2) элемент с data-tilt слегка наклоняется за курсором (только мышь, через requestAnimationFrame);
+// 3) блоки с data-spotlight подсвечиваются за курсором (useSpotlight).
 // Пока компонент не запущен, контент виден полностью — скрытие включается атрибутом data-effects.
 export function LandingEffects() {
+  useSpotlight("[data-spotlight]");
+
   useEffect(() => {
     const page = document.querySelector<HTMLElement>("[data-landing]");
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -3,6 +3,7 @@ import {
   Bell,
   BookOpen,
   CalendarCheck,
+  CalendarClock,
   ClipboardList,
   Crown,
   Globe2,
@@ -30,19 +31,16 @@ import styles from "./landing.module.scss";
 
 type Item = { key: string; icon: LucideIcon };
 
-// Статус возможностей соответствует тому, что уже сделано во frontend.
-const AVAILABLE_FEATURES: Item[] = [
-  { key: "rating", icon: Trophy },
-  { key: "notifications", icon: Bell },
-  { key: "management", icon: School },
-];
-
-const SOON_FEATURES: Item[] = [
+const FEATURES: Item[] = [
   { key: "journal", icon: NotebookPen },
   { key: "progress", icon: BarChart3 },
+  { key: "schedule", icon: CalendarClock },
   { key: "homework", icon: ClipboardList },
   { key: "attendance", icon: CalendarCheck },
+  { key: "rating", icon: Trophy },
   { key: "communication", icon: HeartHandshake },
+  { key: "notifications", icon: Bell },
+  { key: "management", icon: School },
 ];
 
 const AUDIENCES: Item[] = [
@@ -74,7 +72,8 @@ const Landing = async ({ locale }: { locale: string }) => {
       <LandingHeader />
 
       <main id="main">
-        <section className={styles.hero}>
+        <section className={styles.hero} data-spotlight="layer">
+          <span data-spotlight-glow aria-hidden="true" />
           <div className={styles.heroCopy}>
             <h1 className={styles.heroTitle}>{t("hero.title")}</h1>
             <p className={styles.heroText}>{t("hero.description")}</p>
@@ -106,10 +105,9 @@ const Landing = async ({ locale }: { locale: string }) => {
             <p>{t("features.description")}</p>
           </div>
 
-          <h3 className={styles.groupTitle}>{t("features.availableTitle")}</h3>
           <div className={styles.featureGrid}>
-            {AVAILABLE_FEATURES.map(({ key, icon: Icon }) => (
-              <article key={key} className={styles.featureCard} data-reveal>
+            {FEATURES.map(({ key, icon: Icon }) => (
+              <article key={key} className={styles.featureCard} data-reveal data-spotlight>
                 <span className={styles.featureIcon}>
                   <Icon size={20} aria-hidden="true" />
                 </span>
@@ -119,19 +117,6 @@ const Landing = async ({ locale }: { locale: string }) => {
             ))}
           </div>
 
-          <h3 className={styles.groupTitle}>{t("features.soonTitle")}</h3>
-          <ul className={styles.soonList} data-reveal>
-            {SOON_FEATURES.map(({ key, icon: Icon }) => (
-              <li key={key}>
-                <Icon size={18} aria-hidden="true" />
-                <span>
-                  <strong>{t(`features.items.${key}.title`)}</strong>
-                  {t(`features.items.${key}.text`)}
-                </span>
-                <span className={styles.soonBadge}>{t("features.soon")}</span>
-              </li>
-            ))}
-          </ul>
         </section>
 
         <section id="audience" className={styles.section} aria-labelledby="audience-title">
@@ -144,7 +129,7 @@ const Landing = async ({ locale }: { locale: string }) => {
 
           <div className={styles.audienceGrid}>
             {AUDIENCES.map(({ key, icon: Icon }) => (
-              <article key={key} className={styles.audienceItem} data-reveal>
+              <article key={key} className={styles.audienceItem} data-reveal data-spotlight>
                 <div className={styles.audienceHead}>
                   <span className={styles.featureIcon}>
                     <Icon size={20} aria-hidden="true" />
@@ -171,7 +156,7 @@ const Landing = async ({ locale }: { locale: string }) => {
 
           <ol className={styles.steps}>
             {STEPS.map((step, index) => (
-              <li key={step} data-reveal>
+              <li key={step} data-reveal data-spotlight>
                 <span className={styles.stepNumber}>{index + 1}</span>
                 <h3>{t(`how.steps.${step}.title`)}</h3>
                 <p>{t(`how.steps.${step}.text`)}</p>
@@ -189,7 +174,7 @@ const Landing = async ({ locale }: { locale: string }) => {
 
           <ul className={styles.benefits}>
             {BENEFITS.map(({ key, icon: Icon }) => (
-              <li key={key} data-reveal>
+              <li key={key} data-reveal data-spotlight>
                 <Icon size={20} aria-hidden="true" />
                 <strong>{t(`benefits.items.${key}.title`)}</strong>
                 <span>{t(`benefits.items.${key}.text`)}</span>
@@ -199,26 +184,32 @@ const Landing = async ({ locale }: { locale: string }) => {
         </section>
 
         <section id="access" className={styles.access} aria-labelledby="access-title">
-          <div className={styles.accessInner} data-reveal>
+          <div className={styles.accessInner} data-reveal data-spotlight="layer">
+            <span data-spotlight-glow aria-hidden="true" />
             <div className={styles.accessCopy}>
               <h2 id="access-title" className={styles.accessTitle}>
                 {t("access.title")}
               </h2>
               <p>{t("access.description")}</p>
-              <Link href="/login" className={`${styles.buttonPrimary} ${styles.buttonLarge}`}>
-                {t("nav.login")}
-              </Link>
+              <div className={styles.accessActions}>
+                <Link href="/login" className={`${styles.buttonPrimary} ${styles.buttonLarge}`}>
+                  {t("nav.login")}
+                </Link>
+                <Link href="/register" className={`${styles.buttonGhost} ${styles.buttonLarge}`}>
+                  {t("access.register")}
+                </Link>
+              </div>
             </div>
 
             <div className={styles.accessPaths}>
-              <article>
+              <article data-spotlight>
                 <span className={styles.featureIcon}>
                   <UserRound size={20} aria-hidden="true" />
                 </span>
                 <h3>{t("access.staff.title")}</h3>
                 <p>{t("access.staff.text")}</p>
               </article>
-              <article>
+              <article data-spotlight>
                 <span className={styles.featureIcon}>
                   <KeyRound size={20} aria-hidden="true" />
                 </span>

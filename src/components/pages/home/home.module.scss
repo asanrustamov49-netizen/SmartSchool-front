@@ -10,6 +10,9 @@
 
 // Приветственный баннер: тёмный градиент бренда и медленно плывущие пятна света.
 .hero {
+  --spot-color: rgb(255 255 255 / 16%);
+  --spot-size: 520px;
+
   position: relative;
   display: flex;
   min-height: 188px;

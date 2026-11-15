@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
   },
   cacheComponents: true,
+  // Без этого Next.js убирал бы слеш в /api/subjects/ до прокси в src/proxy.ts,
+  // а backend отвечает на такие пути переадресацией на свой http-адрес.
+  skipTrailingSlashRedirect: true,
   partialPrefetching: true,
   reactCompiler: true,
   turbopack: {
