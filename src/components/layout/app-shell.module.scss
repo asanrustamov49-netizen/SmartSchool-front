@@ -276,6 +276,12 @@
   color: var(--accent);
 }
 
+.schoolCardIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .contentArea {
   display: flex;
   min-width: 0;

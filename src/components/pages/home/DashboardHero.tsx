@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import type { CurrentUser, UserRole } from "@/apis/auth.api";
 import { useDateFormat } from "@/hooks/useDateFormat";
+import { getMediaUrl } from "@/lib/utils";
 import scss from "./home.module.scss";
 
 type HeroTone = "admin" | "teacher" | "student" | "parent" | "system";
@@ -93,9 +94,19 @@ export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
   const tone = ROLE_TONE[currentUser.role] ?? "system";
   const Icon = TONE_ICON[tone];
   const chips = getChips(currentUser, t);
+  const bannerUrl = currentUser.school?.banner_url;
+  const logoUrl = currentUser.school?.logo_url;
 
   return (
-    <header className={scss.hero} data-tone={tone}>
+    <header className={scss.hero} data-tone={tone} data-banner={bannerUrl ? "true" : undefined}>
+      {/* Баннер школы из «Настроек школы»: фон с затемнением, чтобы текст оставался читаемым. */}
+      {bannerUrl && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element -- файл лежит на сервере API */}
+          <img className={scss.heroBanner} src={getMediaUrl(bannerUrl)} alt="" />
+          <span className={scss.heroBannerShade} aria-hidden="true" />
+        </>
+      )}
       <div className={scss.heroCopy}>
         <span className={scss.heroBrand}>
           <CalendarDays size={15} strokeWidth={2} aria-hidden="true" />
@@ -118,7 +129,12 @@ export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
       <div className={scss.heroArtwork} aria-hidden="true">
         <div className={scss.heroOrbit} />
         <div className={scss.heroSchool}>
-          <Icon size={58} strokeWidth={1.4} />
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- файл лежит на сервере API
+            <img className={scss.heroLogo} src={getMediaUrl(logoUrl)} alt="" />
+          ) : (
+            <Icon size={58} strokeWidth={1.4} />
+          )}
         </div>
         <Sparkles className={scss.heroSparkle} size={20} />
       </div>

@@ -23,7 +23,7 @@ import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
-import { cn } from "@/lib/utils";
+import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
 import { CommandPalette } from "./CommandPalette";
 import {
@@ -222,7 +222,12 @@ function AuthenticatedShell({
         {currentUser.school && (
           <div className={styles.schoolCard} title={collapsed ? currentUser.school.name : undefined}>
             <span className={styles.schoolCardIcon}>
-              <School size={21} aria-hidden="true" />
+              {currentUser.school.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- файл лежит на сервере API
+                <img src={getMediaUrl(currentUser.school.logo_url)} alt="" />
+              ) : (
+                <School size={21} aria-hidden="true" />
+              )}
             </span>
             <span className={styles.schoolCardText}>
               <strong>{currentUser.school.name}</strong>
