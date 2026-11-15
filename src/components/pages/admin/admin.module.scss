@@ -699,3 +699,13 @@
     outline-offset: 1px;
   }
 }
+
+// Подзаголовок внутри формы (например, «Директор школы» при создании школы).
+.formSectionTitle {
+  grid-column: 1 / -1;
+  margin: 8px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 750;
+}

@@ -11,6 +11,7 @@ import {
   Megaphone,
   NotebookPen,
   School,
+  ShieldCheck,
   Settings2,
   UserRound,
   type LucideIcon,
@@ -79,6 +80,8 @@ const adminItems: NavigationItem[] = [
   { key: "students", href: "/admin/students", icon: GraduationCap, available: true },
   { key: "classes", href: "/admin/classes", icon: School, available: true },
   { key: "subjects", href: "/admin/subjects", icon: Library, available: true },
+  // Завучей добавляет директор; завуч видит список коллег.
+  { key: "deputies", href: "/admin/deputies", icon: ShieldCheck, available: true },
   { key: "journal", href: "/journal", icon: NotebookPen, available: true },
   { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck, available: true },
   { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true },
@@ -156,8 +159,12 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
     case "PARENT":
       return { sectionKey: "parent", items: parentItems, accountItems };
     default:
-      // SYSTEM_ADMIN: в API нет отдельных экранов системного администратора.
-      return { sectionKey: "system", items: [homeItem], accountItems };
+      // SYSTEM_ADMIN управляет школами платформы, а не данными одной школы.
+      return {
+        sectionKey: "system",
+        items: [homeItem, { key: "schools", href: "/system/schools", icon: School, available: true }],
+        accountItems,
+      };
   }
 }
 

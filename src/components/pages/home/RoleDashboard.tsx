@@ -10,6 +10,7 @@ import { ParentDashboard } from "./ParentDashboard";
 import { RecentEventsPanel } from "./RecentEventsPanel";
 import { SchoolRatingPanel } from "./SchoolRatingPanel";
 import { StudentDashboard } from "./StudentDashboard";
+import { SystemDashboard } from "./SystemDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
 import { TodayLessonsPanel } from "./TodayLessonsPanel";
 import scss from "./home.module.scss";
@@ -36,8 +37,9 @@ export function RoleDashboard() {
         return <StudentDashboard currentUser={currentUser} />;
       case "PARENT":
         return <ParentDashboard currentUser={currentUser} />;
+      case "SYSTEM_ADMIN":
+        return <SystemDashboard />;
       default:
-        // Для SYSTEM_ADMIN в API нет отдельных данных главной — показываем честное пустое состояние.
         return <DataState status="empty" message={t("systemEmpty")} />;
     }
   };
@@ -50,11 +52,14 @@ export function RoleDashboard() {
         <TodayLessonsPanel currentUser={currentUser} />
       )}
       {renderRoleContent()}
-      <div className={scss.panelsGrid3}>
-        <SchoolRatingPanel />
-        <RecentEventsPanel />
-        <AnnouncementsPanel />
-      </div>
+      {/* Рейтинг, события и объявления относятся к школе; у системного администратора школы нет. */}
+      {currentUser.role !== "SYSTEM_ADMIN" && (
+        <div className={scss.panelsGrid3}>
+          <SchoolRatingPanel />
+          <RecentEventsPanel />
+          <AnnouncementsPanel />
+        </div>
+      )}
     </>
   );
 }

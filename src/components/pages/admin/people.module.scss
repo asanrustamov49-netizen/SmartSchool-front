@@ -1,0 +1,153 @@
+// Список руководителей школы (директора, завучи): карточки вместо таблицы,
+// поэтому на телефоне ничего не прокручивается вбок.
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+    box-shadow: var(--ss-shadow);
+  }
+}
+
+.personInactive {
+  opacity: 0.72;
+}
+
+.avatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.avatarDirector {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+}
+
+.personInfo {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+
+  > strong {
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.personMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  color: var(--muted);
+  font-size: 12.5px;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.roleBadge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.inactive {
+  color: var(--danger);
+  font-weight: 650;
+}
+
+.tempPassword {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  color: var(--ss-warning, #d97706);
+  font-size: 12.5px;
+  font-weight: 600;
+
+  button {
+    display: inline-grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 7px;
+    color: inherit;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ss-warning, #d97706) 14%, transparent);
+    }
+  }
+}
+
+.secret {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-weight: 700;
+  user-select: all;
+}
+
+.personActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 14px;
+}
+
+@media (max-width: 640px) {
+  .person {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .personInfo > strong {
+    white-space: normal;
+  }
+
+  .personActions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+
+    > button {
+      min-height: 36px;
+    }
+  }
+}
