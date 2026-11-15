@@ -1,18 +1,27 @@
 "use client";
 
-import { KeyRound, Plus } from "lucide-react";
+import { AlertCircle, Download, FileSpreadsheet, KeyRound, Plus, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getClassName } from "@/apis/classes.api";
-import type { Student, StudentCreated } from "@/apis/students.api";
+import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
 import { useClasses } from "@/hooks/useClasses";
-import { useStudents } from "@/hooks/useStudents";
+import { useDeactivateStudent, useResetStudentPassword, useStudents } from "@/hooks/useStudents";
 import { handleApiError } from "@/lib/errorHandler";
+import { downloadBlob } from "@/lib/utils";
 import { StudentForm } from "./StudentForm";
+import { StudentsImport } from "./StudentsImport";
 import styles from "./admin.module.scss";
 
-type FormState = { isOpen: false } | { isOpen: true; student: Student | null };
+type Panel =
+  | { type: "none" }
+  | { type: "form"; student: Student | null }
+  | { type: "import" }
+  | { type: "confirm"; action: "reset" | "deactivate"; student: Student };
+
+// Временный пароль показывается один раз: после создания ученика или сброса пароля.
+type SecretNotice = { message: string; password: string };
 
 export function StudentsPage() {
   const t = useTranslations("admin.students");
@@ -20,8 +29,12 @@ export function StudentsPage() {
   const tApiErrors = useTranslations("apiErrors");
   const studentsQuery = useStudents();
   const classesQuery = useClasses();
-  const [formState, setFormState] = useState<FormState>({ isOpen: false });
-  const [createdStudent, setCreatedStudent] = useState<StudentCreated | null>(null);
+  const deactivateMutation = useDeactivateStudent();
+  const resetPasswordMutation = useResetStudentPassword();
+  const [panel, setPanel] = useState<Panel>({ type: "none" });
+  const [secretNotice, setSecretNotice] = useState<SecretNotice | null>(null);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [actionError, setActionError] = useState("");
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("");
 
@@ -29,10 +42,12 @@ export function StudentsPage() {
   const classNames = new Map(
     classes.map((schoolClass) => [schoolClass.id, getClassName(schoolClass)]),
   );
+  const allStudents = studentsQuery.data ?? [];
+  const existingInns = new Set(allStudents.map((student) => student.inn));
 
   // Backend не поддерживает поиск и фильтры, список фильтруется на клиенте.
   const normalizedSearch = search.trim().toLowerCase();
-  const students = (studentsQuery.data ?? []).filter((student) => {
+  const students = allStudents.filter((student) => {
     const matchesSearch =
       student.full_name.toLowerCase().includes(normalizedSearch) ||
       student.inn.includes(normalizedSearch);
@@ -40,14 +55,75 @@ export function StudentsPage() {
     return matchesSearch && matchesClass;
   });
 
-  const handleCreated = (student: StudentCreated) => {
-    setCreatedStudent(student);
-    setFormState({ isOpen: false });
+  const getStudentClassName = (student: Student) =>
+    student.class_id !== null ? (classNames.get(student.class_id) ?? "—") : t("noClass");
+
+  const openPanel = (nextPanel: Panel) => {
+    setSecretNotice(null);
+    setStatusMessage("");
+    setActionError("");
+    setPanel(nextPanel);
   };
 
-  const openForm = (student: Student | null) => {
-    setCreatedStudent(null);
-    setFormState({ isOpen: true, student });
+  const handleTemplateDownload = async () => {
+    setActionError("");
+    try {
+      downloadBlob(await downloadStudentsTemplate(), "students-template.xlsx");
+    } catch (error) {
+      setActionError(handleApiError(error, tApiErrors));
+    }
+  };
+
+  // Экспортируется текущий отфильтрованный список. ИНН — текстом, чтобы сохранить ведущие нули.
+  const handleExport = async () => {
+    const XLSX = await import("xlsx");
+    const sheet = XLSX.utils.aoa_to_sheet([
+      [t("fullName"), t("inn"), t("class"), t("phone"), t("status")],
+      ...students.map((student) => [
+        student.full_name,
+        student.inn,
+        getStudentClassName(student),
+        student.phone ?? "",
+        student.is_active ? t("active") : t("inactive"),
+      ]),
+    ]);
+    sheet["!cols"] = [{ wch: 34 }, { wch: 18 }, { wch: 10 }, { wch: 16 }, { wch: 12 }];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, sheet, "Students");
+    const fileData: ArrayBuffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
+    const today = new Date().toISOString().slice(0, 10);
+    downloadBlob(new Blob([fileData]), `students-${today}.xlsx`);
+  };
+
+  const handleConfirm = () => {
+    if (panel.type !== "confirm") {
+      return;
+    }
+
+    const { student } = panel;
+    const onError = (error: unknown) => setActionError(handleApiError(error, tApiErrors));
+
+    if (panel.action === "deactivate") {
+      deactivateMutation.mutate(student.id, {
+        onSuccess: () => {
+          setPanel({ type: "none" });
+          setStatusMessage(t("deactivated", { name: student.full_name }));
+        },
+        onError,
+      });
+      return;
+    }
+
+    resetPasswordMutation.mutate(student.id, {
+      onSuccess: (result) => {
+        setPanel({ type: "none" });
+        setSecretNotice({
+          message: t("passwordResetNotice", { name: result.full_name }),
+          password: result.temporary_password,
+        });
+      },
+      onError,
+    });
   };
 
   const renderList = () => {
@@ -92,23 +168,41 @@ export function StudentsPage() {
               <tr key={student.id}>
                 <td>{student.full_name}</td>
                 <td className={styles.cellMuted}>{student.inn}</td>
-                <td>
-                  {student.class_id !== null
-                    ? (classNames.get(student.class_id) ?? "—")
-                    : t("noClass")}
-                </td>
+                <td>{getStudentClassName(student)}</td>
                 <td className={styles.cellMuted}>{student.phone ?? "—"}</td>
                 <td className={student.is_active ? undefined : styles.statusInactive}>
                   {student.is_active ? t("active") : t("inactive")}
                 </td>
                 <td>
-                  <button
-                    type="button"
-                    className={styles.linkButton}
-                    onClick={() => openForm(student)}
-                  >
-                    {tForm("edit")}
-                  </button>
+                  <div className={styles.rowActions}>
+                    <button
+                      type="button"
+                      className={styles.linkButton}
+                      onClick={() => openPanel({ type: "form", student })}
+                    >
+                      {tForm("edit")}
+                    </button>
+                    {student.is_active && (
+                      <>
+                        <button
+                          type="button"
+                          className={styles.linkButton}
+                          onClick={() => openPanel({ type: "confirm", action: "reset", student })}
+                        >
+                          {t("resetPassword")}
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.dangerLink}
+                          onClick={() =>
+                            openPanel({ type: "confirm", action: "deactivate", student })
+                          }
+                        >
+                          {t("deactivate")}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -118,6 +212,8 @@ export function StudentsPage() {
     );
   };
 
+  const isConfirmPending = deactivateMutation.isPending || resetPasswordMutation.isPending;
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
@@ -125,28 +221,66 @@ export function StudentsPage() {
           <h1>{t("title")}</h1>
           <p>{t("description")}</p>
         </div>
-        {!formState.isOpen && (
-          <button type="button" className={styles.primaryButton} onClick={() => openForm(null)}>
+        <div className={styles.headerActions}>
+          <button type="button" className={styles.secondaryButton} onClick={handleTemplateDownload}>
+            <FileSpreadsheet size={16} aria-hidden="true" />
+            {t("downloadTemplate")}
+          </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            disabled={students.length === 0}
+            onClick={handleExport}
+          >
+            <Download size={16} aria-hidden="true" />
+            {t("exportExcel")}
+          </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => openPanel({ type: "import" })}
+          >
+            <Upload size={16} aria-hidden="true" />
+            {t("importExcel")}
+          </button>
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={() => openPanel({ type: "form", student: null })}
+          >
             <Plus size={16} aria-hidden="true" />
             {t("add")}
           </button>
-        )}
+        </div>
       </header>
 
-      {createdStudent && (
+      {actionError && panel.type !== "confirm" && (
+        <p className={styles.formError} role="alert">
+          <AlertCircle size={16} aria-hidden="true" />
+          {actionError}
+        </p>
+      )}
+
+      {statusMessage && (
+        <p className={styles.notice} role="status">
+          {statusMessage}
+        </p>
+      )}
+
+      {secretNotice && (
         <section className={styles.card} role="status">
           <p className={styles.notice}>
             <KeyRound size={16} aria-hidden="true" />
             <span>
-              {t("createdNotice", { name: createdStudent.full_name })}{" "}
-              <span className={styles.secret}>{createdStudent.temporary_password}</span>
+              {secretNotice.message}{" "}
+              <span className={styles.secret}>{secretNotice.password}</span>
             </span>
           </p>
           <div className={styles.formActions}>
             <button
               type="button"
               className={styles.secondaryButton}
-              onClick={() => setCreatedStudent(null)}
+              onClick={() => setSecretNotice(null)}
             >
               {tForm("close")}
             </button>
@@ -154,13 +288,64 @@ export function StudentsPage() {
         </section>
       )}
 
-      {formState.isOpen && (
+      {panel.type === "confirm" && (
+        <section className={styles.card} role="alertdialog" aria-labelledby="student-confirm">
+          <p id="student-confirm" className={styles.notice}>
+            {panel.action === "reset"
+              ? t("confirmReset", { name: panel.student.full_name })
+              : t("confirmDeactivate", { name: panel.student.full_name })}
+          </p>
+          {actionError && (
+            <p className={styles.formError} role="alert">
+              <AlertCircle size={16} aria-hidden="true" />
+              {actionError}
+            </p>
+          )}
+          <div className={styles.formActions}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => openPanel({ type: "none" })}
+            >
+              {tForm("cancel")}
+            </button>
+            <button
+              type="button"
+              className={
+                panel.action === "deactivate"
+                  ? `${styles.primaryButton} ${styles.dangerButton}`
+                  : styles.primaryButton
+              }
+              disabled={isConfirmPending}
+              onClick={handleConfirm}
+            >
+              {panel.action === "reset" ? t("resetPassword") : t("deactivate")}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {panel.type === "form" && (
         <StudentForm
-          key={formState.student?.id ?? "new"}
-          student={formState.student}
+          key={panel.student?.id ?? "new"}
+          student={panel.student}
           classes={classes}
-          onCreated={handleCreated}
-          onClose={() => setFormState({ isOpen: false })}
+          onCreated={(student) => {
+            setPanel({ type: "none" });
+            setSecretNotice({
+              message: t("createdNotice", { name: student.full_name }),
+              password: student.temporary_password,
+            });
+          }}
+          onClose={() => setPanel({ type: "none" })}
+        />
+      )}
+
+      {panel.type === "import" && (
+        <StudentsImport
+          classes={classes}
+          existingInns={existingInns}
+          onClose={() => setPanel({ type: "none" })}
         />
       )}
 

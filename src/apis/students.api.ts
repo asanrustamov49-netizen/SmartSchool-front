@@ -66,3 +66,53 @@ export async function createStudent(data: StudentCreate): Promise<StudentCreated
 export async function updateStudent(studentId: number, data: StudentUpdate) {
   await api.put(`/students/${studentId}`, data);
 }
+
+// Ответ POST /students/import-excel/{class_id} (backend: student_import.py).
+// row в errors — номер строки в загруженном файле. Временные пароли приходят один раз.
+export type StudentImportResult = {
+  message: string;
+  class_id: number;
+  total_added: number;
+  total_errors: number;
+  added_students: { inn: string; full_name: string; temporary_password: string }[];
+  errors: { row: number; error: string }[];
+};
+
+// Ответ POST /admin/users/{id}/reset-password (backend: admin.py).
+export type PasswordResetResult = {
+  message: string;
+  user_id: number;
+  inn: string;
+  full_name: string;
+  temporary_password: string;
+};
+
+// Шаблон с правильными колонками отдаёт backend: ИНН | Толук аты-жөнү | Телефон.
+export async function downloadStudentsTemplate(): Promise<Blob> {
+  const response = await api.get<Blob>("/admin/excel/templates/students", {
+    responseType: "blob",
+  });
+  return response.data;
+}
+
+export async function importStudentsExcel(classId: number, file: Blob): Promise<StudentImportResult> {
+  const formData = new FormData();
+  formData.append("file", file, "students.xlsx");
+
+  const response = await api.post<StudentImportResult>(
+    `/students/import-excel/${classId}`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } },
+  );
+  return response.data;
+}
+
+// DELETE /students/{id} не удаляет ученика, а делает его неактивным.
+export async function deactivateStudent(studentId: number) {
+  await api.delete(`/students/${studentId}`);
+}
+
+export async function resetStudentPassword(studentId: number): Promise<PasswordResetResult> {
+  const response = await api.post<PasswordResetResult>(`/admin/users/${studentId}/reset-password`);
+  return response.data;
+}

@@ -246,6 +246,46 @@
   }
 }
 
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rowActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.dangerLink {
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dangerButton {
+  background: var(--danger) !important;
+  box-shadow: none !important;
+}
+
+.statusOk {
+  color: var(--ss-success, #16a34a);
+  font-weight: 600;
+}
+
+.importResult {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.errorList {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
 .cellMuted {
   color: var(--muted);
 }
@@ -341,8 +381,10 @@
     flex: 1 1 auto;
   }
 
-  .pageHeader > button {
-    width: 100%;
+  .pageHeader > button,
+  .headerActions,
+  .headerActions > button {
+    flex: 1 1 auto;
   }
 }
 
