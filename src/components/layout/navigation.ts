@@ -119,8 +119,9 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
   }
 }
 
+// В нижнюю панель попадают только готовые разделы: разделы «Скоро» остаются в меню.
 export function getMobileItems(navigation: RoleNavigation): NavigationItem[] {
-  return navigation.items.slice(0, MOBILE_ITEMS_COUNT);
+  return navigation.items.filter((item) => item.available).slice(0, MOBILE_ITEMS_COUNT);
 }
 
 export function isPathAllowed(navigation: RoleNavigation, pathname: string) {
