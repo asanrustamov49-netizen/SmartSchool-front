@@ -3,10 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import type { Student, StudentCreated } from "@/apis/students.api";
+import { Select } from "@/components/ui/Select";
 import { useCreateStudent, useUpdateStudent } from "@/hooks/useStudents";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
@@ -53,6 +54,7 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   });
 
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -178,19 +180,23 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
 
             <div className={styles.field}>
               <label htmlFor="student-class">{t("class")}</label>
-              <select
-                id="student-class"
-                className={styles.select}
-                aria-invalid={Boolean(errors.class_id)}
-                {...register("class_id")}
-              >
-                <option value="">{tForm("choose")}</option>
-                {classes.map((schoolClass) => (
-                  <option key={schoolClass.id} value={schoolClass.id}>
-                    {getClassName(schoolClass)} · {schoolClass.academic_year}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                control={control}
+                name="class_id"
+                render={({ field }) => (
+                  <Select
+                    id="student-class"
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    invalid={Boolean(errors.class_id)}
+                    placeholder={tForm("choose")}
+                    options={classes.map((schoolClass) => ({
+                      value: String(schoolClass.id),
+                      label: `${getClassName(schoolClass)} · ${schoolClass.academic_year}`,
+                    }))}
+                  />
+                )}
+              />
               {errors.class_id && (
                 <p className={styles.fieldError}>{errors.class_id.message}</p>
               )}

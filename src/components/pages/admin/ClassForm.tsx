@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, Info, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { SchoolClass } from "@/apis/classes.api";
+import { Select } from "@/components/ui/Select";
 import { useCreateClass, useUpdateClass } from "@/hooks/useClasses";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import styles from "./admin.module.scss";
@@ -39,6 +40,7 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
   });
 
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -107,19 +109,23 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
 
         <div className={styles.field}>
           <label htmlFor="class-grade">{t("gradeNumber")}</label>
-          <select
-            id="class-grade"
-            className={styles.select}
-            aria-invalid={Boolean(errors.grade_number)}
-            {...register("grade_number")}
-          >
-            <option value="">{tForm("choose")}</option>
-            {GRADE_NUMBERS.map((gradeNumber) => (
-              <option key={gradeNumber} value={gradeNumber}>
-                {gradeNumber}
-              </option>
-            ))}
-          </select>
+          <Controller
+            control={control}
+            name="grade_number"
+            render={({ field }) => (
+              <Select
+                id="class-grade"
+                value={field.value}
+                onValueChange={field.onChange}
+                invalid={Boolean(errors.grade_number)}
+                placeholder={tForm("choose")}
+                options={GRADE_NUMBERS.map((gradeNumber) => ({
+                  value: String(gradeNumber),
+                  label: String(gradeNumber),
+                }))}
+              />
+            )}
+          />
           {errors.grade_number && (
             <p className={styles.fieldError}>{errors.grade_number.message}</p>
           )}

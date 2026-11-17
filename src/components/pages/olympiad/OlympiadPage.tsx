@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { OlympiadTopStudent } from "@/apis/olympiad.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import {
   useAddOlympiadCandidate,
   useApproveOlympiadCandidate,
@@ -148,19 +149,16 @@ export function OlympiadPage() {
             <Medal size={18} aria-hidden="true" />
             {t("topTitle")}
           </h2>
-          <select
-            className={adminStyles.select}
-            aria-label={t("grade")}
-            value={gradeNumber ?? ""}
-            onChange={(event) => setGradeNumber(event.target.value === "" ? null : Number(event.target.value))}
-          >
-            <option value="">{t("allGrades")}</option>
-            {GRADES.map((grade) => (
-              <option key={grade} value={grade}>
-                {t("gradeOption", { grade })}
-              </option>
-            ))}
-          </select>
+          <Select
+            className={styles.gradeSelect}
+            ariaLabel={t("grade")}
+            value={gradeNumber === null ? "" : String(gradeNumber)}
+            onValueChange={(value) => setGradeNumber(value === "" ? null : Number(value))}
+            options={[
+              { value: "", label: t("allGrades") },
+              ...GRADES.map((grade) => ({ value: String(grade), label: t("gradeOption", { grade }) })),
+            ]}
+          />
         </div>
 
         {actionError && (

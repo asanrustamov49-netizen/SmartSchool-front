@@ -6,6 +6,7 @@ import { useState } from "react";
 import { downloadTeachersCredentials } from "@/apis/credentials.api";
 import { downloadTeachersTemplate, type Teacher } from "@/apis/teachers.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useSetTeacherActive, useTeachers } from "@/hooks/useTeachers";
 import { useResetUserPassword } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
@@ -406,16 +407,17 @@ export function TeachersPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <select
-            className={styles.select}
-            aria-label={t("statusFilter")}
+          <Select
+            className={styles.toolbarSelect}
+            ariaLabel={t("statusFilter")}
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
-          >
-            <option value="all">{t("allStatuses")}</option>
-            <option value="active">{t("onlyActive")}</option>
-            <option value="inactive">{t("onlyInactive")}</option>
-          </select>
+            onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+            options={[
+              { value: "all", label: t("allStatuses") },
+              { value: "active", label: t("onlyActive") },
+              { value: "inactive", label: t("onlyInactive") },
+            ]}
+          />
           {teachersQuery.data && (
             <span className={styles.toolbarCount}>
               {t("count", { count: teachers.length })}

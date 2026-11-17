@@ -121,7 +121,7 @@
     },
     "nav": {
       "home": "Башкы бет",
-      "daily": "Күнделүк",
+      "daily": "Күндөлүк",
       "assignments": "Үй тапшырмалар",
       "absence": "Сабактан суроо",
       "ratings": "Рейтинг",
@@ -134,7 +134,7 @@
       "teachers": "Мугалимдер",
       "classes": "Класстар",
       "reports": "Отчёттор",
-      "subjects": "Предметтер",
+      "subjects": "Сабактар",
       "olympiad": "Олимпиада",
       "absenceRequests": "Суранууларды кароо",
       "schoolSettings": "Мектептин жөндөөлөрү",
@@ -163,6 +163,15 @@
     "sidebar": {
       "collapse": "Менюну жыйноо",
       "expand": "Менюну жайып көрсөтүү"
+    },
+    "navShort": {
+      "schedule": "Жадыбал",
+      "assignments": "Тапшырмалар",
+      "absence": "Сурануу",
+      "absenceRequests": "Сурануулар",
+      "myClass": "Классым",
+      "schoolSettings": "Мектеп",
+      "promotion": "Которуу"
     }
   },
   "dashboard": {

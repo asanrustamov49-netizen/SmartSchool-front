@@ -1420,3 +1420,19 @@
     color: var(--ss-accent);
   }
 }
+
+// Длинные кыргызские подписи не обрезаются, а переносятся (не больше двух строк).
+.metricCopy > span {
+  display: -webkit-box;
+  line-height: 1.3;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (max-width: 640px) {
+  .headingTitle h2 {
+    line-height: 1.3;
+    white-space: normal;
+  }
+}

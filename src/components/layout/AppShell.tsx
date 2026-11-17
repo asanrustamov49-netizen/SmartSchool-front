@@ -341,7 +341,8 @@ function AuthenticatedShell({
               aria-current={isActive ? "page" : undefined}
             >
               <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
-              <span>{t(`nav.${item.key}`)}</span>
+              {/* В нижней панели мало места: короткая подпись, если она есть (app.navShort). */}
+              <span>{t.has(`navShort.${item.key}`) ? t(`navShort.${item.key}`) : t(`nav.${item.key}`)}</span>
             </Link>
           );
         })}

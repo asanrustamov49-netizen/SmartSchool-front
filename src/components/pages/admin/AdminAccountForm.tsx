@@ -4,9 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { SchoolAdminFields, SchoolAdminRole } from "@/apis/system.api";
+import { Select } from "@/components/ui/Select";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
 import styles from "./admin.module.scss";
@@ -47,6 +48,7 @@ export function AdminAccountForm({ title, allowedRoles, isPending, error, onSubm
   });
 
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -95,13 +97,18 @@ export function AdminAccountForm({ title, allowedRoles, isPending, error, onSubm
         {allowedRoles.length > 1 && (
           <div className={styles.field}>
             <label htmlFor="account-role">{t("role")}</label>
-            <select id="account-role" className={styles.select} {...register("role")}>
-              {allowedRoles.map((role) => (
-                <option key={role} value={role}>
-                  {tRole(role)}
-                </option>
-              ))}
-            </select>
+            <Controller
+              control={control}
+              name="role"
+              render={({ field }) => (
+                <Select
+                  id="account-role"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  options={allowedRoles.map((role) => ({ value: role, label: tRole(role) }))}
+                />
+              )}
+            />
           </div>
         )}
 

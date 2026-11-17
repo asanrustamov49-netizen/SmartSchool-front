@@ -84,7 +84,11 @@
   background: var(--danger);
 }
 
-.compactSelect,
+// Посещаемость в строке журнала: компактное поле components/ui/Select.
+.compactSelect {
+  width: 150px;
+}
+
 .commentInput {
   min-height: 34px;
   padding: 0 8px;

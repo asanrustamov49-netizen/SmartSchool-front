@@ -6,6 +6,7 @@ import { useState } from "react";
 import { getClassName } from "@/apis/classes.api";
 import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useClasses } from "@/hooks/useClasses";
 import { useDeactivateStudent, useStudents } from "@/hooks/useStudents";
 import { useResetUserPassword } from "@/hooks/useUsers";
@@ -378,19 +379,19 @@ export function StudentsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <select
-            className={styles.select}
-            aria-label={t("classFilter")}
+          <Select
+            className={styles.toolbarSelect}
+            ariaLabel={t("classFilter")}
             value={classFilter}
-            onChange={(event) => setClassFilter(event.target.value)}
-          >
-            <option value="">{t("allClasses")}</option>
-            {classes.map((schoolClass) => (
-              <option key={schoolClass.id} value={schoolClass.id}>
-                {getClassName(schoolClass)}
-              </option>
-            ))}
-          </select>
+            onValueChange={setClassFilter}
+            options={[
+              { value: "", label: t("allClasses") },
+              ...classes.map((schoolClass) => ({
+                value: String(schoolClass.id),
+                label: getClassName(schoolClass),
+              })),
+            ]}
+          />
         </div>
         {renderList()}
       </section>

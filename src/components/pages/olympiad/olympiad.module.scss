@@ -147,3 +147,15 @@
     transform: translateY(10px);
   }
 }
+
+// Выбор параллели в заголовке блока «Лучшие по XP».
+.gradeSelect {
+  width: 220px;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .gradeSelect {
+    width: 100%;
+  }
+}

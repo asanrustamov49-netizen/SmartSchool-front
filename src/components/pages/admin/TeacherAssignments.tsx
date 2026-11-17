@@ -6,6 +6,7 @@ import { useState } from "react";
 import { getClassName } from "@/apis/classes.api";
 import type { Teacher } from "@/apis/teachers.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
 import { useSubjects } from "@/hooks/useSubjects";
@@ -159,32 +160,23 @@ export function TeacherAssignments({ teacher, allTeachers, onClose }: TeacherAss
       {!isLoading && !loadError && (
         <>
           <div className={styles.toolbar}>
-            <select
-              className={styles.select}
-              aria-label={t("class")}
+            <Select
+              ariaLabel={t("class")}
               value={classId}
-              onChange={(event) => setClassId(event.target.value)}
-            >
-              <option value="">{t("chooseClass")}</option>
-              {classes.map((schoolClass) => (
-                <option key={schoolClass.id} value={schoolClass.id}>
-                  {getClassName(schoolClass)} · {schoolClass.academic_year}
-                </option>
-              ))}
-            </select>
-            <select
-              className={styles.select}
-              aria-label={t("subject")}
+              onValueChange={setClassId}
+              placeholder={t("chooseClass")}
+              options={classes.map((schoolClass) => ({
+                value: String(schoolClass.id),
+                label: `${getClassName(schoolClass)} · ${schoolClass.academic_year}`,
+              }))}
+            />
+            <Select
+              ariaLabel={t("subject")}
               value={subjectId}
-              onChange={(event) => setSubjectId(event.target.value)}
-            >
-              <option value="">{t("chooseSubject")}</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </select>
+              onValueChange={setSubjectId}
+              placeholder={t("chooseSubject")}
+              options={subjects.map((subject) => ({ value: String(subject.id), label: subject.name }))}
+            />
             <button
               type="button"
               className={styles.primaryButton}

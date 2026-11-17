@@ -7,6 +7,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import type { RatingItem, RatingScope } from "@/apis/ratings.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
 import { useRating, useRecomputeRatings } from "@/hooks/useRatings";
@@ -239,23 +240,17 @@ export function RatingsPage() {
             })}
           </div>
 
-          <label className={styles.subjectSelect}>
-            <BookOpen size={16} aria-hidden="true" />
-            <select
-              aria-label={t("subject")}
-              value={subjectId ?? ""}
-              onChange={(event) =>
-                setSubjectId(event.target.value === "" ? null : Number(event.target.value))
-              }
-            >
-              <option value="">{t("allSubjects")}</option>
-              {subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            className={styles.subjectSelect}
+            icon={<BookOpen size={16} aria-hidden="true" />}
+            ariaLabel={t("subject")}
+            value={subjectId === null ? "" : String(subjectId)}
+            onValueChange={(value) => setSubjectId(value === "" ? null : Number(value))}
+            options={[
+              { value: "", label: t("allSubjects") },
+              ...subjects.map((subject) => ({ value: String(subject.id), label: subject.name })),
+            ]}
+          />
         </div>
 
         <p className={styles.caption}>

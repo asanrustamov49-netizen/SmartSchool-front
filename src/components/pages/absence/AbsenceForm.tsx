@@ -3,9 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { ParentChild } from "@/apis/auth.api";
+import { Select } from "@/components/ui/Select";
 import { useAbsenceRules, useCreateAbsenceRequest } from "@/hooks/useAbsenceRequests";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
@@ -63,6 +64,7 @@ export function AbsenceForm({ childrenList, onClose }: AbsenceFormProps) {
   });
 
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -119,20 +121,23 @@ export function AbsenceForm({ childrenList, onClose }: AbsenceFormProps) {
 
         <div className={adminStyles.field}>
           <label htmlFor="absence-child">{t("child")}</label>
-          <select
-            id="absence-child"
-            className={adminStyles.select}
-            aria-invalid={Boolean(errors.studentId)}
-            {...register("studentId")}
-          >
-            <option value="">{tForm("choose")}</option>
-            {childrenList.map((child) => (
-              <option key={child.id} value={child.id}>
-                {child.full_name}
-                {child.class_name ? ` · ${child.class_name}` : ""}
-              </option>
-            ))}
-          </select>
+          <Controller
+            control={control}
+            name="studentId"
+            render={({ field }) => (
+              <Select
+                id="absence-child"
+                value={field.value}
+                onValueChange={field.onChange}
+                invalid={Boolean(errors.studentId)}
+                placeholder={tForm("choose")}
+                options={childrenList.map((child) => ({
+                  value: String(child.id),
+                  label: child.class_name ? `${child.full_name} · ${child.class_name}` : child.full_name,
+                }))}
+              />
+            )}
+          />
           {errors.studentId && <p className={adminStyles.fieldError}>{errors.studentId.message}</p>}
         </div>
 

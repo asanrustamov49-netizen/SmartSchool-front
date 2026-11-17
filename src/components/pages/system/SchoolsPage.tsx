@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { SystemSchool, SystemSchoolCreated } from "@/apis/system.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useSystemSchools } from "@/hooks/useSystem";
 import { Link } from "@/i18n/navigation";
 import { handleApiError } from "@/lib/errorHandler";
@@ -186,16 +187,17 @@ export function SchoolsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <select
-            className={adminStyles.select}
-            aria-label={t("statusFilter")}
+          <Select
+            className={adminStyles.toolbarSelect}
+            ariaLabel={t("statusFilter")}
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
-          >
-            <option value="all">{t("allStatuses")}</option>
-            <option value="active">{t("onlyActive")}</option>
-            <option value="inactive">{t("onlyClosed")}</option>
-          </select>
+            onValueChange={(value) => setStatusFilter(value as StatusFilter)}
+            options={[
+              { value: "all", label: t("allStatuses") },
+              { value: "active", label: t("onlyActive") },
+              { value: "inactive", label: t("onlyClosed") },
+            ]}
+          />
           {schoolsQuery.data && (
             <span className={adminStyles.toolbarCount}>{t("count", { count: schools.length })}</span>
           )}

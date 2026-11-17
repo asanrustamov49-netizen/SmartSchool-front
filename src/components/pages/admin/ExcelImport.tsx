@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState, type ChangeEvent } from "react";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import type { ExcelImportResult } from "@/apis/students.api";
+import { Select } from "@/components/ui/Select";
 import { useImportStudents } from "@/hooks/useStudents";
 import { useImportTeachers } from "@/hooks/useTeachers";
 import { handleApiError } from "@/lib/errorHandler";
@@ -321,18 +322,15 @@ export function ExcelImport({
         {needsClass && (
           <label className={styles.field}>
             <span>{t("classLabel")}</span>
-            <select
-              className={styles.select}
+            <Select
               value={classId}
-              onChange={(event) => setClassId(event.target.value)}
-            >
-              <option value="">{tForm("choose")}</option>
-              {classes.map((schoolClass) => (
-                <option key={schoolClass.id} value={schoolClass.id}>
-                  {getClassName(schoolClass)}
-                </option>
-              ))}
-            </select>
+              onValueChange={setClassId}
+              placeholder={tForm("choose")}
+              options={classes.map((schoolClass) => ({
+                value: String(schoolClass.id),
+                label: getClassName(schoolClass),
+              }))}
+            />
           </label>
         )}
 

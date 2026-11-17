@@ -163,6 +163,14 @@
     "sidebar": {
       "collapse": "Свернуть меню",
       "expand": "Развернуть меню"
+    },
+    "navShort": {
+      "assignments": "Задания",
+      "absence": "Отсутствие",
+      "absenceRequests": "Заявки",
+      "teachers": "Учителя",
+      "schoolSettings": "Школа",
+      "promotion": "Перевод"
     }
   },
   "dashboard": {

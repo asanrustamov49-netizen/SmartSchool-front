@@ -7,6 +7,7 @@ import { getClassName } from "@/apis/classes.api";
 import type { ScheduleBells, ScheduleWeek } from "@/apis/schedule.api";
 import { ChildTabs } from "@/components/ui/ChildTabs";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useClasses } from "@/hooks/useClasses";
 import { useJournalAssignments } from "@/hooks/useJournal";
@@ -72,21 +73,19 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
   return (
     <>
       <div className={adminStyles.toolbar}>
-        <select
-          className={adminStyles.select}
-          aria-label={t("class")}
-          value={classId ?? ""}
-          onChange={(event) => {
+        <Select
+          className={adminStyles.toolbarSelect}
+          ariaLabel={t("class")}
+          value={classId === null ? "" : String(classId)}
+          onValueChange={(value) => {
             setDraft(null);
-            setSelectedClassId(Number(event.target.value));
+            setSelectedClassId(Number(value));
           }}
-        >
-          {classes.map((schoolClass) => (
-            <option key={schoolClass.id} value={schoolClass.id}>
-              {getClassName(schoolClass)} · {schoolClass.academic_year}
-            </option>
-          ))}
-        </select>
+          options={classes.map((schoolClass) => ({
+            value: String(schoolClass.id),
+            label: `${getClassName(schoolClass)} · ${schoolClass.academic_year}`,
+          }))}
+        />
         <span className={adminStyles.toolbarCount}>{t("adminHint")}</span>
       </div>
 

@@ -133,6 +133,18 @@
   flex: 0 1 200px;
 }
 
+// Выпадающий список (components/ui/Select) в строке фильтров.
+.toolbarSelect {
+  flex: 0 1 220px;
+  width: auto;
+}
+
+@media (max-width: 640px) {
+  .toolbarSelect {
+    flex: 1 1 100%;
+  }
+}
+
 .form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

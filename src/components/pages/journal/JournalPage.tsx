@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useJournalAssignments, useJournalDay } from "@/hooks/useJournal";
 import { handleApiError } from "@/lib/errorHandler";
 import { JournalTable } from "./JournalTable";
@@ -87,20 +88,18 @@ export function JournalPage() {
 
       <section className={adminStyles.card}>
         <div className={adminStyles.toolbar}>
-          <select
-            className={adminStyles.select}
-            aria-label={t("assignment")}
-            value={assignmentId ?? ""}
+          <Select
+            ariaLabel={t("assignment")}
+            value={assignmentId === null ? "" : String(assignmentId)}
             disabled={assignments.length === 0}
-            onChange={(event) => setSelectedId(Number(event.target.value))}
-          >
-            {assignments.map((assignment) => (
-              <option key={assignment.id} value={assignment.id}>
-                {assignment.class_name} · {assignment.subject_name}
-                {assignment.teacher_name ? ` · ${assignment.teacher_name}` : ""}
-              </option>
-            ))}
-          </select>
+            onValueChange={(value) => setSelectedId(Number(value))}
+            options={assignments.map((assignment) => ({
+              value: String(assignment.id),
+              label: [assignment.class_name, assignment.subject_name, assignment.teacher_name]
+                .filter(Boolean)
+                .join(" · "),
+            }))}
+          />
           <input
             type="date"
             className={`${adminStyles.input} ${styles.dateInput}`}

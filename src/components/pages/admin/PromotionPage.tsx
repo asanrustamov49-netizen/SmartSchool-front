@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getNextAcademicYear, type PromotionResult, type PromotionStudent } from "@/apis/promotion.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useClasses } from "@/hooks/useClasses";
 import { useExecutePromotion, usePromotionPreview } from "@/hooks/usePromotion";
 import { getApiErrorStatus, handleApiError } from "@/lib/errorHandler";
@@ -234,18 +235,12 @@ export function PromotionPage() {
         <div className={promotionStyles.years}>
           <div className={styles.field}>
             <label htmlFor="promotion-source">{t("sourceYear")}</label>
-            <select
+            <Select
               id="promotion-source"
-              className={styles.select}
               value={sourceYear}
-              onChange={(event) => changeYear(event.target.value)}
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              onValueChange={changeYear}
+              options={years.map((year) => ({ value: year, label: year }))}
+            />
           </div>
           <ArrowRight className={promotionStyles.yearArrow} size={20} aria-hidden="true" />
           <div className={styles.field}>

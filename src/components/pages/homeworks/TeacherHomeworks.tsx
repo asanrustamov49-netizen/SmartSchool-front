@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { MAX_HOMEWORK_FILES } from "@/apis/homeworks.api";
 import { DataState } from "@/components/ui/DataState";
+import { Select } from "@/components/ui/Select";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import {
   useCreateHomework,
@@ -47,19 +48,16 @@ function HomeworkForm({ onClose }: { onClose: () => void }) {
       <div className={adminStyles.form}>
         <div className={adminStyles.field}>
           <label htmlFor="homework-assignment">{t("classSubject")}</label>
-          <select
+          <Select
             id="homework-assignment"
-            className={adminStyles.select}
             value={assignmentId}
-            onChange={(event) => setAssignmentId(event.target.value)}
-          >
-            <option value="">{tForm("choose")}</option>
-            {ownAssignments.map((assignment) => (
-              <option key={assignment.id} value={assignment.id}>
-                {assignment.class_name} · {assignment.subject_name}
-              </option>
-            ))}
-          </select>
+            onValueChange={setAssignmentId}
+            placeholder={tForm("choose")}
+            options={ownAssignments.map((assignment) => ({
+              value: String(assignment.id),
+              label: `${assignment.class_name} · ${assignment.subject_name}`,
+            }))}
+          />
           {!assignmentsQuery.isPending && ownAssignments.length === 0 && (
             <span className={adminStyles.fieldHint}>{t("noAssignments")}</span>
           )}

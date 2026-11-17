@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { JournalAssignment } from "@/apis/journal.api";
 import type { ScheduleBells, ScheduleLesson } from "@/apis/schedule.api";
+import { Select } from "@/components/ui/Select";
 import { useDeleteScheduleLesson, useSaveScheduleLesson } from "@/hooks/useSchedule";
 import { handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
@@ -74,19 +75,16 @@ export function LessonForm({ draft, assignments, bells, onClose }: LessonFormPro
       <div className={adminStyles.form}>
         <div className={`${adminStyles.field} ${adminStyles.fieldWide}`}>
           <label htmlFor="lesson-assignment">{t("assignment")}</label>
-          <select
+          <Select
             id="lesson-assignment"
-            className={adminStyles.select}
             value={assignmentId}
-            onChange={(event) => setAssignmentId(event.target.value)}
-          >
-            <option value="">{tForm("choose")}</option>
-            {assignments.map((assignment) => (
-              <option key={assignment.id} value={assignment.id}>
-                {assignment.subject_name} · {assignment.teacher_name}
-              </option>
-            ))}
-          </select>
+            onValueChange={setAssignmentId}
+            placeholder={tForm("choose")}
+            options={assignments.map((assignment) => ({
+              value: String(assignment.id),
+              label: `${assignment.subject_name} · ${assignment.teacher_name}`,
+            }))}
+          />
           {assignments.length === 0 && (
             <span className={adminStyles.fieldHint}>{t("noAssignments")}</span>
           )}
@@ -94,38 +92,32 @@ export function LessonForm({ draft, assignments, bells, onClose }: LessonFormPro
 
         <div className={adminStyles.field}>
           <label htmlFor="lesson-weekday">{t("weekday")}</label>
-          <select
+          <Select
             id="lesson-weekday"
-            className={adminStyles.select}
             value={weekday}
-            onChange={(event) => setWeekday(event.target.value)}
-          >
-            {bells.weekdays.map((day) => (
-              <option key={day.weekday} value={day.weekday}>
-                {t(`weekdays.${day.weekday}`)}
-              </option>
-            ))}
-          </select>
+            onValueChange={setWeekday}
+            options={bells.weekdays.map((day) => ({
+              value: String(day.weekday),
+              label: t(`weekdays.${day.weekday}`),
+            }))}
+          />
         </div>
 
         <div className={adminStyles.field}>
           <label htmlFor="lesson-number">{t("lessonNumber")}</label>
-          <select
+          <Select
             id="lesson-number"
-            className={adminStyles.select}
             value={lessonNumber}
-            onChange={(event) => setLessonNumber(event.target.value)}
-          >
-            {bells.bells.map((bell) => (
-              <option key={bell.lesson_number} value={bell.lesson_number}>
-                {t("lessonOption", {
-                  number: bell.lesson_number,
-                  start: bell.start_time,
-                  end: bell.end_time,
-                })}
-              </option>
-            ))}
-          </select>
+            onValueChange={setLessonNumber}
+            options={bells.bells.map((bell) => ({
+              value: String(bell.lesson_number),
+              label: t("lessonOption", {
+                number: bell.lesson_number,
+                start: bell.start_time,
+                end: bell.end_time,
+              }),
+            }))}
+          />
         </div>
 
         <div className={adminStyles.field}>

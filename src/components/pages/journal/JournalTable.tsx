@@ -4,6 +4,7 @@ import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { AttendanceCode, JournalDay, JournalRow } from "@/apis/journal.api";
+import { Select } from "@/components/ui/Select";
 import { useSaveJournalDay } from "@/hooks/useJournal";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
@@ -147,23 +148,24 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
                     </div>
                   </td>
                   <td data-label={t("attendance")}>
-                    <select
+                    <Select
+                      size="sm"
                       className={styles.compactSelect}
-                      aria-label={t("attendance")}
+                      ariaLabel={t("attendance")}
                       value={draft.attendance ?? ""}
-                      onChange={(event) =>
+                      onValueChange={(value) =>
                         updateDraft(row.student_id, {
-                          attendance: event.target.value === "" ? null : (event.target.value as AttendanceCode),
+                          attendance: value === "" ? null : (value as AttendanceCode),
                         })
                       }
-                    >
-                      <option value="">—</option>
-                      {EDITABLE_ATTENDANCE.map((code) => (
-                        <option key={code} value={code}>
-                          {t(`attendanceCodes.${code}`)}
-                        </option>
-                      ))}
-                    </select>
+                      options={[
+                        { value: "", label: "—" },
+                        ...EDITABLE_ATTENDANCE.map((code) => ({
+                          value: code,
+                          label: t(`attendanceCodes.${code}`),
+                        })),
+                      ]}
+                    />
                   </td>
                   <td data-label={t("comment")}>
                     <input

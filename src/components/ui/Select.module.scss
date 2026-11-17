@@ -1,0 +1,190 @@
+// Поле выбора и выпадающая карточка. Цвета — из токенов --ss-*, поэтому
+// одинаково в светлой и тёмной теме и следуют акцентному цвету из «Настроек».
+
+// Ширина по умолчанию — на всю колонку формы. :where не добавляет специфичности,
+// поэтому класс со страницы (например, width: 220px в фильтре) всегда её переопределяет.
+:where(.trigger) {
+  width: 100%;
+}
+
+.trigger {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--ss-surface);
+  color: var(--ss-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 550;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover:not([data-disabled]) {
+    border-color: color-mix(in srgb, var(--ss-accent) 45%, var(--ss-line));
+  }
+
+  &:focus-visible,
+  &[data-popup-open] {
+    border-color: var(--ss-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ss-accent) 18%, transparent);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--ss-danger);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.small {
+  min-height: 36px;
+  padding: 0 8px 0 10px;
+  font-size: 13px;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--ss-accent);
+}
+
+.value {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-placeholder] {
+    color: var(--ss-muted);
+    font-weight: 500;
+  }
+}
+
+.chevron {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--ss-muted);
+  transition: transform 0.25s var(--ss-ease);
+
+  [data-popup-open] > & {
+    transform: rotate(180deg);
+  }
+}
+
+.positioner {
+  z-index: 100;
+  outline: none;
+}
+
+// Ширина — как у поля (но не уже 180px), высота ограничена: список никогда не закрывает весь экран.
+.popup {
+  box-sizing: border-box;
+  min-width: max(var(--anchor-width), 180px);
+  max-width: min(420px, calc(100vw - 24px));
+  max-height: min(320px, var(--available-height));
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--ss-line);
+  border-radius: 14px;
+  background: var(--ss-surface);
+  box-shadow:
+    0 18px 40px -16px rgb(15 23 42 / 35%),
+    0 2px 6px rgb(15 23 42 / 8%);
+  color: var(--ss-ink);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity 0.16s ease,
+    transform 0.18s var(--ss-ease);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+:global(.dark) .popup {
+  box-shadow:
+    0 18px 44px -14px rgb(0 0 0 / 70%),
+    0 0 0 1px rgb(255 255 255 / 4%);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  outline: none;
+}
+
+.item {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 10px 0 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background: color-mix(in srgb, var(--ss-accent) 12%, transparent);
+  }
+
+  &[data-selected] {
+    color: var(--ss-accent);
+    font-weight: 650;
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+// В списке длинный пункт переносится целиком (в самом поле он сокращается многоточием).
+.itemText {
+  min-width: 0;
+  padding: 8px 0;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.check {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--ss-accent);
+}
+
+// На телефоне пункты выше — удобнее попадать пальцем.
+@media (max-width: 640px) {
+  .item {
+    min-height: 44px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup,
+  .chevron {
+    transition: none;
+  }
+}
