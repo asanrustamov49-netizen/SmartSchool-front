@@ -177,7 +177,8 @@
     "moreAccount": "Аккаунт",
     "language": "Язык",
     "themeLight": "Светлая тема",
-    "themeDark": "Тёмная тема"
+    "themeDark": "Тёмная тема",
+    "moreSettings": "Настройки"
   },
   "dashboard": {
     "metrics": {

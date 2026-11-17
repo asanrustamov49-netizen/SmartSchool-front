@@ -178,7 +178,8 @@
     "moreAccount": "Аккаунт",
     "language": "Тил",
     "themeLight": "Жарык тема",
-    "themeDark": "Караңгы тема"
+    "themeDark": "Караңгы тема",
+    "moreSettings": "Жөндөөлөр"
   },
   "dashboard": {
     "metrics": {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog } from "@base-ui/react/dialog";
-import { LogOut, Moon, Sun, X } from "lucide-react";
+import { Check, ChevronRight, Languages, LogOut, Moon, Sun, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import type { CurrentUser } from "@/apis/auth.api";
@@ -30,8 +30,8 @@ function getInitials(fullName: string) {
     .toUpperCase();
 }
 
-// Лист «Ещё» на телефоне и планшете: все остальные разделы крупными плитками,
-// профиль, язык, тема и выход — всё в одном месте у большого пальца.
+// Лист «Ещё» на телефоне и планшете — сгруппированный список, как в настройках iOS и Google:
+// остальные разделы, аккаунт, язык и тема, выход. Строки крупные, с понятными подписями.
 export function MobileMoreSheet({
   open,
   onOpenChange,
@@ -50,22 +50,28 @@ export function MobileMoreSheet({
   const isDark = resolvedTheme === "dark";
   const close = () => onOpenChange(false);
 
-  const renderTile = (item: NavigationItem) => {
+  const renderRow = (item: NavigationItem) => {
     const Icon = item.icon;
     const isActive = item.key === activeKey;
     return (
-      <Link
-        key={item.key}
-        href={item.href}
-        className={cn(styles.tile, isActive && styles.tileActive)}
-        aria-current={isActive ? "page" : undefined}
-        onClick={close}
-      >
-        <span className={styles.tileIcon}>
-          <Icon size={22} strokeWidth={1.8} aria-hidden="true" />
-        </span>
-        <span className={styles.tileLabel}>{t(`nav.${item.key}`)}</span>
-      </Link>
+      <li key={item.key}>
+        <Link
+          href={item.href}
+          className={cn(styles.row, isActive && styles.rowActive)}
+          aria-current={isActive ? "page" : undefined}
+          onClick={close}
+        >
+          <span className={styles.rowIcon}>
+            <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
+          </span>
+          <span className={styles.rowLabel}>{t(`nav.${item.key}`)}</span>
+          {isActive ? (
+            <Check className={styles.rowEnd} size={18} aria-hidden="true" />
+          ) : (
+            <ChevronRight className={styles.rowEnd} size={18} aria-hidden="true" />
+          )}
+        </Link>
+      </li>
     );
   };
 
@@ -100,47 +106,65 @@ export function MobileMoreSheet({
           <div className={styles.body}>
             {items.length > 0 && (
               <section>
-                <h2 className={styles.sectionTitle}>{t("moreSections")}</h2>
-                <nav className={styles.grid} aria-label={t("moreSections")}>
-                  {items.map(renderTile)}
+                <h2 className={styles.groupTitle}>{t("moreSections")}</h2>
+                <nav aria-label={t("moreSections")}>
+                  <ul className={styles.group}>{items.map(renderRow)}</ul>
                 </nav>
               </section>
             )}
 
             <section>
-              <h2 className={styles.sectionTitle}>{t("moreAccount")}</h2>
-              <div className={styles.grid}>{accountItems.map(renderTile)}</div>
+              <h2 className={styles.groupTitle}>{t("moreAccount")}</h2>
+              <ul className={styles.group}>{accountItems.map(renderRow)}</ul>
             </section>
 
-            <section className={styles.quick}>
-              <div className={styles.segmented} role="group" aria-label={t("language")}>
-                {(["ky", "ru"] as const).map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    aria-pressed={locale === item}
-                    className={cn(styles.segment, locale === item && styles.segmentActive)}
-                    onClick={() => router.replace(pathname, { locale: item })}
-                  >
-                    {item === "ky" ? "Кыргызча" : "Русский"}
+            <section>
+              <h2 className={styles.groupTitle}>{t("moreSettings")}</h2>
+              <ul className={styles.group}>
+                <li className={styles.row}>
+                  <span className={styles.rowIcon}>
+                    <Languages size={19} strokeWidth={1.8} aria-hidden="true" />
+                  </span>
+                  <span className={styles.rowLabel}>{t("language")}</span>
+                  <span className={styles.segmented} role="group" aria-label={t("language")}>
+                    {(["ky", "ru"] as const).map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        aria-pressed={locale === item}
+                        className={cn(styles.segment, locale === item && styles.segmentActive)}
+                        onClick={() => router.replace(pathname, { locale: item })}
+                      >
+                        {item === "ky" ? "KG" : "RU"}
+                      </button>
+                    ))}
+                  </span>
+                </li>
+                <li>
+                  <button type="button" className={styles.row} onClick={() => setTheme(isDark ? "light" : "dark")}>
+                    <span className={styles.rowIcon}>
+                      {isDark ? (
+                        <Sun size={19} strokeWidth={1.8} aria-hidden="true" />
+                      ) : (
+                        <Moon size={19} strokeWidth={1.8} aria-hidden="true" />
+                      )}
+                    </span>
+                    <span className={styles.rowLabel}>{isDark ? t("themeLight") : t("themeDark")}</span>
                   </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                className={styles.themeButton}
-                aria-label={t("toggleTheme")}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-              >
-                {isDark ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-                {isDark ? t("themeLight") : t("themeDark")}
-              </button>
+                </li>
+              </ul>
             </section>
 
-            <button type="button" className={styles.logout} onClick={logout}>
-              <LogOut size={18} aria-hidden="true" />
-              {tCommon("logout")}
-            </button>
+            <ul className={styles.group}>
+              <li>
+                <button type="button" className={cn(styles.row, styles.rowDanger)} onClick={logout}>
+                  <span className={styles.rowIcon}>
+                    <LogOut size={19} strokeWidth={1.8} aria-hidden="true" />
+                  </span>
+                  <span className={styles.rowLabel}>{tCommon("logout")}</span>
+                </button>
+              </li>
+            </ul>
           </div>
         </Dialog.Popup>
       </Dialog.Portal>
