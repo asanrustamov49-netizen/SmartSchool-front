@@ -1066,3 +1066,86 @@
     }
   }
 }
+
+// ---------- Нижняя навигация на телефоне: «раскрывающаяся подпись» ----------
+// Неактивные пункты — только иконки, активный плавно раскрывается в плашку с подписью
+// (как в iOS и Material 3). Подписи неактивных пунктов скрыты только визуально:
+// opacity 0 оставляет их для скринридеров.
+@media (max-width: 1024px) {
+  .mobileNav {
+    display: flex;
+    gap: 4px;
+    padding: 7px;
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+    box-shadow:
+      0 16px 36px -14px rgb(15 23 42 / 40%),
+      inset 0 1px 0 rgb(255 255 255 / 6%);
+    backdrop-filter: blur(18px) saturate(1.4);
+  }
+
+  .mobileNavItem {
+    flex: 1 1 0;
+    flex-direction: row;
+    min-height: 48px;
+    gap: 7px;
+    padding: 0 8px;
+    border-radius: 16px;
+    transition:
+      flex-grow 0.45s var(--ss-ease),
+      background-color 0.3s ease,
+      color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.15s ease;
+
+    svg {
+      flex: 0 0 auto;
+      transition: transform 0.3s var(--ss-ease);
+    }
+
+    span {
+      max-width: 0;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      transition:
+        max-width 0.45s var(--ss-ease),
+        opacity 0.2s ease;
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+
+  // Приподнятая плашка с «вдавленной» подписью: градиент, свечение и тень снизу.
+  .mobileNavItemActive {
+    flex-grow: 2.7;
+    background: var(--ss-gradient);
+    box-shadow:
+      var(--ss-glow),
+      inset 0 -2px 0 rgb(0 0 0 / 14%),
+      inset 0 1px 0 rgb(255 255 255 / 22%);
+    color: #ffffff;
+
+    span {
+      max-width: 120px;
+      opacity: 1;
+      transition:
+        max-width 0.45s var(--ss-ease),
+        opacity 0.3s ease 0.12s;
+    }
+
+    svg {
+      transform: scale(1.06);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileNavItem,
+  .mobileNavItem span,
+  .mobileNavItem svg {
+    transition: none;
+  }
+}

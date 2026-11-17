@@ -7,10 +7,12 @@ import { getAdminLimits, MAX_DEPUTIES, type SchoolAdmin } from "@/apis/system.ap
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
+  useActivateDeputy,
   useCreateDeputy,
   useDeactivateDeputy,
   useDeputies,
   useResetDeputyPassword,
+  useUpdateDeputy,
 } from "@/hooks/useDeputies";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
@@ -23,12 +25,14 @@ import peopleStyles from "./people.module.scss";
 type Panel =
   | { type: "none" }
   | { type: "form" }
+  | { type: "edit"; person: SchoolAdmin }
   | { type: "confirm"; action: "reset" | "deactivate"; person: SchoolAdmin };
 
 type SecretState = { message: string; secret: string };
 
-// Завучи школы. Добавляет, отключает и сбрасывает пароль только директор (backend: /admin/deputies).
-// Вернуть отключённого завуча может системный администратор платформы.
+// Завучи школы. Директор добавляет, изменяет, удаляет (отключает доступ), возвращает
+// и сбрасывает пароль — только завучам своей школы (backend: /admin/deputies).
+// Завуч видит список коллег только для чтения.
 export function DeputiesPage() {
   const t = useTranslations("people");
   const tForm = useTranslations("admin.form");
@@ -37,6 +41,8 @@ export function DeputiesPage() {
   const deputiesQuery = useDeputies();
   const createDeputy = useCreateDeputy();
   const deactivateDeputy = useDeactivateDeputy();
+  const updateDeputy = useUpdateDeputy();
+  const activateDeputy = useActivateDeputy();
   const resetPassword = useResetDeputyPassword();
   const [panel, setPanel] = useState<Panel>({ type: "none" });
   const [secret, setSecret] = useState<SecretState | null>(null);
@@ -49,6 +55,7 @@ export function DeputiesPage() {
     setStatusMessage("");
     setActionError("");
     createDeputy.reset();
+    updateDeputy.reset();
     setPanel(nextPanel);
   };
 
@@ -63,7 +70,7 @@ export function DeputiesPage() {
       deactivateDeputy.mutate(person.id, {
         onSuccess: () => {
           setPanel({ type: "none" });
-          setStatusMessage(t("deactivated", { name: person.full_name }));
+          setStatusMessage(t("removed", { name: person.full_name }));
         },
         onError,
       });
@@ -79,13 +86,38 @@ export function DeputiesPage() {
     });
   };
 
+  const handleActivate = (person: SchoolAdmin) => {
+    openPanel({ type: "none" });
+    activateDeputy.mutate(person.id, {
+      onSuccess: () => setStatusMessage(t("activated", { name: person.full_name })),
+      onError: (error) => setActionError(handleApiError(error, tApiErrors)),
+    });
+  };
+
   const renderActions = (person: SchoolAdmin) => {
-    if (!isDirector || !person.is_active) {
+    if (!isDirector) {
       return null;
+    }
+
+    if (!person.is_active) {
+      return (
+        <button
+          type="button"
+          className={styles.linkButton}
+          disabled={!limits.canAddDeputy || activateDeputy.isPending}
+          title={limits.canAddDeputy ? undefined : t("deputiesFull", { max: MAX_DEPUTIES })}
+          onClick={() => handleActivate(person)}
+        >
+          {t("restore")}
+        </button>
+      );
     }
 
     return (
       <>
+        <button type="button" className={styles.linkButton} onClick={() => openPanel({ type: "edit", person })}>
+          {tForm("edit")}
+        </button>
         <button
           type="button"
           className={styles.linkButton}
@@ -98,7 +130,7 @@ export function DeputiesPage() {
           className={styles.dangerLink}
           onClick={() => openPanel({ type: "confirm", action: "deactivate", person })}
         >
-          {t("deactivate")}
+          {t("remove")}
         </button>
       </>
     );
@@ -167,7 +199,7 @@ export function DeputiesPage() {
           <p id="deputy-confirm" className={styles.notice}>
             {panel.action === "reset"
               ? t("confirmReset", { name: panel.person.full_name })
-              : t("confirmDeactivateDeputy", { name: panel.person.full_name })}
+              : t("confirmRemoveDeputy", { name: panel.person.full_name })}
           </p>
           {actionError && (
             <p className={styles.formError} role="alert">
@@ -185,7 +217,7 @@ export function DeputiesPage() {
               disabled={deactivateDeputy.isPending || resetPassword.isPending}
               onClick={handleConfirm}
             >
-              {panel.action === "reset" ? t("resetPassword") : t("deactivate")}
+              {panel.action === "reset" ? t("resetPassword") : t("remove")}
             </button>
           </div>
         </section>
@@ -209,6 +241,29 @@ export function DeputiesPage() {
                       secret: person.temporary_password,
                     });
                   }
+                },
+              },
+            )
+          }
+          onClose={() => setPanel({ type: "none" })}
+        />
+      )}
+
+      {panel.type === "edit" && (
+        <AdminAccountForm
+          key={panel.person.id}
+          title={t("editDeputy")}
+          person={panel.person}
+          allowedRoles={["DEPUTY"]}
+          isPending={updateDeputy.isPending}
+          error={updateDeputy.error}
+          onSubmit={({ full_name, phone }) =>
+            updateDeputy.mutate(
+              { userId: panel.person.id, data: { full_name, phone } },
+              {
+                onSuccess: (person) => {
+                  setPanel({ type: "none" });
+                  setStatusMessage(t("saved", { name: person.full_name }));
                 },
               },
             )

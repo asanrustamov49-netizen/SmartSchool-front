@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createDeputy, deactivateDeputy, getDeputies } from "@/apis/deputies.api";
+import {
+  activateDeputy,
+  createDeputy,
+  deactivateDeputy,
+  getDeputies,
+  updateDeputy,
+  type DeputyUpdate,
+} from "@/apis/deputies.api";
 import { resetUserPassword } from "@/apis/users.api";
 
 const deputiesQueryKey = ["deputies"];
@@ -16,6 +23,19 @@ function useInvalidateDeputies() {
 export function useCreateDeputy() {
   const invalidateDeputies = useInvalidateDeputies();
   return useMutation({ mutationFn: createDeputy, onSuccess: invalidateDeputies });
+}
+
+export function useUpdateDeputy() {
+  const invalidateDeputies = useInvalidateDeputies();
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: number; data: DeputyUpdate }) => updateDeputy(userId, data),
+    onSuccess: invalidateDeputies,
+  });
+}
+
+export function useActivateDeputy() {
+  const invalidateDeputies = useInvalidateDeputies();
+  return useMutation({ mutationFn: activateDeputy, onSuccess: invalidateDeputies });
 }
 
 export function useDeactivateDeputy() {
