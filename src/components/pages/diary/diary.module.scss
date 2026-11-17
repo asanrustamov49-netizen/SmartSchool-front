@@ -317,3 +317,31 @@
     transform: translateY(8px);
   }
 }
+
+// Мини-график по месяцам: цвет показывает, растёт средний балл или падает.
+.trend {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: var(--ss-muted);
+  overflow: visible;
+
+  polyline {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  circle {
+    fill: currentColor;
+  }
+}
+
+.trend_up {
+  color: var(--ss-success);
+}
+
+.trend_down {
+  color: var(--ss-danger);
+}

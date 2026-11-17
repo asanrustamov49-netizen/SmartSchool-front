@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, MessageSquareText, Sparkles } from "lucide-r
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
-import type { AttendanceCode, DiaryLesson, GradesSummary } from "@/apis/journal.api";
+import type { AttendanceCode, DiaryLesson, GradesSummary, SubjectSummary } from "@/apis/journal.api";
 import { ChildTabs } from "@/components/ui/ChildTabs";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
@@ -125,6 +125,42 @@ function SummaryCards({ summary }: { summary: GradesSummary }) {
   );
 }
 
+const TREND_WIDTH = 96;
+const TREND_HEIGHT = 28;
+
+// Мини-график среднего балла по месяцам (шкала 2–5). Нужны хотя бы два месяца.
+function TrendLine({ trend }: { trend: SubjectSummary["trend"] }) {
+  const t = useTranslations("diary");
+
+  if (trend.length < 2) {
+    return null;
+  }
+
+  const points = trend.map((month, index) => {
+    const x = (index / (trend.length - 1)) * (TREND_WIDTH - 4) + 2;
+    const y = TREND_HEIGHT - 2 - ((month.average - 2) / 3) * (TREND_HEIGHT - 4);
+    return { x, y };
+  });
+  const first = trend[0].average;
+  const last = trend[trend.length - 1].average;
+  const direction = last > first + 0.05 ? "up" : last < first - 0.05 ? "down" : "flat";
+  const lastPoint = points[points.length - 1];
+
+  return (
+    <svg
+      className={cn(styles.trend, styles[`trend_${direction}`])}
+      width={TREND_WIDTH}
+      height={TREND_HEIGHT}
+      viewBox={`0 0 ${TREND_WIDTH} ${TREND_HEIGHT}`}
+      role="img"
+      aria-label={t(`trend.${direction}`, { from: first.toFixed(1), to: last.toFixed(1) })}
+    >
+      <polyline points={points.map((point) => `${point.x},${point.y}`).join(" ")} />
+      <circle cx={lastPoint.x} cy={lastPoint.y} r={2.5} />
+    </svg>
+  );
+}
+
 function SubjectsSummary({ summary }: { summary: GradesSummary }) {
   const t = useTranslations("diary");
 
@@ -138,6 +174,7 @@ function SubjectsSummary({ summary }: { summary: GradesSummary }) {
         <li key={subject.subject_id}>
           <div className={styles.subjectHead}>
             <strong>{subject.subject_name}</strong>
+            <TrendLine trend={subject.trend} />
             <span className={cn(styles.subjectAverage, averageTone(subject.average))}>
               {subject.average?.toFixed(1) ?? "—"}
             </span>
