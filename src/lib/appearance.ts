@@ -5,7 +5,20 @@
 
 import { TOKEN_COOKIE_NAME } from "@/lib/auth";
 
-export const ACCENTS = ["blue", "violet", "emerald", "amber", "rose", "graphite"] as const;
+export const ACCENTS = [
+  "blue",
+  "indigo",
+  "violet",
+  "rose",
+  "red",
+  "orange",
+  "amber",
+  "green",
+  "emerald",
+  "teal",
+  "sky",
+  "graphite",
+] as const;
 export type Accent = (typeof ACCENTS)[number];
 
 export const DEFAULT_ACCENT: Accent = "blue";

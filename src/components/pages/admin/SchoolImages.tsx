@@ -2,7 +2,7 @@
 
 import { CircleAlert, CircleCheck, ImageUp, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import type { School, SchoolImageType } from "@/apis/schools.api";
 import { useUploadSchoolImage } from "@/hooks/useSchool";
 import { handleApiError } from "@/lib/errorHandler";
@@ -16,45 +16,38 @@ type SchoolImageFieldProps = {
   savedUrl: string | null;
 };
 
-// Выбранный файл сначала показывается как превью и уходит на сервер
-// только по кнопке «Сохранить».
+// Картинка сохраняется сразу после выбора файла — как аватар в профиле.
+// Раньше нужно было отдельно нажать «Сохранить»: если забыть, после возврата на страницу
+// показывалась старая картинка, и казалось, что загрузка не сохраняется.
+// Пока файл загружается, видно его превью.
 function SchoolImageField({ imageType, savedUrl }: SchoolImageFieldProps) {
   const t = useTranslations("admin.school");
-  const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
   const uploadImage = useUploadSchoolImage();
-  const [pending, setPending] = useState<{ file: File; previewUrl: string } | null>(null);
-  const pendingFile = pending?.file ?? null;
-
-  // Временная ссылка на выбранный файл освобождается, когда превью больше не нужно.
-  useEffect(() => {
-    return () => {
-      if (pending) {
-        URL.revokeObjectURL(pending.previewUrl);
-      }
-    };
-  }, [pending]);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     // Сброс, чтобы повторный выбор того же файла снова сработал.
     event.target.value = "";
-    uploadImage.reset();
-
-    if (file) {
-      setPending({ file, previewUrl: URL.createObjectURL(file) });
-    }
-  };
-
-  const handleSave = () => {
-    if (!pending) {
+    if (!file) {
       return;
     }
 
-    uploadImage.mutate({ imageType, file: pending.file }, { onSuccess: () => setPending(null) });
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+    uploadImage.mutate(
+      { imageType, file },
+      {
+        onSettled: () => {
+          setPreviewUrl(null);
+          URL.revokeObjectURL(localUrl);
+        },
+      },
+    );
   };
 
-  const imageUrl = pending?.previewUrl ?? (savedUrl ? getMediaUrl(savedUrl) : null);
+  const imageUrl = previewUrl ?? (savedUrl ? getMediaUrl(savedUrl) : null);
 
   return (
     <div className={styles.field}>
@@ -67,7 +60,12 @@ function SchoolImageField({ imageType, savedUrl }: SchoolImageFieldProps) {
         ) : (
           t("noImage")
         )}
-        {pendingFile && <span className={styles.previewBadge}>{t("unsaved")}</span>}
+        {uploadImage.isPending && (
+          <span className={styles.previewBadge}>
+            <LoaderCircle className={styles.spinner} size={13} aria-hidden="true" />
+            {t("saving")}
+          </span>
+        )}
       </div>
       <p className={styles.fieldHint}>{t(`imageHints.${imageType}`)}</p>
 
@@ -77,7 +75,7 @@ function SchoolImageField({ imageType, savedUrl }: SchoolImageFieldProps) {
           {handleApiError(uploadImage.error, tApiErrors)}
         </p>
       )}
-      {uploadImage.isSuccess && !pendingFile && (
+      {uploadImage.isSuccess && (
         <p className={styles.notice} role="status">
           <CircleCheck size={16} aria-hidden="true" />
           {t("imageSaved")}
@@ -85,40 +83,11 @@ function SchoolImageField({ imageType, savedUrl }: SchoolImageFieldProps) {
       )}
 
       <div className={styles.imageActions}>
-        <label className={styles.fileLabel}>
+        <label className={cn(styles.fileLabel, uploadImage.isPending && styles.fileLabelDisabled)}>
           <ImageUp size={16} aria-hidden="true" />
-          {pendingFile ? t("chooseAnother") : t("upload")}
-          <input
-            type="file"
-            accept="image/*"
-            disabled={uploadImage.isPending}
-            onChange={handleFileChange}
-          />
+          {savedUrl ? t("replace") : t("upload")}
+          <input type="file" accept="image/*" disabled={uploadImage.isPending} onChange={handleFileChange} />
         </label>
-
-        {pendingFile && (
-          <>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              disabled={uploadImage.isPending}
-              onClick={() => setPending(null)}
-            >
-              {tForm("cancel")}
-            </button>
-            <button
-              type="button"
-              className={styles.primaryButton}
-              disabled={uploadImage.isPending}
-              onClick={handleSave}
-            >
-              {uploadImage.isPending && (
-                <LoaderCircle className={styles.spinner} size={16} aria-hidden="true" />
-              )}
-              {tForm("save")}
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

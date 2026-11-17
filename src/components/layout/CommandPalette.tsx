@@ -7,13 +7,16 @@ import { useState, type KeyboardEvent } from "react";
 import { useLogout } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import type { NavigationItem } from "./navigation";
+import type { NavigationGroup, NavigationItem } from "./navigation";
 import styles from "./command-palette.module.scss";
+
+// Группы как в боковом меню (Обзор, Люди, Учёба…), затем аккаунт и действия.
+type PaletteGroup = NavigationGroup | "account" | "actions";
 
 type PaletteEntry = {
   id: string;
   label: string;
-  group: "pages" | "actions";
+  group: PaletteGroup;
   icon: LucideIcon;
   run: () => void;
 };
@@ -40,25 +43,26 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
     ...pages.map((page) => ({
       id: page.href,
       label: t(`nav.${page.key}`),
-      group: "pages" as const,
+      // Страницы аккаунта (профиль, настройки) группы не имеют.
+      group: page.group ?? ("account" as const),
       icon: page.icon,
       run: () => router.push(page.href),
     })),
     {
       id: "theme",
       label: resolvedTheme === "dark" ? t("search.lightTheme") : t("search.darkTheme"),
-      group: "actions",
+      group: "actions" as const,
       icon: Moon,
       run: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
     },
     {
       id: "language",
       label: locale === "ky" ? t("search.toRussian") : t("search.toKyrgyz"),
-      group: "actions",
+      group: "actions" as const,
       icon: Languages,
       run: () => router.replace(pathname, { locale: locale === "ky" ? "ru" : "ky" }),
     },
-    { id: "logout", label: tCommon("logout"), group: "actions", icon: LogOut, run: logout },
+    { id: "logout", label: tCommon("logout"), group: "actions" as const, icon: LogOut, run: logout },
   ];
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -85,15 +89,28 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
     }
   };
 
-  const renderGroup = (group: PaletteEntry["group"]) => {
+  const getGroupLabel = (group: PaletteGroup) => {
+    if (group === "actions") {
+      return t("search.actions");
+    }
+    if (group === "account") {
+      return t("moreAccount");
+    }
+    return t(`groups.${group}`);
+  };
+
+  // Группы в том порядке, в каком идут записи, — тогда стрелки на клавиатуре идут сверху вниз.
+  const visibleGroups = [...new Set(visibleEntries.map((entry) => entry.group))];
+
+  const renderGroup = (group: PaletteGroup) => {
     const groupEntries = visibleEntries.filter((entry) => entry.group === group);
     if (groupEntries.length === 0) {
       return null;
     }
 
     return (
-      <div className={styles.group} role="group" aria-label={t(`search.${group}`)}>
-        <span className={styles.groupLabel}>{t(`search.${group}`)}</span>
+      <div key={group} className={styles.group} role="group" aria-label={getGroupLabel(group)}>
+        <span className={styles.groupLabel}>{getGroupLabel(group)}</span>
         {groupEntries.map((entry) => {
           const index = visibleEntries.indexOf(entry);
           const Icon = entry.icon;
@@ -156,10 +173,7 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
           {visibleEntries.length === 0 ? (
             <p className={styles.empty}>{t("search.empty")}</p>
           ) : (
-            <>
-              {renderGroup("pages")}
-              {renderGroup("actions")}
-            </>
+            visibleGroups.map(renderGroup)
           )}
         </div>
 

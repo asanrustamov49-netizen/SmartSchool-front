@@ -924,3 +924,17 @@
     padding: 0 6px;
   }
 }
+
+// Значок «Сохраняется…» поверх превью картинки школы.
+.previewBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent);
+}
+
+// Кнопка выбора файла, пока идёт загрузка.
+.fileLabelDisabled {
+  cursor: progress;
+  opacity: 0.6;
+}
