@@ -144,7 +144,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 // Общая плашка активного пункта (src/hooks/useNavIndicator.ts): при смене страницы
@@ -191,12 +190,24 @@
   filter: brightness(1.1) saturate(1.05);
 }
 
+// Блок раздела: подпись группы и её пункты. Между группами — воздух, без линий.
+.navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  & + & {
+    margin-top: 14px;
+  }
+}
+
 .navLabel {
-  padding: 0 10px 6px;
+  padding: 0 14px 6px;
   color: var(--sidebar-muted);
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 0.045em;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .navItem {
@@ -1041,6 +1052,12 @@
 
     .brandCompact {
       display: inline-flex !important;
+    }
+
+    .navGroup + .navGroup {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
     }
 
     .brand {

@@ -32,6 +32,7 @@ import {
   getAllowedItems,
   getCurrentNavigationItem,
   getMobileItems,
+  groupNavigationItems,
   getMoreItems,
   getRoleNavigation,
   isPathAllowed,
@@ -222,9 +223,16 @@ function AuthenticatedShell({
 
         <nav className={styles.nav} aria-label={t("navLabel")}>
           <div className={styles.navBlock} ref={listRef}>
-            <span className={styles.navLabel}>{t(`sections.${navigation.sectionKey}`)}</span>
             <span className={styles.navIndicator} ref={indicatorRef} aria-hidden="true" />
-            {navigation.items.map(renderNavItem)}
+            {/* Разделы блоками с подписью: Обзор, Люди, Учёба… — так проще найти нужное. */}
+            {groupNavigationItems(navigation.items).map(({ group, items }) => (
+              <div key={group} className={styles.navGroup} role="group" aria-label={t(`groups.${group}`)}>
+                <span className={styles.navLabel} aria-hidden="true">
+                  {t(`groups.${group}`)}
+                </span>
+                {items.map(renderNavItem)}
+              </div>
+            ))}
           </div>
         </nav>
 

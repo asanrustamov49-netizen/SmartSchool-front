@@ -178,7 +178,15 @@
     "language": "Язык",
     "themeLight": "Светлая тема",
     "themeDark": "Тёмная тема",
-    "moreSettings": "Настройки"
+    "moreSettings": "Настройки",
+    "groups": {
+      "overview": "Обзор",
+      "people": "Люди",
+      "learning": "Учёба",
+      "classroom": "Мой класс",
+      "activity": "Активность",
+      "platform": "Платформа"
+    }
   },
   "dashboard": {
     "metrics": {

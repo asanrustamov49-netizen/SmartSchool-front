@@ -8,7 +8,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { useLogout } from "@/hooks/useAuth";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { cn, getMediaUrl } from "@/lib/utils";
-import type { NavigationItem } from "./navigation";
+import { groupNavigationItems, type NavigationItem } from "./navigation";
 import styles from "./MobileMoreSheet.module.scss";
 
 type MobileMoreSheetProps = {
@@ -105,12 +105,15 @@ export function MobileMoreSheet({
 
           <div className={styles.body}>
             {items.length > 0 && (
-              <section>
-                <h2 className={styles.groupTitle}>{t("moreSections")}</h2>
-                <nav aria-label={t("moreSections")}>
-                  <ul className={styles.group}>{items.map(renderRow)}</ul>
-                </nav>
-              </section>
+              <nav className={styles.sections} aria-label={t("moreSections")}>
+                {/* Те же группы, что в боковом меню: Обзор, Люди, Учёба, Активность. */}
+                {groupNavigationItems(items).map(({ group, items: groupItems }) => (
+                  <section key={group}>
+                    <h2 className={styles.groupTitle}>{t(`groups.${group}`)}</h2>
+                    <ul className={styles.group}>{groupItems.map(renderRow)}</ul>
+                  </section>
+                ))}
+              </nav>
             )}
 
             <section>

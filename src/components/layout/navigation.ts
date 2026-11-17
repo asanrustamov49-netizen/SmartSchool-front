@@ -20,12 +20,32 @@ import {
 } from "lucide-react";
 import type { CurrentUser } from "@/apis/auth.api";
 
+// Смысловая группа раздела: в боковом меню и в листе «Ещё» разделы идут блоками
+// с подписью (Обзор, Люди, Учёба…), чтобы не искать нужное в длинном списке.
+export type NavigationGroup = "overview" | "people" | "learning" | "classroom" | "activity" | "platform";
+
 export type NavigationItem = {
   key: string;
   href: string;
   icon: LucideIcon;
   available?: boolean;
+  group?: NavigationGroup;
 };
+
+// Подряд идущие разделы одной группы — для вывода блоками с заголовком.
+export function groupNavigationItems(items: NavigationItem[]) {
+  const groups: { group: NavigationGroup; items: NavigationItem[] }[] = [];
+  for (const item of items) {
+    const group = item.group ?? "overview";
+    const last = groups[groups.length - 1];
+    if (last && last.group === group) {
+      last.items.push(item);
+    } else {
+      groups.push({ group, items: [item] });
+    }
+  }
+  return groups;
+}
 
 export type RoleNavigation = {
   sectionKey: string;
@@ -43,6 +63,7 @@ const homeItem: NavigationItem = {
   href: "/",
   icon: LayoutDashboard,
   available: true,
+  group: "overview",
 };
 
 const scheduleItem: NavigationItem = {
@@ -50,6 +71,23 @@ const scheduleItem: NavigationItem = {
   href: "/schedule",
   icon: CalendarClock,
   available: true,
+  group: "overview",
+};
+
+const ratingsItem: NavigationItem = {
+  key: "ratings",
+  href: "/ratings",
+  icon: ChartNoAxesCombined,
+  available: true,
+  group: "activity",
+};
+
+const announcementsItem: NavigationItem = {
+  key: "announcements",
+  href: "/announcements",
+  icon: Megaphone,
+  available: true,
+  group: "activity",
 };
 
 const profileItem: NavigationItem = {
@@ -75,29 +113,47 @@ const schoolSettingsItem: NavigationItem = {
 
 // Разделы взяты из backend FRONTEND.md («Экраны → эндпоинты»).
 // available: true ставится только после того, как страница реально сделана.
-const adminItems: NavigationItem[] = [
-  homeItem,
-  scheduleItem,
-  { key: "teachers", href: "/admin/teachers", icon: UserRound, available: true },
-  { key: "students", href: "/admin/students", icon: GraduationCap, available: true },
-  { key: "classes", href: "/admin/classes", icon: School, available: true },
-  { key: "subjects", href: "/admin/subjects", icon: Library, available: true },
-  // Завучей добавляет директор; завуч видит список коллег.
-  { key: "deputies", href: "/admin/deputies", icon: ShieldCheck, available: true },
-  { key: "journal", href: "/journal", icon: NotebookPen, available: true },
-  { key: "absenceRequests", href: "/absence-requests", icon: ClipboardCheck, available: true },
-  { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true },
-  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
-  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-];
+// Перевод учеников на новый учебный год backend разрешает только директору.
+const promotionItem: NavigationItem = {
+  key: "promotion",
+  href: "/admin/promotion",
+  icon: TrendingUp,
+  available: true,
+  group: "learning",
+};
+
+function getAdminItems(isDirector: boolean): NavigationItem[] {
+  return [
+    homeItem,
+    scheduleItem,
+    { key: "teachers", href: "/admin/teachers", icon: UserRound, available: true, group: "people" },
+    { key: "students", href: "/admin/students", icon: GraduationCap, available: true, group: "people" },
+    // Завучей добавляет директор; завуч видит список коллег.
+    { key: "deputies", href: "/admin/deputies", icon: ShieldCheck, available: true, group: "people" },
+    { key: "classes", href: "/admin/classes", icon: School, available: true, group: "learning" },
+    { key: "subjects", href: "/admin/subjects", icon: Library, available: true, group: "learning" },
+    { key: "journal", href: "/journal", icon: NotebookPen, available: true, group: "learning" },
+    ...(isDirector ? [promotionItem] : []),
+    {
+      key: "absenceRequests",
+      href: "/absence-requests",
+      icon: ClipboardCheck,
+      available: true,
+      group: "activity",
+    },
+    { key: "olympiad", href: "/admin/olympiad", icon: Medal, available: true, group: "activity" },
+    ratingsItem,
+    announcementsItem,
+  ];
+}
 
 const studentItems: NavigationItem[] = [
   homeItem,
   scheduleItem,
-  { key: "daily", href: "/diary", icon: BookOpen, available: true },
-  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
-  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
-  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+  { key: "daily", href: "/diary", icon: BookOpen, available: true, group: "learning" },
+  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true, group: "learning" },
+  ratingsItem,
+  announcementsItem,
 ];
 
 // Ученик не может подавать заявки на отсутствие (backend отвечает 403),
@@ -105,44 +161,34 @@ const studentItems: NavigationItem[] = [
 const parentItems: NavigationItem[] = [
   homeItem,
   scheduleItem,
-  { key: "daily", href: "/diary", icon: BookOpen, available: true },
-  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
-  { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true },
-  { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
-  { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
+  { key: "daily", href: "/diary", icon: BookOpen, available: true, group: "learning" },
+  { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true, group: "learning" },
+  { key: "absence", href: "/absence-requests", icon: ClipboardCheck, available: true, group: "learning" },
+  ratingsItem,
+  announcementsItem,
 ];
-
-// Перевод учеников на новый учебный год backend разрешает только директору.
-const promotionItem: NavigationItem = {
-  key: "promotion",
-  href: "/admin/promotion",
-  icon: TrendingUp,
-  available: true,
-};
 
 function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
   const items: NavigationItem[] = [
     homeItem,
     scheduleItem,
-    { key: "journal", href: "/journal", icon: NotebookPen, available: true },
-    { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true },
+    { key: "journal", href: "/journal", icon: NotebookPen, available: true, group: "learning" },
+    { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true, group: "learning" },
   ];
 
   // Классный руководитель определяется не ролью, а привязкой к классу (is_class_teacher).
   if (isClassTeacher) {
-    items.push({ key: "myClass", href: "/my-class", icon: Users, available: true });
+    items.push({ key: "myClass", href: "/my-class", icon: Users, available: true, group: "classroom" });
     items.push({
       key: "absenceRequests",
       href: "/absence-requests",
       icon: ClipboardCheck,
       available: true,
+      group: "classroom",
     });
   }
 
-  items.push(
-    { key: "ratings", href: "/ratings", icon: ChartNoAxesCombined, available: true },
-    { key: "announcements", href: "/announcements", icon: Megaphone, available: true },
-  );
+  items.push(ratingsItem, announcementsItem);
 
   return items;
 }
@@ -155,7 +201,7 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
     case "DEPUTY":
       return {
         sectionKey: "admin",
-        items: user.role === "DIRECTOR" ? [...adminItems, promotionItem] : adminItems,
+        items: getAdminItems(user.role === "DIRECTOR"),
         accountItems: [profileItem, schoolSettingsItem, settingsItem],
       };
     case "TEACHER":
@@ -173,7 +219,10 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
       // SYSTEM_ADMIN управляет школами платформы, а не данными одной школы.
       return {
         sectionKey: "system",
-        items: [homeItem, { key: "schools", href: "/system/schools", icon: School, available: true }],
+        items: [
+          homeItem,
+          { key: "schools", href: "/system/schools", icon: School, available: true, group: "platform" },
+        ],
         accountItems,
       };
   }

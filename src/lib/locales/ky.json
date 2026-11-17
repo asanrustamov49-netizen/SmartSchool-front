@@ -179,7 +179,15 @@
     "language": "Тил",
     "themeLight": "Жарык тема",
     "themeDark": "Караңгы тема",
-    "moreSettings": "Жөндөөлөр"
+    "moreSettings": "Жөндөөлөр",
+    "groups": {
+      "overview": "Жалпы",
+      "people": "Адамдар",
+      "learning": "Окуу",
+      "classroom": "Менин классым",
+      "activity": "Активдүүлүк",
+      "platform": "Платформа"
+    }
   },
   "dashboard": {
     "metrics": {
