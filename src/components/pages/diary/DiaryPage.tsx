@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MessageSquareText, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, MessageSquareText, Printer, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 import journalStyles from "../journal/journal.module.scss";
 import styles from "./diary.module.scss";
+import { ReportCard } from "./ReportCard";
 
 const DAYS_IN_WEEK = 7;
 
@@ -208,6 +209,9 @@ function StudentDiary({ user }: { user: CurrentUser }) {
   const isCurrentWeek = toDateString(weekStart) === toDateString(getMonday(new Date()));
   const diaryQuery = useDiary(studentId, toDateString(weekStart), toDateString(weekEnd), enabled);
   const summaryQuery = useGradesSummary(studentId, enabled);
+  const selectedChild = children.find((child) => child.id === studentId);
+  const className = isParent ? (selectedChild?.class_name ?? null) : (user.student?.class_name ?? null);
+  const hasGrades = (summaryQuery.data?.subjects.length ?? 0) > 0;
 
   if (isParent && children.length === 0) {
     return <DataState status="empty" message={t("noChildren")} action={{ label: t("linkChild"), href: "/" }} />;
@@ -312,6 +316,12 @@ function StudentDiary({ user }: { user: CurrentUser }) {
           <h2 className={adminStyles.cardTitle}>
             <Sparkles size={17} aria-hidden="true" /> {t("subjectsTitle")}
           </h2>
+          {hasGrades && (
+            <button type="button" className={adminStyles.linkButton} onClick={() => window.print()}>
+              <Printer size={16} aria-hidden="true" />
+              {t("reportCard.download")}
+            </button>
+          )}
           {summaryQuery.isPending && <DataState status="loading" />}
           {summaryQuery.isError && (
             <DataState
@@ -323,6 +333,14 @@ function StudentDiary({ user }: { user: CurrentUser }) {
           {summaryQuery.data && <SubjectsSummary summary={summaryQuery.data} />}
         </section>
       </div>
+      {summaryQuery.data && hasGrades && (
+        <ReportCard
+          summary={summaryQuery.data}
+          schoolName={user.school?.name ?? null}
+          className={className}
+          date={formatDate(new Date())}
+        />
+      )}
     </>
   );
 }

@@ -1,0 +1,99 @@
+// На экране табель не нужен — только при печати.
+@media screen {
+  .reportCard {
+    display: none;
+  }
+}
+
+@media print {
+  // Скрываем всё приложение, кроме табеля.
+  :global(body *) {
+    visibility: hidden;
+  }
+
+  .reportCard,
+  .reportCard * {
+    visibility: visible;
+  }
+
+  .reportCard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 12mm;
+    color: #000;
+    font-size: 12pt;
+
+    h1 {
+      margin: 0 0 6mm;
+      font-size: 20pt;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 2.5mm 3mm;
+      border: 1px solid #555;
+      color: #000;
+      text-align: center;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th,
+    tfoot td {
+      font-weight: 700;
+    }
+  }
+
+  .school {
+    margin: 0 0 2mm;
+    text-align: center;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm 10mm;
+    margin: 0 0 6mm;
+
+    div {
+      display: flex;
+      gap: 2mm;
+    }
+
+    dt {
+      color: #444;
+    }
+
+    dt::after {
+      content: ":";
+    }
+
+    dd {
+      margin: 0;
+      font-weight: 700;
+    }
+  }
+
+  .signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18mm;
+
+    span {
+      min-width: 70mm;
+      padding-top: 2mm;
+      border-top: 1px solid #000;
+    }
+  }
+}

@@ -987,6 +987,19 @@
       "up": "Орточо балл өсүүдө: {from} → {to}",
       "down": "Орточо балл төмөндөөдө: {from} → {to}",
       "flat": "Орточо балл туруктуу: {to}"
+    },
+    "reportCard": {
+      "download": "Табель (PDF)",
+      "title": "Окуу жетишкендиктеринин табели",
+      "student": "Окуучу",
+      "class": "Класс",
+      "date": "Күнү",
+      "subject": "Сабак",
+      "gradesCount": "Баалар",
+      "average": "Орточо балл",
+      "overall": "Жыйынтык",
+      "classTeacher": "Класс жетекчи",
+      "director": "Директор"
     }
   },
   "homeworks": {
