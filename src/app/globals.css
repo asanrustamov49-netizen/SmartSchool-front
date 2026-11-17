@@ -138,7 +138,7 @@
   --ss-warning: #d97706;
   --ss-warning-soft: #fff6e5;
   --ss-danger: #e5484d;
-  --ss-gradient: linear-gradient(135deg, #2f6bff 0%, #7c5cff 100%);
+  --ss-gradient: linear-gradient(135deg, #2f6bff 0%, color-mix(in srgb, #2f6bff 70%, #7c5cff) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(47 107 255 / 12%), rgb(124 92 255 / 12%));
   --ss-sidebar: linear-gradient(180deg, #0b1230 0%, #131a45 55%, #1e1b4b 100%);
   --ss-sidebar-accent: #9db8ff;
@@ -149,7 +149,7 @@
   --ss-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 8px 20px -12px rgb(15 23 42 / 14%);
   --ss-shadow-md: 0 2px 4px rgb(15 23 42 / 4%), 0 16px 32px -16px rgb(15 23 42 / 22%);
   --ss-shadow-lg: 0 30px 60px -30px rgb(15 23 42 / 35%);
-  --ss-glow: 0 10px 28px -10px rgb(47 107 255 / 60%);
+  --ss-glow: 0 4px 14px -8px rgb(47 107 255 / 32%);
   --ss-radius: 12px;
   --ss-radius-sm: 8px;
   --ss-radius-lg: 16px;
@@ -174,14 +174,14 @@
   --ss-warning: #fbbf24;
   --ss-warning-soft: rgb(251 191 36 / 12%);
   --ss-danger: #f87171;
-  --ss-gradient: linear-gradient(135deg, #3b74ff 0%, #8b6bff 100%);
+  --ss-gradient: linear-gradient(135deg, #3b74ff 0%, color-mix(in srgb, #3b74ff 70%, #8b6bff) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(91 140 255 / 16%), rgb(155 133 255 / 16%));
   --ss-sidebar: linear-gradient(180deg, #070b1d 0%, #0e1336 55%, #171447 100%);
   --ss-shadow-xs: 0 1px 2px rgb(0 0 0 / 30%);
   --ss-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 20px -12px rgb(0 0 0 / 50%);
   --ss-shadow-md: 0 16px 32px -16px rgb(0 0 0 / 60%);
   --ss-shadow-lg: 0 30px 60px -30px rgb(0 0 0 / 70%);
-  --ss-glow: 0 10px 28px -10px rgb(91 140 255 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(91 140 255 / 32%);
 }
 
 /* Акцентные палитры из личных настроек (/settings). Меняют акцент, градиенты, свечение,
@@ -192,9 +192,9 @@
   --ss-accent-strong: #6d28d9;
   --ss-accent-soft: #f3edff;
   --ss-violet: #c026d3;
-  --ss-gradient: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
+  --ss-gradient: linear-gradient(135deg, #7c3aed 0%, color-mix(in srgb, #7c3aed 70%, #c026d3) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(124 58 237 / 12%), color-mix(in srgb, #c026d3 12%, transparent));
-  --ss-glow: 0 10px 28px -10px rgb(124 58 237 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(124 58 237 / 32%);
   --ss-sidebar: linear-gradient(180deg, #140a2e 0%, #22104a 55%, #2e1065 100%);
   --ss-sidebar-accent: #d8b4fe;
   --ss-sidebar-glow: color-mix(in srgb, #c026d3 35%, transparent);
@@ -207,8 +207,8 @@
   --ss-accent-strong: #c4b5fd;
   --ss-accent-soft: rgb(167 139 250 / 14%);
   --ss-violet: #e879f9;
-  --ss-gradient: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
-  --ss-glow: 0 10px 28px -10px rgb(139 92 246 / 55%);
+  --ss-gradient: linear-gradient(135deg, #8b5cf6 0%, color-mix(in srgb, #8b5cf6 70%, #d946ef) 100%);
+  --ss-glow: 0 4px 14px -8px rgb(139 92 246 / 32%);
   --ss-sidebar: linear-gradient(180deg, #0c0620 0%, #180a38 55%, #22094f 100%);
 }
 
@@ -218,9 +218,9 @@
   --ss-accent-strong: #047857;
   --ss-accent-soft: #e7f8f1;
   --ss-violet: #0d9488;
-  --ss-gradient: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+  --ss-gradient: linear-gradient(135deg, #10b981 0%, color-mix(in srgb, #10b981 70%, #0d9488) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(16 185 129 / 12%), color-mix(in srgb, #0d9488 12%, transparent));
-  --ss-glow: 0 10px 28px -10px rgb(16 185 129 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(16 185 129 / 32%);
   --ss-sidebar: linear-gradient(180deg, #04140f 0%, #062a20 55%, #073b2c 100%);
   --ss-sidebar-accent: #6ee7b7;
   --ss-sidebar-glow: color-mix(in srgb, #0d9488 35%, transparent);
@@ -233,8 +233,8 @@
   --ss-accent-strong: #6ee7b7;
   --ss-accent-soft: rgb(52 211 153 / 14%);
   --ss-violet: #2dd4bf;
-  --ss-gradient: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-  --ss-glow: 0 10px 28px -10px rgb(52 211 153 / 55%);
+  --ss-gradient: linear-gradient(135deg, #10b981 0%, color-mix(in srgb, #10b981 70%, #14b8a6) 100%);
+  --ss-glow: 0 4px 14px -8px rgb(52 211 153 / 32%);
   --ss-sidebar: linear-gradient(180deg, #020d0a 0%, #041e17 55%, #052c21 100%);
 }
 
@@ -244,9 +244,9 @@
   --ss-accent-strong: #b45309;
   --ss-accent-soft: #fff6e5;
   --ss-violet: #ea580c;
-  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, color-mix(in srgb, #f59e0b 70%, #ea580c) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(245 158 11 / 12%), color-mix(in srgb, #ea580c 12%, transparent));
-  --ss-glow: 0 10px 28px -10px rgb(245 158 11 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(245 158 11 / 32%);
   --ss-sidebar: linear-gradient(180deg, #1c1203 0%, #2b1a05 55%, #3d2306 100%);
   --ss-sidebar-accent: #fcd34d;
   --ss-sidebar-glow: color-mix(in srgb, #ea580c 35%, transparent);
@@ -259,8 +259,8 @@
   --ss-accent-strong: #fcd34d;
   --ss-accent-soft: rgb(251 191 36 / 14%);
   --ss-violet: #fb923c;
-  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
-  --ss-glow: 0 10px 28px -10px rgb(251 191 36 / 55%);
+  --ss-gradient: linear-gradient(135deg, #f59e0b 0%, color-mix(in srgb, #f59e0b 70%, #f97316) 100%);
+  --ss-glow: 0 4px 14px -8px rgb(251 191 36 / 32%);
   --ss-sidebar: linear-gradient(180deg, #120b02 0%, #1f1304 55%, #2c1a05 100%);
 }
 
@@ -270,9 +270,9 @@
   --ss-accent-strong: #be123c;
   --ss-accent-soft: #ffeef2;
   --ss-violet: #db2777;
-  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, #db2777 100%);
+  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, color-mix(in srgb, #f43f5e 70%, #db2777) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(244 63 94 / 12%), color-mix(in srgb, #db2777 12%, transparent));
-  --ss-glow: 0 10px 28px -10px rgb(244 63 94 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(244 63 94 / 32%);
   --ss-sidebar: linear-gradient(180deg, #1f0710 0%, #300b1a 55%, #420f26 100%);
   --ss-sidebar-accent: #fda4af;
   --ss-sidebar-glow: color-mix(in srgb, #db2777 35%, transparent);
@@ -285,8 +285,8 @@
   --ss-accent-strong: #fda4af;
   --ss-accent-soft: rgb(251 113 133 / 14%);
   --ss-violet: #f472b6;
-  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, #ec4899 100%);
-  --ss-glow: 0 10px 28px -10px rgb(251 113 133 / 55%);
+  --ss-gradient: linear-gradient(135deg, #f43f5e 0%, color-mix(in srgb, #f43f5e 70%, #ec4899) 100%);
+  --ss-glow: 0 4px 14px -8px rgb(251 113 133 / 32%);
   --ss-sidebar: linear-gradient(180deg, #14040a 0%, #220712 55%, #300a1b 100%);
 }
 
@@ -296,9 +296,9 @@
   --ss-accent-strong: #334155;
   --ss-accent-soft: #eef1f5;
   --ss-violet: #64748b;
-  --ss-gradient: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+  --ss-gradient: linear-gradient(135deg, #475569 0%, color-mix(in srgb, #475569 70%, #1e293b) 100%);
   --ss-gradient-soft: linear-gradient(135deg, rgb(71 85 105 / 12%), color-mix(in srgb, #1e293b 12%, transparent));
-  --ss-glow: 0 10px 28px -10px rgb(71 85 105 / 55%);
+  --ss-glow: 0 4px 14px -8px rgb(71 85 105 / 32%);
   --ss-sidebar: linear-gradient(180deg, #0b0f17 0%, #111827 55%, #1f2937 100%);
   --ss-sidebar-accent: #cbd5e1;
   --ss-sidebar-glow: color-mix(in srgb, #1e293b 35%, transparent);
@@ -311,8 +311,8 @@
   --ss-accent-strong: #cbd5e1;
   --ss-accent-soft: rgb(148 163 184 / 14%);
   --ss-violet: #cbd5e1;
-  --ss-gradient: linear-gradient(135deg, #64748b 0%, #334155 100%);
-  --ss-glow: 0 10px 28px -10px rgb(100 116 139 / 55%);
+  --ss-gradient: linear-gradient(135deg, #64748b 0%, color-mix(in srgb, #64748b 70%, #334155) 100%);
+  --ss-glow: 0 4px 14px -8px rgb(100 116 139 / 32%);
   --ss-sidebar: linear-gradient(180deg, #05070b 0%, #0b0f17 55%, #151c28 100%);
 }
 
@@ -373,13 +373,13 @@ select option:checked {
    Блоки, у которых ::before уже занят (баннеры), получают data-spotlight="layer"
    и отдельный дочерний слой [data-spotlight-glow]. */
 :root {
-  --spot-color: color-mix(in srgb, var(--ss-accent) 13%, transparent);
-  --spot-ring: color-mix(in srgb, var(--ss-accent) 45%, transparent);
+  --spot-color: color-mix(in srgb, var(--ss-accent) 6%, transparent);
+  --spot-ring: color-mix(in srgb, var(--ss-accent) 28%, transparent);
 }
 
 :root.dark {
-  --spot-color: color-mix(in srgb, var(--ss-accent) 20%, transparent);
-  --spot-ring: color-mix(in srgb, var(--ss-accent) 60%, transparent);
+  --spot-color: color-mix(in srgb, var(--ss-accent) 9%, transparent);
+  --spot-ring: color-mix(in srgb, var(--ss-accent) 36%, transparent);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -398,7 +398,7 @@ select option:checked {
     inset: 0;
     border-radius: inherit;
     background: radial-gradient(
-      var(--spot-size, 380px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--spot-size, 300px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
       var(--spot-color),
       transparent 70%
     );
@@ -413,13 +413,13 @@ select option:checked {
     padding: 1px;
     background:
       radial-gradient(
-          var(--spot-size, 380px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+          var(--spot-size, 300px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
           var(--spot-color),
           transparent 70%
         )
         padding-box,
       radial-gradient(
-          220px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+          150px circle at var(--spot-x, 50%) var(--spot-y, 50%),
           var(--spot-ring),
           transparent 70%
         )

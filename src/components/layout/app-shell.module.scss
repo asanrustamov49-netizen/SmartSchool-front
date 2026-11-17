@@ -261,9 +261,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .navIndicator[data-shine]::after {
-    animation: nav-shine 900ms ease 380ms 1 both;
-  }
 }
 
 @keyframes nav-shine {

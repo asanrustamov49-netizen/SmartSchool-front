@@ -1370,7 +1370,7 @@
 
   &:hover {
     background: var(--ss-gradient);
-    box-shadow: 0 14px 34px -10px rgb(91 140 255 / 75%);
+    box-shadow: 0 8px 20px -10px rgb(91 140 255 / 45%);
     transform: translateY(-2px);
   }
 
@@ -1690,14 +1690,14 @@
 }
 
 .hero {
-  --spot-color: rgb(120 160 255 / 20%);
+  --spot-color: rgb(120 160 255 / 10%);
   --spot-size: 640px;
 }
 
 .accessInner {
-  --spot-color: rgb(255 255 255 / 16%);
+  --spot-color: rgb(255 255 255 / 9%);
   --spot-size: 560px;
-  --spot-ring: rgb(255 255 255 / 55%);
+  --spot-ring: rgb(255 255 255 / 30%);
 }
 
 // ---------- Hero на телефоне ----------
