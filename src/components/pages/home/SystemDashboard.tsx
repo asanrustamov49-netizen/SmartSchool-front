@@ -72,7 +72,7 @@ export function SystemDashboard() {
     }
 
     if (schoolsQuery.data.length === 0) {
-      return <DataState status="empty" message={t("empty")} />;
+      return <DataState status="empty" message={t("empty")} action={{ label: t("add"), href: "/system/schools" }} />;
     }
 
     const recentSchools = [...schoolsQuery.data]

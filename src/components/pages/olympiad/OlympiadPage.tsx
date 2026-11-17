@@ -82,7 +82,7 @@ export function OlympiadPage() {
     }
 
     if (analyticsQuery.data.subjects.length === 0) {
-      return <DataState status="empty" message={t("noSubjects")} />;
+      return <DataState status="empty" message={t("noSubjects")} action={{ label: t("goToSubjects"), href: "/admin/subjects" }} />;
     }
 
     return (

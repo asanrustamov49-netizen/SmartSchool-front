@@ -173,7 +173,7 @@ function StudentDiary({ user }: { user: CurrentUser }) {
   const summaryQuery = useGradesSummary(studentId, enabled);
 
   if (isParent && children.length === 0) {
-    return <DataState status="empty" message={t("noChildren")} />;
+    return <DataState status="empty" message={t("noChildren")} action={{ label: t("linkChild"), href: "/" }} />;
   }
 
   // Понедельник–суббота всегда; воскресенье — только если в нём есть записи.

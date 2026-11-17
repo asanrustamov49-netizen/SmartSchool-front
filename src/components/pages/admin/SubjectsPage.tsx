@@ -59,6 +59,9 @@ export function SubjectsPage() {
         <DataState
           status="empty"
           message={normalizedSearch ? tForm("nothingFound") : t("empty")}
+          action={
+            normalizedSearch ? undefined : { label: t("add"), onClick: () => openPanel({ type: "form", subject: null }) }
+          }
         />
       );
     }

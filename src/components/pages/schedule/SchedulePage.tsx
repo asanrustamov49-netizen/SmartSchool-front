@@ -67,7 +67,7 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
   }
 
   if (classes.length === 0) {
-    return <DataState status="empty" message={t("noClasses")} />;
+    return <DataState status="empty" message={t("noClasses")} action={{ label: t("goToClasses"), href: "/admin/classes" }} />;
   }
 
   return (
@@ -126,7 +126,7 @@ function PersonalSchedule({ user, bells }: { user: CurrentUser; bells: ScheduleB
   const scheduleQuery = useMySchedule(studentId, !isParent || studentId !== null);
 
   if (isParent && children.length === 0) {
-    return <DataState status="empty" message={t("noChildren")} />;
+    return <DataState status="empty" message={t("noChildren")} action={{ label: t("linkChild"), href: "/" }} />;
   }
 
   return (

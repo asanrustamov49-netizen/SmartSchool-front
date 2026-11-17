@@ -383,7 +383,11 @@ export function SchoolDetailsPage() {
           )}
 
           {admins.length === 0 ? (
-            <DataState status="empty" message={t("noAdmins")} />
+            <DataState
+              status="empty"
+              message={t("noAdmins")}
+              action={{ label: t("addAdmin"), onClick: () => openPanel({ type: "addAdmin" }) }}
+            />
           ) : (
             <ul className={peopleStyles.list}>
               {admins.map((person) => (

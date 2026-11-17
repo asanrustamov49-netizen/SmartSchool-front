@@ -88,7 +88,13 @@ export function AnnouncementsPage() {
     }
 
     if (announcements.length === 0) {
-      return <DataState status="empty" message={t("empty")} />;
+      return (
+        <DataState
+          status="empty"
+          message={t("empty")}
+          action={canManage ? { label: t("add"), onClick: () => openPanel({ type: "form", announcement: null }) } : undefined}
+        />
+      );
     }
 
     return (

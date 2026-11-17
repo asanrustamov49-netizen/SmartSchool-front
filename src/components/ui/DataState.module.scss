@@ -104,3 +104,24 @@
     transform: translateY(-5px);
   }
 }
+
+// Кнопка «что сделать дальше» в пустом состоянии.
+.actionButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--ss-accent);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: var(--ss-accent-strong);
+  }
+}

@@ -66,6 +66,11 @@ export function ClassesPage() {
         <DataState
           status="empty"
           message={normalizedSearch ? tForm("nothingFound") : t("empty")}
+          action={
+            normalizedSearch
+              ? undefined
+              : { label: t("add"), onClick: () => setFormState({ isOpen: true, schoolClass: null }) }
+          }
         />
       );
     }

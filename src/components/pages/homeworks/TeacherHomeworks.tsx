@@ -206,7 +206,7 @@ export function TeacherHomeworks() {
     }
 
     if (homeworksQuery.data.length === 0) {
-      return <DataState status="empty" message={t("emptyTeacher")} />;
+      return <DataState status="empty" message={t("emptyTeacher")} action={{ label: t("add"), onClick: () => setIsFormOpen(true) }} />;
     }
 
     return (

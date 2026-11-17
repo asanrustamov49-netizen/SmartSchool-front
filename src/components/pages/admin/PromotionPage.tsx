@@ -94,7 +94,7 @@ export function PromotionPage() {
     }
 
     if (years.length === 0) {
-      return <DataState status="empty" message={t("noClasses")} />;
+      return <DataState status="empty" message={t("noClasses")} action={{ label: t("goToClasses"), href: "/admin/classes" }} />;
     }
 
     if (previewQuery.isError) {

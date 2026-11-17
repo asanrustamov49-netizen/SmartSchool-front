@@ -152,7 +152,13 @@ export function DeputiesPage() {
     }
 
     if (deputiesQuery.data.length === 0) {
-      return <DataState status="empty" message={t("emptyDeputies")} />;
+      return (
+        <DataState
+          status="empty"
+          message={t("emptyDeputies")}
+          action={isDirector ? { label: t("addDeputy"), onClick: () => openPanel({ type: "form" }) } : undefined}
+        />
+      );
     }
 
     return (

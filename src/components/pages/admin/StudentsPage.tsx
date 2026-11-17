@@ -159,7 +159,11 @@ export function StudentsPage() {
     if (students.length === 0) {
       const isFiltered = normalizedSearch !== "" || classFilter !== "";
       return (
-        <DataState status="empty" message={isFiltered ? tForm("nothingFound") : t("empty")} />
+        <DataState
+          status="empty"
+          message={isFiltered ? tForm("nothingFound") : t("empty")}
+          action={isFiltered ? undefined : { label: t("add"), onClick: () => openPanel({ type: "form", student: null }) }}
+        />
       );
     }
 

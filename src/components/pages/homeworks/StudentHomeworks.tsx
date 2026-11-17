@@ -95,7 +95,7 @@ export function StudentHomeworks({ user }: { user: CurrentUser }) {
   const homeworksQuery = useHomeworks(studentId, !isParent || studentId !== null);
 
   if (isParent && children.length === 0) {
-    return <DataState status="empty" message={t("noChildren")} />;
+    return <DataState status="empty" message={t("noChildren")} action={{ label: t("linkChild"), href: "/" }} />;
   }
 
   const homeworks = homeworksQuery.data ?? [];
