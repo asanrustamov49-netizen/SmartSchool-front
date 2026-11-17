@@ -1778,3 +1778,83 @@
     font-size: 12px;
   }
 }
+
+// ---------- Телефон: компактнее и короче ----------
+// Карточки возможностей — строкой «иконка слева, текст справа» вместо высоких плиток,
+// отступы секций меньше: страница на телефоне примерно вдвое короче, читать проще.
+@media (max-width: 640px) {
+  .section {
+    padding-block: 48px;
+  }
+
+  .sectionIntro {
+    margin-bottom: 24px;
+  }
+
+  .featureGrid {
+    gap: 10px;
+  }
+
+  .featureCard {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 4px 14px;
+    padding: 16px;
+
+    .featureIcon {
+      width: 40px;
+      height: 40px;
+      grid-row: span 2;
+      border-radius: 12px;
+    }
+
+    h4 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  .audienceGrid {
+    gap: 10px;
+  }
+
+  .audienceItem {
+    padding: 18px;
+
+    ul {
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+  }
+
+  .audienceHead h3 {
+    font-size: 17px;
+  }
+
+  .steps {
+    row-gap: 10px;
+  }
+
+  .steps li {
+    padding: 16px;
+  }
+
+  .benefits {
+    gap: 10px;
+  }
+
+  .benefits li {
+    padding: 16px;
+  }
+
+  .access {
+    margin-bottom: 48px;
+  }
+}
