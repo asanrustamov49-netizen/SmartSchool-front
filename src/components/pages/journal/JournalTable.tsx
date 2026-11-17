@@ -2,7 +2,7 @@
 
 import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import type { AttendanceCode, JournalDay, JournalRow } from "@/apis/journal.api";
 import { Select } from "@/components/ui/Select";
 import { useSaveJournalDay } from "@/hooks/useJournal";
@@ -12,6 +12,7 @@ import adminStyles from "../admin/admin.module.scss";
 import styles from "./journal.module.scss";
 
 const GRADES = [5, 4, 3, 2];
+const AUTOSAVE_DELAY_MS = 1200;
 // «С» учитель не ставит: её выставляет backend после одобрения заявки на отсутствие.
 const EDITABLE_ATTENDANCE: AttendanceCode[] = ["Б", "Ж", "К"];
 
@@ -38,7 +39,10 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
   const [drafts, setDrafts] = useState<Record<number, DraftRow>>(() =>
     Object.fromEntries(journal.students.map((row) => [row.student_id, toDraft(row)])),
   );
-  const [isDirty, setIsDirty] = useState(false);
+  // Номер последнего изменения и номер изменения, которое уже сохранено на сервере.
+  const [changeVersion, setChangeVersion] = useState(0);
+  const [savedVersion, setSavedVersion] = useState(0);
+  const isDirty = changeVersion !== savedVersion;
 
   const updateDraft = (studentId: number, change: Partial<DraftRow>) => {
     setDrafts((current) => {
@@ -49,10 +53,11 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
       }
       return { ...current, [studentId]: next };
     });
-    setIsDirty(true);
+    setChangeVersion((version) => version + 1);
   };
 
   const handleSave = () => {
+    const versionToSave = changeVersion;
     saveJournal.mutate({
       assignment_id: journal.assignment.id,
       date: journal.date,
@@ -65,7 +70,44 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
           comment: draft.comment.trim() === "" ? null : draft.comment.trim(),
         };
       }),
-    }, { onSuccess: () => setIsDirty(false) });
+    }, { onSuccess: () => setSavedVersion(versionToSave) });
+  };
+
+  // Автосохранение: через секунду после последнего изменения. После ошибки ждём нажатия «Повторить».
+  useEffect(() => {
+    if (!canEdit || !isDirty || saveJournal.isPending || saveJournal.isError) {
+      return;
+    }
+    const timer = setTimeout(handleSave, AUTOSAVE_DELAY_MS);
+    return () => clearTimeout(timer);
+    // handleSave пересоздаётся каждый рендер; запуск зависит только от номера изменения.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changeVersion, canEdit, saveJournal.isPending, saveJournal.isError]);
+
+  // Клавиатура: 2–5 — оценка и переход к следующему ученику, 0/Delete — убрать оценку, ↑/↓ — между учениками.
+  const focusRow = (index: number) => {
+    const row = document.querySelector<HTMLElement>(`[data-grade-row="${index}"] button:not(:disabled)`);
+    row?.focus();
+  };
+
+  const handleGradeKeys = (event: KeyboardEvent<HTMLDivElement>, rowIndex: number, studentId: number) => {
+    const grade = Number(event.key);
+    if (GRADES.includes(grade)) {
+      event.preventDefault();
+      if (drafts[studentId].attendance !== "Ж") {
+        updateDraft(studentId, { grade });
+      }
+      focusRow(rowIndex + 1);
+    } else if (event.key === "0" || event.key === "Delete" || event.key === "Backspace") {
+      event.preventDefault();
+      updateDraft(studentId, { grade: null });
+    } else if (event.key === "ArrowDown" || event.key === "Enter") {
+      event.preventDefault();
+      focusRow(rowIndex + 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      focusRow(rowIndex - 1);
+    }
   };
 
   const grades = journal.students
@@ -88,6 +130,7 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
 
       {!journal.can_edit && <p className={adminStyles.notice}>{t("readOnly")}</p>}
       {journal.can_edit && isFutureDay && <p className={adminStyles.notice}>{t("futureDay")}</p>}
+      {canEdit && <p className={styles.keyboardHint}>{t("keyboardHint")}</p>}
 
       <div className={adminStyles.tableWrap}>
         <table className={cn(adminStyles.table, adminStyles.responsiveTable)}>
@@ -101,7 +144,7 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
             </tr>
           </thead>
           <tbody>
-            {journal.students.map((row) => {
+            {journal.students.map((row, rowIndex) => {
               const draft = drafts[row.student_id];
 
               if (!canEdit || row.excused) {
@@ -130,7 +173,13 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
                   <td data-mobile-hidden className={adminStyles.cellMuted}>{row.number}</td>
                   <td data-label={t("student")}>{row.full_name}</td>
                   <td data-label={t("grade")}>
-                    <div className={styles.gradeButtons} role="group" aria-label={t("grade")}>
+                    <div
+                      className={styles.gradeButtons}
+                      role="group"
+                      aria-label={t("grade")}
+                      data-grade-row={rowIndex}
+                      onKeyDown={(event) => handleGradeKeys(event, rowIndex, row.student_id)}
+                    >
                       {GRADES.map((grade) => (
                         <button
                           key={grade}
@@ -185,29 +234,31 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
 
       {canEdit && (
         <div className={styles.footer}>
-          {saveJournal.isError && (
-            <p className={adminStyles.formError} role="alert">
-              <CircleAlert size={16} aria-hidden="true" />
-              {handleApiError(saveJournal.error, tApiErrors)}
+          {saveJournal.isError ? (
+            <>
+              <p className={adminStyles.formError} role="alert">
+                <CircleAlert size={16} aria-hidden="true" />
+                {handleApiError(saveJournal.error, tApiErrors)}
+              </p>
+              <button type="button" className={adminStyles.primaryButton} onClick={handleSave}>
+                {t("retry")}
+              </button>
+            </>
+          ) : (
+            <p className={styles.saveStatus} role="status">
+              {isDirty || saveJournal.isPending ? (
+                <>
+                  <LoaderCircle className={adminStyles.spinner} size={16} aria-hidden="true" />
+                  {t("saving")}
+                </>
+              ) : (
+                <>
+                  <CircleCheck size={16} aria-hidden="true" />
+                  {t("autosaved")}
+                </>
+              )}
             </p>
           )}
-          {saveJournal.isSuccess && !isDirty && (
-            <p className={adminStyles.notice} role="status">
-              <CircleCheck size={16} aria-hidden="true" />
-              {t("saved")}
-            </p>
-          )}
-          <button
-            type="button"
-            className={adminStyles.primaryButton}
-            disabled={!isDirty || saveJournal.isPending}
-            onClick={handleSave}
-          >
-            {saveJournal.isPending && (
-              <LoaderCircle className={adminStyles.spinner} size={16} aria-hidden="true" />
-            )}
-            {t("save")}
-          </button>
         </div>
       )}
     </>

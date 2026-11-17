@@ -122,3 +122,29 @@
   gap: 10px;
   margin-top: 14px;
 }
+
+.keyboardHint {
+  margin: 0 0 10px;
+  color: var(--ss-muted);
+  font-size: 13px;
+}
+
+.saveStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--ss-muted);
+  font-size: 14px;
+
+  svg:not([class]) {
+    color: var(--ss-success);
+  }
+}
+
+// На сенсорных экранах подсказка про клавиатуру не нужна.
+@media (hover: none) {
+  .keyboardHint {
+    display: none;
+  }
+}
