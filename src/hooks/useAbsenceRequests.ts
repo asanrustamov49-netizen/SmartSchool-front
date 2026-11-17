@@ -10,10 +10,12 @@ import {
 
 const absenceQueryKey = ["absence-requests"];
 
-export function useAbsenceRequests(status: AbsenceStatus | null) {
+// enabled = false — когда роли заявки недоступны (ученик получил бы 403).
+export function useAbsenceRequests(status: AbsenceStatus | null, enabled = true) {
   return useQuery({
     queryKey: [...absenceQueryKey, "list", status],
     queryFn: () => getAbsenceRequests(status),
+    enabled,
   });
 }
 

@@ -36,10 +36,11 @@ export function useMySchedule(studentId: number | null, enabled: boolean) {
   });
 }
 
-export function useTodaySchedule(studentId: number | null) {
+export function useTodaySchedule(studentId: number | null, enabled = true) {
   return useQuery({
     queryKey: [...scheduleQueryKey, "today", studentId],
     queryFn: () => getTodaySchedule(studentId),
+    enabled,
   });
 }
 

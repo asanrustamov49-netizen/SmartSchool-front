@@ -1443,3 +1443,105 @@
     align-items: center;
   }
 }
+
+// «Что сделать сегодня»: строки-ссылки, цвет иконки показывает срочность.
+.tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.task {
+  --task-color: var(--ss-accent);
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  color: var(--ss-ink);
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--ss-ink) 5%, transparent);
+  }
+
+  &:hover .taskArrow {
+    transform: translateX(2px);
+  }
+}
+
+.taskDanger {
+  --task-color: var(--ss-danger);
+}
+
+.taskWarning {
+  --task-color: var(--ss-warning);
+}
+
+.taskAccent {
+  --task-color: var(--ss-accent);
+}
+
+.taskIcon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--task-color) 12%, transparent);
+  color: var(--task-color);
+}
+
+.taskText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  small {
+    overflow: hidden;
+    color: var(--ss-muted);
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.taskArrow {
+  flex: 0 0 auto;
+  color: var(--ss-muted);
+  transition: transform 0.15s ease;
+}
+
+.tasksDone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--ss-muted);
+  font-size: 14px;
+
+  svg {
+    color: var(--ss-success);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task,
+  .taskArrow {
+    transition: none;
+  }
+}

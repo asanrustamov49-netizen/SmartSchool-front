@@ -13,10 +13,11 @@ import {
 
 const teachersQueryKey = ["teachers"];
 
-export function useTeachers() {
+export function useTeachers(enabled = true) {
   return useQuery({
     queryKey: teachersQueryKey,
     queryFn: getTeachers,
+    enabled,
   });
 }
 
