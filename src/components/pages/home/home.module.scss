@@ -1545,3 +1545,28 @@
     transition: none;
   }
 }
+
+.setupProgress {
+  overflow: hidden;
+  height: 6px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ss-ink) 8%, transparent);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ss-accent);
+    transition: width 0.3s ease;
+  }
+}
+
+.taskCompleted {
+  --task-color: var(--ss-success);
+
+  strong {
+    color: var(--ss-muted);
+    text-decoration: line-through;
+  }
+}
