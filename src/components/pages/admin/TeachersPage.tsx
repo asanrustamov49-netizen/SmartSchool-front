@@ -1,11 +1,23 @@
 "use client";
 
-import { AlertCircle, FileKey, FileSpreadsheet, KeyRound, Plus, Upload } from "lucide-react";
+import {
+  AlertCircle,
+  BookOpen,
+  FileKey,
+  FileSpreadsheet,
+  KeyRound,
+  Pencil,
+  Plus,
+  Upload,
+  UserCheck,
+  UserX,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { downloadTeachersCredentials } from "@/apis/credentials.api";
 import { downloadTeachersTemplate, type Teacher } from "@/apis/teachers.api";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import { Select } from "@/components/ui/Select";
 import { useSetTeacherActive, useTeachers } from "@/hooks/useTeachers";
 import { useResetUserPassword } from "@/hooks/useUsers";
@@ -166,7 +178,7 @@ export function TeachersPage() {
             <tr>
               <th>{t("fullName")}</th>
               <th>{t("inn")}</th>
-              <th>{t("phone")}</th>
+              <th className={styles.optionalColumn}>{t("phone")}</th>
               <th>{t("classesLed")}</th>
               <th>{t("subjects")}</th>
               <th>{t("status")}</th>
@@ -190,64 +202,52 @@ export function TeachersPage() {
                     )}
                   </td>
                   <td data-label={t("inn")} className={styles.cellMuted}>{teacher.inn}</td>
-                  <td data-label={t("phone")} className={styles.cellMuted}>{teacher.phone ?? "—"}</td>
+                  <td data-label={t("phone")} className={cn(styles.cellMuted, styles.optionalColumn)}>{teacher.phone ?? "—"}</td>
                   <td data-label={t("classesLed")}>
                     {teacher.classes_led.length > 0
                       ? teacher.classes_led.map((schoolClass) => schoolClass.name).join(", ")
                       : "—"}
                   </td>
-                  <td data-label={t("subjects")} className={styles.cellMuted} title={subjectNames.join(", ")}>
+                  <td data-label={t("subjects")} className={cn(styles.cellMuted, styles.cellWrap)}>
                     {subjectNames.length > 0 ? subjectNames.join(", ") : "—"}
                   </td>
                   <td data-label={t("status")} className={teacher.is_active ? undefined : styles.statusInactive}>
                     {teacher.is_active ? t("active") : t("inactive")}
                   </td>
                   <td data-actions>
-                    <div className={styles.rowActions}>
-                      <button
-                        type="button"
-                        className={styles.linkButton}
-                        onClick={() => openPanel({ type: "form", teacher })}
-                      >
-                        {tForm("edit")}
-                      </button>
-                      {teacher.is_active ? (
-                        <>
-                          <button
-                            type="button"
-                            className={styles.linkButton}
-                            onClick={() => openPanel({ type: "assignments", teacherId: teacher.id })}
-                          >
-                            {t("subjectsAction")}
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.linkButton}
-                            onClick={() => openPanel({ type: "confirm", action: "reset", teacher })}
-                          >
-                            {t("resetPassword")}
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.dangerLink}
-                            onClick={() =>
-                              openPanel({ type: "confirm", action: "deactivate", teacher })
-                            }
-                          >
-                            {t("deactivate")}
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          className={styles.linkButton}
-                          disabled={setActiveMutation.isPending}
-                          onClick={() => handleActivate(teacher)}
-                        >
-                          {t("activate")}
-                        </button>
-                      )}
-                    </div>
+                    <RowActions
+                      menuLabel={`${tForm("actions")}: ${teacher.full_name}`}
+                      primary={{ label: tForm("edit"), icon: Pencil, onSelect: () => openPanel({ type: "form", teacher }) }}
+                      actions={
+                        teacher.is_active
+                          ? [
+                              {
+                                label: t("subjectsAction"),
+                                icon: BookOpen,
+                                onSelect: () => openPanel({ type: "assignments", teacherId: teacher.id }),
+                              },
+                              {
+                                label: t("resetPassword"),
+                                icon: KeyRound,
+                                onSelect: () => openPanel({ type: "confirm", action: "reset", teacher }),
+                              },
+                              {
+                                label: t("deactivate"),
+                                icon: UserX,
+                                danger: true,
+                                onSelect: () => openPanel({ type: "confirm", action: "deactivate", teacher }),
+                              },
+                            ]
+                          : [
+                              {
+                                label: t("activate"),
+                                icon: UserCheck,
+                                disabled: setActiveMutation.isPending,
+                                onSelect: () => handleActivate(teacher),
+                              },
+                            ]
+                      }
+                    />
                   </td>
                 </tr>
               );

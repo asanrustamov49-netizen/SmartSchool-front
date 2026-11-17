@@ -1,10 +1,11 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { KeyRound, Pencil, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import { useClasses } from "@/hooks/useClasses";
 import { useSchoolUser } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
@@ -91,22 +92,17 @@ export function ClassesPage() {
                   <ClassTeacherName teacherId={schoolClass.class_teacher_id} />
                 </td>
                 <td data-actions>
-                  <div className={styles.rowActions}>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => setCredentialsClassId(schoolClass.id)}
-                    >
-                      {t("logins")}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => setFormState({ isOpen: true, schoolClass })}
-                    >
-                      {tForm("edit")}
-                    </button>
-                  </div>
+                  <RowActions
+                    menuLabel={`${tForm("actions")}: ${getClassName(schoolClass)}`}
+                    primary={{
+                      label: tForm("edit"),
+                      icon: Pencil,
+                      onSelect: () => setFormState({ isOpen: true, schoolClass }),
+                    }}
+                    actions={[
+                      { label: t("logins"), icon: KeyRound, onSelect: () => setCredentialsClassId(schoolClass.id) },
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

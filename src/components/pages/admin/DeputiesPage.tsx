@@ -1,10 +1,11 @@
 "use client";
 
-import { AlertCircle, UserPlus } from "lucide-react";
+import { AlertCircle, KeyRound, Pencil, RotateCcw, UserPlus, UserX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getAdminLimits, MAX_DEPUTIES, type SchoolAdmin } from "@/apis/system.api";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import { useCurrentUser } from "@/hooks/useAuth";
 import {
   useActivateDeputy,
@@ -100,39 +101,38 @@ export function DeputiesPage() {
     }
 
     if (!person.is_active) {
+      // При пяти активных завучах вернуть нельзя — кнопка неактивна (лимит показан над списком).
       return (
-        <button
-          type="button"
-          className={styles.linkButton}
-          disabled={!limits.canAddDeputy || activateDeputy.isPending}
-          title={limits.canAddDeputy ? undefined : t("deputiesFull", { max: MAX_DEPUTIES })}
-          onClick={() => handleActivate(person)}
-        >
-          {t("restore")}
-        </button>
+        <RowActions
+          menuLabel={`${tForm("actions")}: ${person.full_name}`}
+          primary={{
+            label: t("restore"),
+            icon: RotateCcw,
+            disabled: !limits.canAddDeputy || activateDeputy.isPending,
+            onSelect: () => handleActivate(person),
+          }}
+        />
       );
     }
 
     return (
-      <>
-        <button type="button" className={styles.linkButton} onClick={() => openPanel({ type: "edit", person })}>
-          {tForm("edit")}
-        </button>
-        <button
-          type="button"
-          className={styles.linkButton}
-          onClick={() => openPanel({ type: "confirm", action: "reset", person })}
-        >
-          {t("resetPassword")}
-        </button>
-        <button
-          type="button"
-          className={styles.dangerLink}
-          onClick={() => openPanel({ type: "confirm", action: "deactivate", person })}
-        >
-          {t("remove")}
-        </button>
-      </>
+      <RowActions
+        menuLabel={`${tForm("actions")}: ${person.full_name}`}
+        primary={{ label: tForm("edit"), icon: Pencil, onSelect: () => openPanel({ type: "edit", person }) }}
+        actions={[
+          {
+            label: t("resetPassword"),
+            icon: KeyRound,
+            onSelect: () => openPanel({ type: "confirm", action: "reset", person }),
+          },
+          {
+            label: t("remove"),
+            icon: UserX,
+            danger: true,
+            onSelect: () => openPanel({ type: "confirm", action: "deactivate", person }),
+          },
+        ]}
+      />
     );
   };
 

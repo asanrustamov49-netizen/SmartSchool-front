@@ -6,12 +6,15 @@ import {
   GraduationCap,
   Mail,
   MapPin,
+  KeyRound,
   Pencil,
   Phone,
   Power,
+  RotateCcw,
   UserPlus,
   UserRound,
   Users,
+  UserX,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -25,6 +28,7 @@ import {
   type SchoolAdminRole,
 } from "@/apis/system.api";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import {
   useAddSchoolAdmin,
@@ -157,37 +161,37 @@ export function SchoolDetailsPage() {
 
   const renderAdminActions = (person: SchoolAdmin) => {
     if (!person.is_active) {
-      const canActivate = canActivateAdmin(person, limits);
+      // Включить нельзя, если лимит роли занят (1 директор, 5 завучей) — счётчики над списком.
       return (
-        <button
-          type="button"
-          className={adminStyles.linkButton}
-          disabled={!canActivate}
-          title={canActivate ? undefined : t(person.role === "DIRECTOR" ? "directorLimit" : "deputyLimit")}
-          onClick={() => activateAdmin(person)}
-        >
-          {tPeople("activate")}
-        </button>
+        <RowActions
+          menuLabel={`${tForm("actions")}: ${person.full_name}`}
+          primary={{
+            label: tPeople("activate"),
+            icon: RotateCcw,
+            disabled: !canActivateAdmin(person, limits),
+            onSelect: () => activateAdmin(person),
+          }}
+        />
       );
     }
 
     return (
-      <>
-        <button
-          type="button"
-          className={adminStyles.linkButton}
-          onClick={() => openPanel({ type: "confirmAdmin", action: "reset", person })}
-        >
-          {tPeople("resetPassword")}
-        </button>
-        <button
-          type="button"
-          className={adminStyles.dangerLink}
-          onClick={() => openPanel({ type: "confirmAdmin", action: "deactivate", person })}
-        >
-          {tPeople("deactivate")}
-        </button>
-      </>
+      <RowActions
+        menuLabel={`${tForm("actions")}: ${person.full_name}`}
+        primary={{
+          label: tPeople("resetPassword"),
+          icon: KeyRound,
+          onSelect: () => openPanel({ type: "confirmAdmin", action: "reset", person }),
+        }}
+        actions={[
+          {
+            label: tPeople("deactivate"),
+            icon: UserX,
+            danger: true,
+            onSelect: () => openPanel({ type: "confirmAdmin", action: "deactivate", person }),
+          },
+        ]}
+      />
     );
   };
 

@@ -250,9 +250,15 @@
     border-radius: 0 8px 8px 0;
   }
 
+  // Текст переносится, чтобы таблица помещалась без прокрутки вбок;
+  // ИНН, телефоны и даты (cellMuted) остаются в одну строку.
   td {
     padding: 12px 10px;
     border-bottom: 1px solid var(--border);
+    white-space: normal;
+  }
+
+  td.cellMuted {
     white-space: nowrap;
   }
 
@@ -862,5 +868,47 @@
 
   .tableWrap:has(.responsiveTable) {
     overflow-x: visible;
+  }
+}
+
+// Длинный текст в ячейке (например, список предметов) переносится, а не растягивает таблицу.
+.table td.cellWrap {
+  min-width: 160px;
+  max-width: 260px;
+  white-space: normal;
+}
+
+// Колонка действий — узкая и прижата вправо (на телефоне строки — карточки, там своё правило).
+@media (min-width: 641px) {
+  .table td[data-actions] {
+    width: 1%;
+    text-align: right;
+  }
+}
+
+// Пометка «ещё не входил» не разрывается посередине.
+.tag {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+// Ноутбуки поменьше: заголовки столбцов переносятся, отступы в ячейках чуть меньше.
+@media (min-width: 641px) and (max-width: 1280px) {
+  .table th {
+    white-space: normal;
+  }
+
+  .table th,
+  .table td {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+
+// Второстепенный столбец (телефон) скрывается на ноутбуках с открытым боковым меню,
+// чтобы таблица помещалась без прокрутки. На телефоне строки — карточки, там он виден.
+@media (min-width: 1025px) and (max-width: 1300px) {
+  .table .optionalColumn {
+    display: none;
   }
 }

@@ -1,0 +1,183 @@
+// Действия строки: спокойные «призрачные» кнопки и меню «⋯» в стиле приложения.
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.button,
+.more {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--ss-ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--ss-line);
+    background: var(--ss-surface);
+    color: var(--ss-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ss-accent);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--ss-muted);
+  }
+
+  &:hover:not(:disabled) svg {
+    color: inherit;
+  }
+}
+
+.button {
+  padding: 0 10px;
+}
+
+.more {
+  width: 34px;
+
+  &[data-popup-open] {
+    border-color: var(--ss-line);
+    background: var(--ss-surface);
+    color: var(--ss-accent);
+  }
+}
+
+.danger {
+  color: var(--ss-danger);
+
+  svg {
+    color: currentcolor;
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--ss-danger);
+  }
+}
+
+.positioner {
+  z-index: 100;
+  outline: none;
+}
+
+.popup {
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--ss-line);
+  border-radius: 14px;
+  background: var(--ss-surface);
+  box-shadow:
+    0 16px 36px -14px rgb(15 23 42 / 30%),
+    0 2px 6px rgb(15 23 42 / 6%);
+  color: var(--ss-ink);
+  outline: none;
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+:global(.dark) .popup {
+  box-shadow: 0 16px 40px -14px rgb(0 0 0 / 70%);
+}
+
+.item {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 550;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--ss-muted);
+  }
+
+  &[data-highlighted] {
+    background: color-mix(in srgb, var(--ss-accent) 10%, transparent);
+
+    svg {
+      color: var(--ss-accent);
+    }
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.itemDanger {
+  color: var(--ss-danger);
+
+  svg {
+    color: var(--ss-danger) !important;
+  }
+
+  &[data-highlighted] {
+    background: color-mix(in srgb, var(--ss-danger) 10%, transparent);
+  }
+}
+
+.separator {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--ss-line);
+}
+
+// На телефоне кнопки крупнее — удобнее попадать пальцем.
+@media (max-width: 640px) {
+  .button,
+  .more {
+    min-height: 40px;
+  }
+
+  .more {
+    width: 40px;
+  }
+
+  .item {
+    min-height: 46px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup {
+    transition: none;
+  }
+}

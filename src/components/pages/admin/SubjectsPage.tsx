@@ -1,9 +1,10 @@
 "use client";
 
-import { AlertCircle, Plus } from "lucide-react";
+import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import type { Subject } from "@/apis/subjects.api";
 import { useDeleteSubject, useSubjects } from "@/hooks/useSubjects";
 import { handleApiError } from "@/lib/errorHandler";
@@ -80,22 +81,18 @@ export function SubjectsPage() {
                 <td data-label={t("name")}>{subject.name}</td>
                 <td data-label={t("code")} className={styles.cellMuted}>{subject.code ?? "—"}</td>
                 <td data-actions>
-                  <div className={styles.rowActions}>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => openPanel({ type: "form", subject })}
-                    >
-                      {tForm("edit")}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.dangerLink}
-                      onClick={() => openPanel({ type: "delete", subject })}
-                    >
-                      {t("delete")}
-                    </button>
-                  </div>
+                  <RowActions
+                    menuLabel={`${tForm("actions")}: ${subject.name}`}
+                    primary={{ label: tForm("edit"), icon: Pencil, onSelect: () => openPanel({ type: "form", subject }) }}
+                    actions={[
+                      {
+                        label: t("delete"),
+                        icon: Trash2,
+                        danger: true,
+                        onSelect: () => openPanel({ type: "delete", subject }),
+                      },
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

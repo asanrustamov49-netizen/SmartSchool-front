@@ -430,3 +430,30 @@ select option:checked {
     opacity: 1;
   }
 }
+
+/* Полосы прокрутки внутри страниц (таблицы, списки, выпадающие меню): тонкие, без стрелок,
+   в цвет темы. Полоса самой страницы скрыта отдельно (правило для html выше). */
+* {
+  scrollbar-color: color-mix(in srgb, var(--ss-muted) 40%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ss-muted) 40%, transparent);
+  background-clip: padding-box;
+}

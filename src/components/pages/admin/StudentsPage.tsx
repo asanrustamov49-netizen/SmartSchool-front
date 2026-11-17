@@ -1,11 +1,22 @@
 "use client";
 
-import { AlertCircle, Download, FileSpreadsheet, KeyRound, Plus, Upload } from "lucide-react";
+import {
+  AlertCircle,
+  Download,
+  FileSpreadsheet,
+  IdCard,
+  KeyRound,
+  Pencil,
+  Plus,
+  Upload,
+  UserX,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getClassName } from "@/apis/classes.api";
 import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
+import { RowActions } from "@/components/ui/RowActions";
 import { Select } from "@/components/ui/Select";
 import { useClasses } from "@/hooks/useClasses";
 import { useDeactivateStudent, useStudents } from "@/hooks/useStudents";
@@ -178,42 +189,32 @@ export function StudentsPage() {
                   {student.is_active ? t("active") : t("inactive")}
                 </td>
                 <td data-actions>
-                  <div className={styles.rowActions}>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => openPanel({ type: "card", studentId: student.id })}
-                    >
-                      {t("card")}
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => openPanel({ type: "form", student })}
-                    >
-                      {tForm("edit")}
-                    </button>
-                    {student.is_active && (
-                      <>
-                        <button
-                          type="button"
-                          className={styles.linkButton}
-                          onClick={() => openPanel({ type: "confirm", action: "reset", student })}
-                        >
-                          {t("resetPassword")}
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.dangerLink}
-                          onClick={() =>
-                            openPanel({ type: "confirm", action: "deactivate", student })
-                          }
-                        >
-                          {t("deactivate")}
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  <RowActions
+                    menuLabel={`${tForm("actions")}: ${student.full_name}`}
+                    primary={{ label: tForm("edit"), icon: Pencil, onSelect: () => openPanel({ type: "form", student }) }}
+                    actions={[
+                      {
+                        label: t("card"),
+                        icon: IdCard,
+                        onSelect: () => openPanel({ type: "card", studentId: student.id }),
+                      },
+                      ...(student.is_active
+                        ? [
+                            {
+                              label: t("resetPassword"),
+                              icon: KeyRound,
+                              onSelect: () => openPanel({ type: "confirm", action: "reset", student }),
+                            },
+                            {
+                              label: t("deactivate"),
+                              icon: UserX,
+                              danger: true,
+                              onSelect: () => openPanel({ type: "confirm", action: "deactivate", student }),
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
                 </td>
               </tr>
             ))}
