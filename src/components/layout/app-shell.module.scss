@@ -1146,3 +1146,66 @@
     transition: none;
   }
 }
+
+// ---------- Телефон и планшет: навигация через нижнюю панель и лист «Ещё» ----------
+// Боковое меню не выезжает (все разделы есть в «Ещё»), в шапке — логотип, название
+// страницы, поиск и уведомления. Язык и тема переехали в лист «Ещё».
+@media (max-width: 1024px) {
+  .sidebar,
+  .menuButton,
+  .backdrop {
+    display: none !important;
+  }
+
+  .langSwitcher,
+  .themeToggle {
+    display: none;
+  }
+
+  .headerLeft {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 10px;
+  }
+
+  .headerContext {
+    display: flex !important;
+    min-width: 0;
+  }
+
+  .headerContext span {
+    display: none !important;
+  }
+
+  .headerContext strong {
+    overflow: hidden;
+    font-size: 16px !important;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .searchTrigger {
+    width: 40px;
+    max-width: 40px;
+    flex: 0 0 auto;
+    justify-content: center;
+    margin-left: auto;
+    padding: 0;
+  }
+
+  .searchText,
+  .searchKbd {
+    display: none;
+  }
+}
+
+// Планшет: нижняя панель компактная и по центру, а не на всю ширину экрана.
+@media (min-width: 641px) and (max-width: 1024px) {
+  .mobileNav {
+    right: auto;
+    left: 50%;
+    width: min(560px, calc(100% - 24px));
+    transform: translateX(-50%);
+  }
+}

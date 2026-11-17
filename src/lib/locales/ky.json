@@ -172,7 +172,13 @@
       "myClass": "Классым",
       "schoolSettings": "Мектеп",
       "promotion": "Которуу"
-    }
+    },
+    "more": "Дагы",
+    "moreSections": "Бардык бөлүмдөр",
+    "moreAccount": "Аккаунт",
+    "language": "Тил",
+    "themeLight": "Жарык тема",
+    "themeDark": "Караңгы тема"
   },
   "dashboard": {
     "metrics": {

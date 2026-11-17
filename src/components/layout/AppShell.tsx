@@ -6,7 +6,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import {
   CircleAlert,
   LoaderCircle,
-  Menu,
+  LayoutGrid,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -14,7 +14,6 @@ import {
   Search,
   ShieldAlert,
   Sun,
-  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
@@ -26,12 +25,14 @@ import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
+import { MobileMoreSheet } from "./MobileMoreSheet";
 import { CabinetSpotlight } from "./CabinetSpotlight";
 import { CommandPalette } from "./CommandPalette";
 import {
   getAllowedItems,
   getCurrentNavigationItem,
   getMobileItems,
+  getMoreItems,
   getRoleNavigation,
   isPathAllowed,
   type NavigationItem,
@@ -110,13 +111,22 @@ function AuthenticatedShell({
   const pathname = usePathname();
   const { setTheme } = useTheme();
   const collapsed = useSidebarCollapsed();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Лист «Ещё» на телефоне и планшете — там все остальные разделы, профиль, язык и выход.
+  const [moreOpen, setMoreOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   const navigation = getRoleNavigation(currentUser);
   const mobileItems = getMobileItems(navigation);
+  const moreItems = getMoreItems(navigation);
+
+  // В нижней панели мало места: короткая подпись раздела, если она есть (app.navShort).
+  const getMobileLabel = (key: string) => (t.has(`navShort.${key}`) ? t(`navShort.${key}`) : t(`nav.${key}`));
   const pathAllowed = isPathAllowed(navigation, pathname);
   const currentItem = getCurrentNavigationItem(navigation, pathname);
+  // «Ещё» подсвечивается, когда открыт раздел, которого нет в нижней панели (журнал, профиль…).
+  const isMoreActive = !mobileItems.some((item) => item.key === currentItem?.key);
+  // Открыт раздел из «Ещё» — на кнопке его иконка и название, чтобы было видно, где ты.
+  const MoreIcon = isMoreActive && currentItem ? currentItem.icon : LayoutGrid;
   const pageTitle = currentItem ? t(`nav.${currentItem.key}`) : t("title");
   const roleLabel = t(`role.${currentUser.role}`);
   const { listRef, indicatorRef } = useNavIndicator(currentItem?.key, collapsed ? "collapsed" : "expanded");
@@ -164,7 +174,6 @@ function AuthenticatedShell({
           className={className}
           aria-current={isActive ? "page" : undefined}
           title={collapsed ? label : undefined}
-          onClick={() => setMobileNavOpen(false)}
         >
           {content}
         </Link>
@@ -188,7 +197,7 @@ function AuthenticatedShell({
     <div className={styles.shell}>
       <CabinetSpotlight />
       <aside
-        className={cn(styles.sidebar, mobileNavOpen && styles.sidebarOpen)}
+        className={styles.sidebar}
         id="primary-navigation"
       >
         <div className={styles.sidebarGlow} aria-hidden="true" />
@@ -223,7 +232,7 @@ function AuthenticatedShell({
           currentUser={currentUser}
           items={navigation.accountItems}
           collapsed={collapsed}
-          onNavigate={() => setMobileNavOpen(false)}
+          onNavigate={() => setMoreOpen(false)}
         />
         {currentUser.school && (
           <div className={styles.schoolCard} title={collapsed ? currentUser.school.name : undefined}>
@@ -246,16 +255,6 @@ function AuthenticatedShell({
       <div className={styles.contentArea}>
         <header className={styles.header}>
           <div className={styles.headerLeft}>
-            <button
-              type="button"
-              className={styles.menuButton}
-              aria-label={mobileNavOpen ? t("closeMenu") : t("openMenu")}
-              aria-controls="primary-navigation"
-              aria-expanded={mobileNavOpen}
-              onClick={() => setMobileNavOpen((value) => !value)}
-            >
-              {mobileNavOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-            </button>
             <Logo variant="icon" size="sm" className={styles.headerLogo} />
             <div className={styles.headerContext}>
               <span>{roleLabel}</span>
@@ -294,7 +293,7 @@ function AuthenticatedShell({
 
             <button
               type="button"
-              className={styles.iconButton}
+              className={cn(styles.iconButton, styles.themeToggle)}
               aria-label={t("toggleTheme")}
               onClick={() =>
                 setTheme(document.documentElement.classList.contains("dark") ? "light" : "dark")
@@ -341,21 +340,30 @@ function AuthenticatedShell({
               aria-current={isActive ? "page" : undefined}
             >
               <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
-              {/* В нижней панели мало места: короткая подпись, если она есть (app.navShort). */}
-              <span>{t.has(`navShort.${item.key}`) ? t(`navShort.${item.key}`) : t(`nav.${item.key}`)}</span>
+              <span>{getMobileLabel(item.key)}</span>
             </Link>
           );
         })}
-      </nav>
-
-      {mobileNavOpen && (
         <button
           type="button"
-          className={styles.backdrop}
-          aria-label={t("closeMenu")}
-          onClick={() => setMobileNavOpen(false)}
-        />
-      )}
+          className={cn(styles.mobileNavItem, isMoreActive && styles.mobileNavItemActive)}
+          aria-haspopup="dialog"
+          aria-expanded={moreOpen}
+          onClick={() => setMoreOpen(true)}
+        >
+          <MoreIcon size={19} strokeWidth={1.8} aria-hidden="true" />
+          <span>{isMoreActive && currentItem ? getMobileLabel(currentItem.key) : t("more")}</span>
+        </button>
+      </nav>
+
+      <MobileMoreSheet
+        open={moreOpen}
+        onOpenChange={setMoreOpen}
+        currentUser={currentUser}
+        items={moreItems}
+        accountItems={navigation.accountItems}
+        activeKey={currentItem?.key}
+      />
 
       {paletteOpen && (
         <CommandPalette pages={getAllowedItems(navigation)} onClose={() => setPaletteOpen(false)} />

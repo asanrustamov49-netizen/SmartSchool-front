@@ -36,7 +36,7 @@ export type RoleNavigation = {
   accountItems: NavigationItem[];
 };
 
-const MOBILE_ITEMS_COUNT = 5;
+const MOBILE_ITEMS_COUNT = 4;
 
 const homeItem: NavigationItem = {
   key: "home",
@@ -179,13 +179,15 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
   }
 }
 
-// Нижняя панель на телефоне: готовые разделы, затем профиль, всего не больше пяти.
-// Разделы «Скоро» остаются только в боковом меню.
+// Нижняя панель на телефоне: четыре главных раздела роли и кнопка «Ещё».
 export function getMobileItems(navigation: RoleNavigation): NavigationItem[] {
-  return [...navigation.items.filter((item) => item.available), profileItem].slice(
-    0,
-    MOBILE_ITEMS_COUNT,
-  );
+  return navigation.items.filter((item) => item.available).slice(0, MOBILE_ITEMS_COUNT);
+}
+
+// Всё, что не поместилось в нижнюю панель, открывается листом «Ещё».
+export function getMoreItems(navigation: RoleNavigation): NavigationItem[] {
+  const mobileKeys = new Set(getMobileItems(navigation).map((item) => item.key));
+  return navigation.items.filter((item) => item.available && !mobileKeys.has(item.key));
 }
 
 // Все страницы, доступные роли: для проверки доступа, заголовка и быстрого поиска.

@@ -171,7 +171,13 @@
       "teachers": "Учителя",
       "schoolSettings": "Школа",
       "promotion": "Перевод"
-    }
+    },
+    "more": "Ещё",
+    "moreSections": "Все разделы",
+    "moreAccount": "Аккаунт",
+    "language": "Язык",
+    "themeLight": "Светлая тема",
+    "themeDark": "Тёмная тема"
   },
   "dashboard": {
     "metrics": {
