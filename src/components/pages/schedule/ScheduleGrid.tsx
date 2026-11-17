@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState, type TouchEvent } from "react";
 import type { ScheduleBells, ScheduleLesson } from "@/apis/schedule.api";
 import { cn } from "@/lib/utils";
 import styles from "./schedule.module.scss";
@@ -23,10 +23,14 @@ function getTodayWeekday() {
   return day === 0 ? 1 : day;
 }
 
+const SWIPE_MIN_DISTANCE = 50;
+
 // Неделя на компьютере — сетка «уроки × дни», на телефоне — вкладки дней со списком.
 export function ScheduleGrid({ lessons, bells, secondary, onAdd, onEdit }: ScheduleGridProps) {
   const t = useTranslations("schedule");
   const [mobileDay, setMobileDay] = useState(getTodayWeekday);
+  const [slideFrom, setSlideFrom] = useState<"left" | "right" | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const canEdit = Boolean(onAdd && onEdit);
 
   // Показываем уроки до последнего занятого номера, но не меньше шести строк.
@@ -93,6 +97,36 @@ export function ScheduleGrid({ lessons, bells, secondary, onAdd, onEdit }: Sched
     .filter((lesson) => lesson.weekday === mobileDay)
     .sort((first, second) => first.lesson_number - second.lesson_number);
 
+  const changeDay = (weekday: number) => {
+    setSlideFrom(weekday > mobileDay ? "right" : "left");
+    setMobileDay(weekday);
+  };
+
+  // Свайп влево — следующий день, вправо — предыдущий. Вертикальная прокрутка не мешает.
+  const handleTouchStart = (event: TouchEvent) => {
+    const touch = event.touches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) {
+      return;
+    }
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < SWIPE_MIN_DISTANCE || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) {
+      return;
+    }
+    const weekdays = bells.weekdays.map((day) => day.weekday);
+    const nextWeekday = weekdays[weekdays.indexOf(mobileDay) + (deltaX < 0 ? 1 : -1)];
+    if (nextWeekday !== undefined) {
+      changeDay(nextWeekday);
+    }
+  };
+
   return (
     <>
       <div className={styles.gridWrap}>
@@ -134,30 +168,37 @@ export function ScheduleGrid({ lessons, bells, secondary, onAdd, onEdit }: Sched
               role="tab"
               aria-selected={mobileDay === day.weekday}
               className={cn(styles.dayTab, mobileDay === day.weekday && styles.dayTabActive)}
-              onClick={() => setMobileDay(day.weekday)}
+              onClick={() => changeDay(day.weekday)}
             >
               {t(`weekdaysShort.${day.weekday}`)}
             </button>
           ))}
         </div>
 
-        {mobileLessons.length === 0 ? (
-          <p className={styles.mobileEmpty}>{t("noLessonsDay")}</p>
-        ) : (
-          <ul className={styles.mobileList}>
-            {mobileLessons.map((lesson) => (
-              <li key={lesson.id}>
-                <span className={styles.mobileTime}>
-                  <strong>{lesson.lesson_number}</strong>
-                  <small>
-                    {lesson.start_time}–{lesson.end_time}
-                  </small>
-                </span>
-                {renderLesson(lesson)}
-              </li>
-            ))}
-          </ul>
-        )}
+        <div
+          key={mobileDay}
+          className={cn(styles.mobileDay, slideFrom && styles[`slideFrom_${slideFrom}`])}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {mobileLessons.length === 0 ? (
+            <p className={styles.mobileEmpty}>{t("noLessonsDay")}</p>
+          ) : (
+            <ul className={styles.mobileList}>
+              {mobileLessons.map((lesson) => (
+                <li key={lesson.id}>
+                  <span className={styles.mobileTime}>
+                    <strong>{lesson.lesson_number}</strong>
+                    <small>
+                      {lesson.start_time}–{lesson.end_time}
+                    </small>
+                  </span>
+                  {renderLesson(lesson)}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {onAdd && (
           <button

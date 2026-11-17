@@ -270,3 +270,33 @@
     transform: scale(0.96);
   }
 }
+
+// Смена дня на телефоне: список слегка въезжает с той стороны, куда листали.
+.mobileDay {
+  min-height: 120px;
+  touch-action: pan-y;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slideFrom_right {
+    animation: scheduleSlideRight 0.22s ease-out;
+  }
+
+  .slideFrom_left {
+    animation: scheduleSlideLeft 0.22s ease-out;
+  }
+}
+
+@keyframes scheduleSlideRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes scheduleSlideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
