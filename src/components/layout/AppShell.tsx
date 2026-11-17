@@ -339,8 +339,10 @@ function AuthenticatedShell({
               className={cn(styles.mobileNavItem, isActive && styles.mobileNavItemActive)}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
-              <span>{getMobileLabel(item.key)}</span>
+              <span className={styles.mobileNavIcon} aria-hidden="true">
+                <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} />
+              </span>
+              <span className={styles.mobileNavLabel}>{getMobileLabel(item.key)}</span>
             </Link>
           );
         })}
@@ -351,8 +353,12 @@ function AuthenticatedShell({
           aria-expanded={moreOpen}
           onClick={() => setMoreOpen(true)}
         >
-          <MoreIcon size={19} strokeWidth={1.8} aria-hidden="true" />
-          <span>{isMoreActive && currentItem ? getMobileLabel(currentItem.key) : t("more")}</span>
+          <span className={styles.mobileNavIcon} aria-hidden="true">
+            <MoreIcon size={20} strokeWidth={isMoreActive ? 2.2 : 1.8} />
+          </span>
+          <span className={styles.mobileNavLabel}>
+            {isMoreActive && currentItem ? getMobileLabel(currentItem.key) : t("more")}
+          </span>
         </button>
       </nav>
 
