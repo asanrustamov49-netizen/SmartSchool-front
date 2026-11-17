@@ -278,3 +278,15 @@
     transform: translateY(8px);
   }
 }
+
+// Телефон: статус уходит над заголовком, заголовок занимает всю ширину карточки.
+@media (max-width: 640px) {
+  .cardHeader {
+    flex-direction: column-reverse;
+    gap: 8px;
+
+    > .status {
+      align-self: flex-start;
+    }
+  }
+}

@@ -1433,3 +1433,13 @@
     white-space: normal;
   }
 }
+
+// Ссылки в заголовках панелей («Бүт жума», «Все школы») — удобная область нажатия на телефоне.
+@media (max-width: 640px) {
+  a.panelMeta,
+  .panelLink {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+  }
+}

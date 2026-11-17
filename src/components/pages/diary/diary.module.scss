@@ -57,7 +57,6 @@
 // ---------- Неделя ----------
 .weekNav {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
@@ -65,8 +64,9 @@
 
 .weekButton {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -89,6 +89,7 @@
 .weekTitle {
   display: flex;
   min-width: 0;
+  flex: 1;
   flex-direction: column;
 
   strong {

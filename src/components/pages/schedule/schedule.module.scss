@@ -247,7 +247,8 @@
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ss-success, #059669) 25%, transparent);
 }
 
-@media (max-width: 760px) {
+// Неделя сеткой помещается только на ноутбуке; на телефоне и планшете — по дням.
+@media (max-width: 1024px) {
   .gridWrap {
     display: none;
   }

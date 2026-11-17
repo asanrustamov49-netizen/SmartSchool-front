@@ -433,9 +433,11 @@ select option:checked {
 
 /* Полосы прокрутки внутри страниц (таблицы, списки, выпадающие меню): тонкие, без стрелок,
    в цвет темы. Полоса самой страницы скрыта отдельно (правило для html выше). */
-* {
-  scrollbar-color: color-mix(in srgb, var(--ss-muted) 40%, transparent) transparent;
-  scrollbar-width: thin;
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: color-mix(in srgb, var(--ss-muted) 40%, transparent) transparent;
+    scrollbar-width: thin;
+  }
 }
 
 *::-webkit-scrollbar {

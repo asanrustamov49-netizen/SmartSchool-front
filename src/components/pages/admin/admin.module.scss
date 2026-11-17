@@ -912,3 +912,15 @@
     display: none;
   }
 }
+
+// Текстовые кнопки («Изменить», «Удалить», «Добавить») на телефоне: область нажатия
+// не меньше 40px по высоте, хотя визуально это по-прежнему ссылка.
+@media (max-width: 640px) {
+  .linkButton,
+  .dangerLink {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    padding: 0 6px;
+  }
+}
