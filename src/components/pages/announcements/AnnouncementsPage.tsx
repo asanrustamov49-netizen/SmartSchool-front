@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, CircleAlert, Plus } from "lucide-react";
+import { CalendarDays, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Announcement } from "@/apis/announcements.api";
@@ -8,6 +8,7 @@ import { DataState } from "@/components/ui/DataState";
 import { useAnnouncementsList, useDeleteAnnouncement } from "@/hooks/useAnnouncements";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useDateFormat } from "@/hooks/useDateFormat";
+import { useUndoableDelete } from "@/hooks/useUndoableDelete";
 import { handleApiError } from "@/lib/errorHandler";
 import { getMediaUrl } from "@/lib/utils";
 import { AnnouncementForm } from "./AnnouncementForm";
@@ -16,8 +17,7 @@ import styles from "./announcements.module.scss";
 
 type Panel =
   | { type: "none" }
-  | { type: "form"; announcement: Announcement | null }
-  | { type: "delete"; announcement: Announcement };
+  | { type: "form"; announcement: Announcement | null };
 
 export function AnnouncementsPage() {
   const t = useTranslations("announcements");
@@ -32,45 +32,14 @@ export function AnnouncementsPage() {
   // Создавать, менять и удалять объявления backend разрешает только директору и завучу.
   const role = currentUserQuery.data?.role;
   const canManage = role === "DIRECTOR" || role === "DEPUTY";
-  const announcements = announcementsQuery.data?.pages.flat() ?? [];
+  const { hiddenIds, requestDelete } = useUndoableDelete(deleteMutation.mutateAsync, t("deleted"));
+  const announcements = (announcementsQuery.data?.pages.flat() ?? []).filter(
+    (announcement) => !hiddenIds.has(announcement.id),
+  );
 
   const openPanel = (nextPanel: Panel) => {
-    deleteMutation.reset();
     setPanel(nextPanel);
   };
-
-  const handleDelete = (announcement: Announcement) => {
-    deleteMutation.mutate(announcement.id, { onSuccess: () => setPanel({ type: "none" }) });
-  };
-
-  const renderDeleteConfirm = (announcement: Announcement) => (
-    <div className={styles.confirm} role="alertdialog" aria-label={t("delete")}>
-      <p>{t("confirmDelete")}</p>
-      {deleteMutation.isError && (
-        <p className={adminStyles.formError} role="alert">
-          <CircleAlert size={16} aria-hidden="true" />
-          {handleApiError(deleteMutation.error, tApiErrors)}
-        </p>
-      )}
-      <div className={adminStyles.formActions}>
-        <button
-          type="button"
-          className={adminStyles.secondaryButton}
-          onClick={() => openPanel({ type: "none" })}
-        >
-          {tForm("cancel")}
-        </button>
-        <button
-          type="button"
-          className={`${adminStyles.primaryButton} ${adminStyles.dangerButton}`}
-          disabled={deleteMutation.isPending}
-          onClick={() => handleDelete(announcement)}
-        >
-          {t("delete")}
-        </button>
-      </div>
-    </div>
-  );
 
   const renderList = () => {
     if (announcementsQuery.isPending) {
@@ -131,16 +100,13 @@ export function AnnouncementsPage() {
                   <button
                     type="button"
                     className={adminStyles.dangerLink}
-                    onClick={() => openPanel({ type: "delete", announcement })}
+                    onClick={() => requestDelete(announcement.id)}
                   >
                     {t("delete")}
                   </button>
                 </div>
               )}
 
-              {panel.type === "delete" &&
-                panel.announcement.id === announcement.id &&
-                renderDeleteConfirm(announcement)}
             </div>
           </li>
         ))}

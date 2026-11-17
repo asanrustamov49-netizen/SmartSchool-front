@@ -1,12 +1,13 @@
 "use client";
 
-import { AlertCircle, Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
 import { RowActions } from "@/components/ui/RowActions";
 import type { Subject } from "@/apis/subjects.api";
 import { useDeleteSubject, useSubjects } from "@/hooks/useSubjects";
+import { useUndoableDelete } from "@/hooks/useUndoableDelete";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import { SubjectForm } from "./SubjectForm";
@@ -14,8 +15,7 @@ import styles from "./admin.module.scss";
 
 type Panel =
   | { type: "none" }
-  | { type: "form"; subject: Subject | null }
-  | { type: "delete"; subject: Subject };
+  | { type: "form"; subject: Subject | null };
 
 export function SubjectsPage() {
   const t = useTranslations("admin.subjects");
@@ -25,8 +25,9 @@ export function SubjectsPage() {
   const deleteSubject = useDeleteSubject();
   const [panel, setPanel] = useState<Panel>({ type: "none" });
 
+  const { hiddenIds, requestDelete } = useUndoableDelete(deleteSubject.mutateAsync, t("deleted"));
+
   const openPanel = (nextPanel: Panel) => {
-    deleteSubject.reset();
     setPanel(nextPanel);
   };
   const [search, setSearch] = useState("");
@@ -35,8 +36,9 @@ export function SubjectsPage() {
   const normalizedSearch = search.trim().toLowerCase();
   const subjects = (subjectsQuery.data ?? []).filter(
     (subject) =>
-      subject.name.toLowerCase().includes(normalizedSearch) ||
-      (subject.code ?? "").toLowerCase().includes(normalizedSearch),
+      !hiddenIds.has(subject.id) &&
+      (subject.name.toLowerCase().includes(normalizedSearch) ||
+      (subject.code ?? "").toLowerCase().includes(normalizedSearch)),
   );
 
   const renderList = () => {
@@ -92,7 +94,7 @@ export function SubjectsPage() {
                         label: t("delete"),
                         icon: Trash2,
                         danger: true,
-                        onSelect: () => openPanel({ type: "delete", subject }),
+                        onSelect: () => requestDelete(subject.id),
                       },
                     ]}
                   />
@@ -130,39 +132,6 @@ export function SubjectsPage() {
           subject={panel.subject}
           onClose={() => setPanel({ type: "none" })}
         />
-      )}
-
-      {panel.type === "delete" && (
-        <section className={styles.card} role="alertdialog" aria-labelledby="subject-delete">
-          <p id="subject-delete" className={styles.notice}>
-            {t("confirmDelete", { name: panel.subject.name })}
-          </p>
-          {deleteSubject.isError && (
-            <p className={styles.formError} role="alert">
-              <AlertCircle size={16} aria-hidden="true" />
-              {handleApiError(deleteSubject.error, tApiErrors)}
-            </p>
-          )}
-          <div className={styles.formActions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={() => openPanel({ type: "none" })}
-            >
-              {tForm("cancel")}
-            </button>
-            <button
-              type="button"
-              className={`${styles.primaryButton} ${styles.dangerButton}`}
-              disabled={deleteSubject.isPending}
-              onClick={() =>
-                deleteSubject.mutate(panel.subject.id, { onSuccess: () => setPanel({ type: "none" }) })
-              }
-            >
-              {t("delete")}
-            </button>
-          </div>
-        </section>
       )}
 
       <section className={styles.card}>

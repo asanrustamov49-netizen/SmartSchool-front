@@ -18,6 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { Logo } from "@/components/ui/Logo";
+import { Toaster } from "@/components/ui/Toaster";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
@@ -382,6 +383,7 @@ function AuthenticatedShell({
       {paletteOpen && (
         <CommandPalette pages={getAllowedItems(navigation)} onClose={() => setPaletteOpen(false)} />
       )}
+      <Toaster />
     </div>
   );
 }

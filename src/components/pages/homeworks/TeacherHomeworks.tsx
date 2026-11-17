@@ -14,6 +14,7 @@ import {
   useHomeworks,
 } from "@/hooks/useHomeworks";
 import { useJournalAssignments } from "@/hooks/useJournal";
+import { useUndoableDelete } from "@/hooks/useUndoableDelete";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import { AttachmentList, HomeworkCard } from "./HomeworkCard";
@@ -182,13 +183,13 @@ function Submissions({ homeworkId }: { homeworkId: number }) {
 // Учитель даёт задания по своим предметам и смотрит, кто что сдал.
 export function TeacherHomeworks() {
   const t = useTranslations("homeworks");
-  const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
   const homeworksQuery = useHomeworks(null, true);
   const deleteHomework = useDeleteHomework();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [openSubmissionsId, setOpenSubmissionsId] = useState<number | null>(null);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const { hiddenIds, requestDelete } = useUndoableDelete(deleteHomework.mutateAsync, t("deleted"));
+  const homeworks = (homeworksQuery.data ?? []).filter((homework) => !hiddenIds.has(homework.id));
 
   const renderList = () => {
     if (homeworksQuery.isPending) {
@@ -205,13 +206,13 @@ export function TeacherHomeworks() {
       );
     }
 
-    if (homeworksQuery.data.length === 0) {
+    if (homeworks.length === 0) {
       return <DataState status="empty" message={t("emptyTeacher")} action={{ label: t("add"), onClick: () => setIsFormOpen(true) }} />;
     }
 
     return (
       <div className={styles.list}>
-        {homeworksQuery.data.map((homework) => (
+        {homeworks.map((homework) => (
           <HomeworkCard key={homework.id} homework={homework}>
             <div className={styles.cardActions}>
               <button
@@ -224,42 +225,17 @@ export function TeacherHomeworks() {
                 <MessageSquareText size={16} aria-hidden="true" />
                 {openSubmissionsId === homework.id ? t("hideSubmissions") : t("showSubmissions")}
               </button>
-              {confirmDeleteId === homework.id ? (
-                <>
-                  <span className={styles.confirmText}>{t("confirmDelete")}</span>
-                  <button
-                    type="button"
-                    className={adminStyles.secondaryButton}
-                    onClick={() => setConfirmDeleteId(null)}
-                  >
-                    {tForm("cancel")}
-                  </button>
-                  <button
-                    type="button"
-                    className={cn(adminStyles.primaryButton, adminStyles.dangerButton)}
-                    disabled={deleteHomework.isPending}
-                    onClick={() =>
-                      deleteHomework.mutate(homework.id, {
-                        onSuccess: () => {
-                          setConfirmDeleteId(null);
-                          setOpenSubmissionsId(null);
-                        },
-                      })
-                    }
-                  >
-                    {t("delete")}
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  className={cn(adminStyles.secondaryButton, adminStyles.ghostDanger)}
-                  onClick={() => setConfirmDeleteId(homework.id)}
-                >
-                  <Trash2 size={16} aria-hidden="true" />
-                  {t("delete")}
-                </button>
-              )}
+              <button
+                type="button"
+                className={cn(adminStyles.secondaryButton, adminStyles.ghostDanger)}
+                onClick={() => {
+                  setOpenSubmissionsId(null);
+                  requestDelete(homework.id);
+                }}
+              >
+                <Trash2 size={16} aria-hidden="true" />
+                {t("delete")}
+              </button>
             </div>
             {openSubmissionsId === homework.id && <Submissions homeworkId={homework.id} />}
           </HomeworkCard>

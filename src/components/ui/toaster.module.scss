@@ -1,0 +1,88 @@
+// Уведомления внизу по центру; на планшете и телефоне — над нижней панелью навигации.
+.region {
+  position: fixed;
+  z-index: 60;
+  bottom: 24px;
+  left: 50%;
+  display: flex;
+  width: min(440px, calc(100vw - 32px));
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.toast {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 14px;
+  background: var(--ss-ink);
+  box-shadow: var(--ss-shadow-lg);
+  color: var(--ss-surface);
+  font-size: 14px;
+  pointer-events: auto;
+  animation: toastIn 0.2s ease-out;
+}
+
+.error > svg {
+  flex: 0 0 auto;
+  color: var(--ss-danger);
+}
+
+.message {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
+}
+
+.action,
+.close {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--ss-surface) 14%, transparent);
+  }
+}
+
+.action {
+  padding: 0 12px;
+  color: color-mix(in srgb, var(--ss-accent) 70%, var(--ss-surface));
+  font-weight: 700;
+}
+
+.close {
+  width: 36px;
+  opacity: 0.7;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .region {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
