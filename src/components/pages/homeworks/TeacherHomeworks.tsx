@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useHomeworks";
 import { useJournalAssignments } from "@/hooks/useJournal";
 import { handleApiError } from "@/lib/errorHandler";
+import { cn } from "@/lib/utils";
 import { AttachmentList, HomeworkCard } from "./HomeworkCard";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./homeworks.module.scss";
@@ -225,17 +226,17 @@ export function TeacherHomeworks() {
               </button>
               {confirmDeleteId === homework.id ? (
                 <>
-                  <span className={adminStyles.fieldHint}>{t("confirmDelete")}</span>
+                  <span className={styles.confirmText}>{t("confirmDelete")}</span>
                   <button
                     type="button"
-                    className={adminStyles.linkButton}
+                    className={adminStyles.secondaryButton}
                     onClick={() => setConfirmDeleteId(null)}
                   >
                     {tForm("cancel")}
                   </button>
                   <button
                     type="button"
-                    className={adminStyles.dangerLink}
+                    className={cn(adminStyles.primaryButton, adminStyles.dangerButton)}
                     disabled={deleteHomework.isPending}
                     onClick={() =>
                       deleteHomework.mutate(homework.id, {
@@ -252,10 +253,11 @@ export function TeacherHomeworks() {
               ) : (
                 <button
                   type="button"
-                  className={adminStyles.dangerLink}
+                  className={cn(adminStyles.secondaryButton, adminStyles.ghostDanger)}
                   onClick={() => setConfirmDeleteId(homework.id)}
                 >
-                  <Trash2 size={15} aria-hidden="true" /> {t("delete")}
+                  <Trash2 size={16} aria-hidden="true" />
+                  {t("delete")}
                 </button>
               )}
             </div>

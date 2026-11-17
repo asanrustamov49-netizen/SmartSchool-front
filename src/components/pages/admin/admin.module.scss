@@ -84,6 +84,14 @@
   }
 }
 
+// Иконка и текст в одну строку (Tailwind делает svg блочным — без flex иконка уезжает наверх).
+.linkButton,
+.dangerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .linkButton {
   color: var(--accent);
   font-size: 13px;
@@ -291,6 +299,19 @@
   color: var(--danger);
   font-size: 13px;
   font-weight: 600;
+}
+
+// «Призрачная» кнопка удаления рядом с обычными кнопками: та же высота, красный текст,
+// рамка и фон появляются только при наведении.
+.ghostDanger {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--danger) !important;
+
+  &:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--danger) 35%, transparent) !important;
+    background: color-mix(in srgb, var(--danger) 8%, transparent) !important;
+  }
 }
 
 .dangerButton {
@@ -937,4 +958,9 @@
 .fileLabelDisabled {
   cursor: progress;
   opacity: 0.6;
+}
+
+// Кнопка удаления в ряду действий формы — слева, отдельно от «Отмена / Сохранить».
+.pushLeft {
+  margin-right: auto;
 }

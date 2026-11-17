@@ -8,7 +8,7 @@ import type { ScheduleBells, ScheduleLesson } from "@/apis/schedule.api";
 import { Select } from "@/components/ui/Select";
 import { useDeleteScheduleLesson, useSaveScheduleLesson } from "@/hooks/useSchedule";
 import { handleApiError } from "@/lib/errorHandler";
-import { emptyToNull } from "@/lib/utils";
+import { cn, emptyToNull } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 
 export type LessonDraft = {
@@ -137,16 +137,17 @@ export function LessonForm({ draft, assignments, bells, onClose }: LessonFormPro
           {draft.lesson && !confirmDelete && (
             <button
               type="button"
-              className={adminStyles.dangerLink}
+              className={cn(adminStyles.secondaryButton, adminStyles.ghostDanger, adminStyles.pushLeft)}
               onClick={() => setConfirmDelete(true)}
             >
-              <Trash2 size={15} aria-hidden="true" /> {t("delete")}
+              <Trash2 size={16} aria-hidden="true" />
+              {t("delete")}
             </button>
           )}
           {draft.lesson && confirmDelete && (
             <button
               type="button"
-              className={`${adminStyles.primaryButton} ${adminStyles.dangerButton}`}
+              className={cn(adminStyles.primaryButton, adminStyles.dangerButton, adminStyles.pushLeft)}
               disabled={deleteLesson.isPending}
               onClick={() => {
                 if (draft.lesson) {

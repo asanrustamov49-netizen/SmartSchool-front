@@ -290,3 +290,19 @@
     }
   }
 }
+
+// Вопрос «Удалить задание?» в ряду кнопок карточки.
+.confirmText {
+  flex: 1 1 100%;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// Телефон: кнопки карточки растягиваются — в одну строку, если помещаются, иначе каждая на всю ширину.
+@media (max-width: 640px) {
+  .cardActions > button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}
