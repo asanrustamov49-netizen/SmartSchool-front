@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Announcement } from "@/apis/announcements.api";
 import { DataState } from "@/components/ui/DataState";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useAnnouncementsList, useDeleteAnnouncement } from "@/hooks/useAnnouncements";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useDateFormat } from "@/hooks/useDateFormat";
@@ -40,6 +41,7 @@ export function AnnouncementsPage() {
   const openPanel = (nextPanel: Panel) => {
     setPanel(nextPanel);
   };
+  useCreateIntent("announcement", () => openPanel({ type: "form", announcement: null }), canManage);
 
   const renderList = () => {
     if (announcementsQuery.isPending) {

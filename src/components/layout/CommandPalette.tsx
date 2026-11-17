@@ -1,17 +1,29 @@
 "use client";
 
-import { CornerDownLeft, Languages, LogOut, Moon, Search, type LucideIcon } from "lucide-react";
+import { CornerDownLeft, Languages, LogOut, Moon, Plus, Search, type LucideIcon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useState, type KeyboardEvent } from "react";
-import { useLogout } from "@/hooks/useAuth";
+import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { requestCreate, type CreateIntent } from "@/hooks/useCreateIntent";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import type { NavigationGroup, NavigationItem } from "./navigation";
 import styles from "./command-palette.module.scss";
 
 // Группы как в боковом меню (Обзор, Люди, Учёба…), затем аккаунт и действия.
-type PaletteGroup = NavigationGroup | "account" | "actions";
+type PaletteGroup = NavigationGroup | "account" | "create" | "actions";
+
+// Какие формы создания открываются со страниц. Объявления создают только директор и завуч,
+// задания — только учителя (у ученика на той же странице свой список).
+const CREATE_COMMANDS: { intent: CreateIntent; href: string; roles?: string[] }[] = [
+  { intent: "student", href: "/admin/students" },
+  { intent: "teacher", href: "/admin/teachers" },
+  { intent: "class", href: "/admin/classes" },
+  { intent: "subject", href: "/admin/subjects" },
+  { intent: "announcement", href: "/announcements", roles: ["DIRECTOR", "DEPUTY"] },
+  { intent: "homework", href: "/homeworks", roles: ["TEACHER", "CLASS_TEACHER"] },
+];
 
 type PaletteEntry = {
   id: string;
@@ -35,6 +47,7 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
+  const role = useCurrentUser().data?.role;
   const { resolvedTheme, setTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -47,6 +60,19 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
       group: page.group ?? ("account" as const),
       icon: page.icon,
       run: () => router.push(page.href),
+    })),
+    ...CREATE_COMMANDS.filter(
+      (command) =>
+        pages.some((page) => page.href === command.href) && (!command.roles || (role && command.roles.includes(role))),
+    ).map((command) => ({
+      id: `create-${command.intent}`,
+      label: t(`search.create.${command.intent}`),
+      group: "create" as const,
+      icon: Plus,
+      run: () => {
+        requestCreate(command.intent);
+        router.push(command.href);
+      },
     })),
     {
       id: "theme",
@@ -90,6 +116,9 @@ export function CommandPalette({ pages, onClose }: CommandPaletteProps) {
   };
 
   const getGroupLabel = (group: PaletteGroup) => {
+    if (group === "create") {
+      return t("search.createGroup");
+    }
     if (group === "actions") {
       return t("search.actions");
     }

@@ -89,7 +89,16 @@
       "lightTheme": "Жарык теманы күйгүзүү",
       "darkTheme": "Караңгы теманы күйгүзүү",
       "toRussian": "Переключить на русский",
-      "toKyrgyz": "Кыргызчага которуу"
+      "toKyrgyz": "Кыргызчага которуу",
+      "createGroup": "Түзүү",
+      "create": {
+        "student": "Окуучу кошуу",
+        "teacher": "Мугалим кошуу",
+        "class": "Класс түзүү",
+        "subject": "Сабак кошуу",
+        "announcement": "Жаңы жарыя",
+        "homework": "Жаңы тапшырма"
+      }
     },
     "studentClass": "11-А класс",
     "schoolName": "№1 мектеп",

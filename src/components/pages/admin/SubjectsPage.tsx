@@ -6,6 +6,7 @@ import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
 import { RowActions } from "@/components/ui/RowActions";
 import type { Subject } from "@/apis/subjects.api";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useDeleteSubject, useSubjects } from "@/hooks/useSubjects";
 import { useUndoableDelete } from "@/hooks/useUndoableDelete";
 import { handleApiError } from "@/lib/errorHandler";
@@ -30,6 +31,7 @@ export function SubjectsPage() {
   const openPanel = (nextPanel: Panel) => {
     setPanel(nextPanel);
   };
+  useCreateIntent("subject", () => openPanel({ type: "form", subject: null }));
   const [search, setSearch] = useState("");
 
   // Backend не поддерживает поиск, список фильтруется на клиенте.

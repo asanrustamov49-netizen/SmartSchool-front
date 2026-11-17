@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MAX_HOMEWORK_FILES } from "@/apis/homeworks.api";
 import { DataState } from "@/components/ui/DataState";
 import { Select } from "@/components/ui/Select";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import {
   useCreateHomework,
@@ -187,6 +188,7 @@ export function TeacherHomeworks() {
   const homeworksQuery = useHomeworks(null, true);
   const deleteHomework = useDeleteHomework();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  useCreateIntent("homework", () => setIsFormOpen(true));
   const [openSubmissionsId, setOpenSubmissionsId] = useState<number | null>(null);
   const { hiddenIds, requestDelete } = useUndoableDelete(deleteHomework.mutateAsync, t("deleted"));
   const homeworks = (homeworksQuery.data ?? []).filter((homework) => !hiddenIds.has(homework.id));

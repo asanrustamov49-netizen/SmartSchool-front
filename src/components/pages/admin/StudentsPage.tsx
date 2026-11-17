@@ -18,6 +18,7 @@ import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
 import { RowActions } from "@/components/ui/RowActions";
 import { Select } from "@/components/ui/Select";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useClasses } from "@/hooks/useClasses";
 import { useDeactivateStudent, useStudents } from "@/hooks/useStudents";
 import { useResetUserPassword } from "@/hooks/useUsers";
@@ -79,6 +80,7 @@ export function StudentsPage() {
     setActionError("");
     setPanel(nextPanel);
   };
+  useCreateIntent("student", () => openPanel({ type: "form", student: null }));
 
   const handleTemplateDownload = async () => {
     setActionError("");

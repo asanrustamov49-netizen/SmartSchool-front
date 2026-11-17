@@ -6,6 +6,7 @@ import { useState } from "react";
 import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import { DataState } from "@/components/ui/DataState";
 import { RowActions } from "@/components/ui/RowActions";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useClasses } from "@/hooks/useClasses";
 import { useSchoolUser } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
@@ -34,6 +35,7 @@ export function ClassesPage() {
   const tApiErrors = useTranslations("apiErrors");
   const classesQuery = useClasses();
   const [formState, setFormState] = useState<FormState>({ isOpen: false });
+  useCreateIntent("class", () => setFormState({ isOpen: true, schoolClass: null }));
   const [search, setSearch] = useState("");
   const [credentialsClassId, setCredentialsClassId] = useState<number | null>(null);
 

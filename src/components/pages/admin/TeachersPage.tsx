@@ -19,6 +19,7 @@ import { downloadTeachersTemplate, type Teacher } from "@/apis/teachers.api";
 import { DataState } from "@/components/ui/DataState";
 import { RowActions } from "@/components/ui/RowActions";
 import { Select } from "@/components/ui/Select";
+import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useSetTeacherActive, useTeachers } from "@/hooks/useTeachers";
 import { useResetUserPassword } from "@/hooks/useUsers";
 import { handleApiError } from "@/lib/errorHandler";
@@ -84,6 +85,7 @@ export function TeachersPage() {
     setActionError("");
     setPanel(nextPanel);
   };
+  useCreateIntent("teacher", () => openPanel({ type: "form", teacher: null }));
 
   const handleTemplateDownload = async () => {
     setActionError("");
