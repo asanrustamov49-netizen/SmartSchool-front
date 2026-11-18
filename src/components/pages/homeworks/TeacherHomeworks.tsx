@@ -18,7 +18,7 @@ import { useJournalAssignments } from "@/hooks/useJournal";
 import { useUndoableDelete } from "@/hooks/useUndoableDelete";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
-import { AttachmentList, HomeworkCard } from "./HomeworkCard";
+import { AttachmentList, HomeworkCard, todayString } from "./HomeworkCard";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./homeworks.module.scss";
 
@@ -73,6 +73,7 @@ function HomeworkForm({ onClose }: { onClose: () => void }) {
             type="date"
             className={adminStyles.input}
             value={dueDate}
+            min={todayString()}
             onChange={(event) => setDueDate(event.target.value)}
           />
           <span className={adminStyles.fieldHint}>{tForm("optional")}</span>

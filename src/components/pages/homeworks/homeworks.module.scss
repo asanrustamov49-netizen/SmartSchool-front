@@ -151,6 +151,21 @@
   }
 }
 
+.daysLeft {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+// Сегодня или завтра — заметнее, чтобы не забыть сдать.
+.daysLeftUrgent {
+  background: var(--ss-warning-soft);
+  color: var(--ss-warning);
+}
+
 .description {
   margin: 0;
   color: var(--text);

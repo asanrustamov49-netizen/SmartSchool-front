@@ -10,7 +10,7 @@ import styles from "./homeworks.module.scss";
 
 export type HomeworkStatus = "submitted" | "overdue" | "pending" | "noDeadline";
 
-function todayString() {
+export function todayString() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
@@ -26,6 +26,14 @@ export function getHomeworkStatus(homework: Homework): HomeworkStatus {
     return "noDeadline";
   }
   return homework.due_date < todayString() ? "overdue" : "pending";
+}
+
+// Сколько полных дней осталось до срока: 0 — сегодня, 1 — завтра.
+function daysUntil(dueDate: string) {
+  const [year, month, day] = dueDate.split("-").map(Number);
+  const [todayYear, todayMonth, todayDay] = todayString().split("-").map(Number);
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  return Math.round((Date.UTC(year, month - 1, day) - Date.UTC(todayYear, todayMonth - 1, todayDay)) / millisecondsPerDay);
 }
 
 export function fileNameFromUrl(url: string) {
@@ -76,6 +84,18 @@ type HomeworkCardProps = {
 export function HomeworkCard({ homework, status, children }: HomeworkCardProps) {
   const t = useTranslations("homeworks");
   const { formatDate } = useDateFormat();
+  // Ученику и родителю подсказываем, сколько осталось: «завтра» понятнее, чем дата.
+  const daysLeft = status === "pending" && homework.due_date ? daysUntil(homework.due_date) : null;
+
+  const getDaysLeftText = (days: number) => {
+    if (days === 0) {
+      return t("dueToday");
+    }
+    if (days === 1) {
+      return t("dueTomorrow");
+    }
+    return t("dueInDays", { count: days });
+  };
 
   return (
     <article className={cn(styles.card, status && styles[`card_${status}`])}>
@@ -95,6 +115,11 @@ export function HomeworkCard({ homework, status, children }: HomeworkCardProps) 
         <p className={styles.due}>
           <CalendarClock size={15} aria-hidden="true" />
           {t("dueDate", { date: formatDate(homework.due_date) })}
+          {daysLeft !== null && (
+            <span className={cn(styles.daysLeft, daysLeft <= 1 && styles.daysLeftUrgent)}>
+              {getDaysLeftText(daysLeft)}
+            </span>
+          )}
         </p>
       )}
 

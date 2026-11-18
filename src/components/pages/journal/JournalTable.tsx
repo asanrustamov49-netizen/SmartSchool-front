@@ -84,6 +84,16 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changeVersion, canEdit, saveJournal.isPending, saveJournal.isError]);
 
+  // Пока изменения не сохранены, браузер переспросит перед закрытием вкладки — оценки не потеряются.
+  useEffect(() => {
+    if (!isDirty && !saveJournal.isPending) {
+      return;
+    }
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty, saveJournal.isPending]);
+
   // Клавиатура: 2–5 — оценка и переход к следующему ученику, 0/Delete — убрать оценку, ↑/↓ — между учениками.
   const focusRow = (index: number) => {
     const row = document.querySelector<HTMLElement>(`[data-grade-row="${index}"] button:not(:disabled)`);
