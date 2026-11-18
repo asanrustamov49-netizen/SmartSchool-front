@@ -163,7 +163,8 @@ export function AccountMenu({ currentUser, items, collapsed, onNavigate }: Accou
         className={cn(styles.trigger, isOpen && styles.triggerOpen)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        title={collapsed ? currentUser.full_name : undefined}
+        aria-label={collapsed ? currentUser.full_name : undefined}
+        data-tooltip={collapsed && !isOpen ? currentUser.full_name : undefined}
         onClick={() => setIsOpen((value) => !value)}
       >
         <UserAvatar user={currentUser} />

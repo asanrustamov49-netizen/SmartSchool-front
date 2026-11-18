@@ -28,6 +28,7 @@ import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
 import { MobileMoreSheet } from "./MobileMoreSheet";
 import { CabinetSpotlight } from "./CabinetSpotlight";
+import { SidebarTooltip } from "./SidebarTooltip";
 import { CommandPalette } from "./CommandPalette";
 import {
   getAllowedItems,
@@ -150,6 +151,25 @@ function AuthenticatedShell({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Клавиша [ сворачивает и разворачивает боковое меню на компьютере (как в Linear, Notion).
+  // event.code, а не event.key: на русской раскладке эта клавиша — «х».
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      const isTyping = target?.closest("input, textarea, select, [contenteditable='true']");
+      const hasModifier = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
+      const isDesktop = window.matchMedia("(min-width: 1025px)").matches;
+
+      if (event.code === "BracketLeft" && !isTyping && !hasModifier && isDesktop) {
+        event.preventDefault();
+        setSidebarCollapsed(!collapsed);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [collapsed]);
+
   const handleLocaleChange = (nextLocale: string) => {
     router.replace(pathname, { locale: nextLocale });
   };
@@ -175,7 +195,8 @@ function AuthenticatedShell({
           href={item.href}
           className={className}
           aria-current={isActive ? "page" : undefined}
-          title={collapsed ? label : undefined}
+          aria-label={label}
+          data-tooltip={collapsed ? label : undefined}
         >
           {content}
         </Link>
@@ -188,7 +209,8 @@ function AuthenticatedShell({
         type="button"
         className={className}
         disabled
-        title={`${label} · ${t("comingSoon")}`}
+        aria-label={`${label} · ${t("comingSoon")}`}
+        data-tooltip={collapsed ? `${label} · ${t("comingSoon")}` : undefined}
       >
         {content}
       </button>
@@ -211,7 +233,8 @@ function AuthenticatedShell({
             type="button"
             className={styles.collapseButton}
             aria-label={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
-            title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+            data-tooltip={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+            data-tooltip-shortcut="["
             onClick={() => setSidebarCollapsed(!collapsed)}
           >
             {collapsed ? (
@@ -244,7 +267,7 @@ function AuthenticatedShell({
           onNavigate={() => setMoreOpen(false)}
         />
         {currentUser.school && (
-          <div className={styles.schoolCard} title={collapsed ? currentUser.school.name : undefined}>
+          <div className={styles.schoolCard} data-tooltip={collapsed ? currentUser.school.name : undefined}>
             <span className={styles.schoolCardIcon}>
               {currentUser.school.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element -- файл лежит на сервере API
@@ -260,6 +283,7 @@ function AuthenticatedShell({
           </div>
         )}
       </aside>
+      <SidebarTooltip containerId="primary-navigation" />
 
       <div className={styles.contentArea}>
         <header className={styles.header}>
