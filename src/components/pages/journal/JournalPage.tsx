@@ -11,6 +11,18 @@ import adminStyles from "../admin/admin.module.scss";
 import styles from "./journal.module.scss";
 
 // Дата в формате YYYY-MM-DD по местному времени (toISOString дал бы дату по UTC).
+const LAST_ASSIGNMENT_KEY = "smart-school-journal-assignment";
+
+// Журнал открывается на последнем выбранном классе и предмете.
+function readLastAssignment(): number | null {
+  try {
+    const value = Number(window.localStorage.getItem(LAST_ASSIGNMENT_KEY));
+    return Number.isFinite(value) && value > 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 function getTodayString() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -23,11 +35,26 @@ export function JournalPage() {
   const tApiErrors = useTranslations("apiErrors");
   const today = getTodayString();
   const assignmentsQuery = useJournalAssignments();
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(() =>
+    typeof window === "undefined" ? null : readLastAssignment(),
+  );
   const [day, setDay] = useState(today);
 
   const assignments = assignmentsQuery.data ?? [];
-  const assignmentId = selectedId ?? assignments[0]?.id ?? null;
+  // Без сохранённого выбора — первый свой предмет: в чужом журнале оценки ставить нельзя.
+  const defaultAssignment = assignments.find((assignment) => assignment.can_edit) ?? assignments[0];
+  const assignmentId = assignments.some((assignment) => assignment.id === selectedId)
+    ? selectedId
+    : (defaultAssignment?.id ?? null);
+
+  const selectAssignment = (id: number) => {
+    setSelectedId(id);
+    try {
+      window.localStorage.setItem(LAST_ASSIGNMENT_KEY, String(id));
+    } catch {
+      // Без localStorage выбор просто не запомнится.
+    }
+  };
   const dayQuery = useJournalDay(assignmentId, day);
 
   const renderJournal = () => {
@@ -92,7 +119,7 @@ export function JournalPage() {
             ariaLabel={t("assignment")}
             value={assignmentId === null ? "" : String(assignmentId)}
             disabled={assignments.length === 0}
-            onValueChange={(value) => setSelectedId(Number(value))}
+            onValueChange={(value) => selectAssignment(Number(value))}
             options={assignments.map((assignment) => ({
               value: String(assignment.id),
               label: [assignment.class_name, assignment.subject_name, assignment.teacher_name]

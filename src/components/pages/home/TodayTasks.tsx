@@ -21,6 +21,7 @@ import { useTeachers } from "@/hooks/useTeachers";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import scss from "./home.module.scss";
+import { QuickAbsence } from "./QuickAbsence";
 
 type TaskTone = "danger" | "warning" | "accent";
 
@@ -58,6 +59,7 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
   const children = role === "PARENT" ? (currentUser.children ?? []) : [];
   const { selectedChildId } = useSelectedChild(children);
   const studentId = role === "PARENT" ? selectedChildId : null;
+  const selectedChild = children.find((child) => child.id === selectedChildId);
   const homeworksQuery = useHomeworks(studentId, isStudentSide && (role === "STUDENT" || studentId !== null));
   const pendingAbsences = useAbsenceRequests("PENDING", reviewsAbsences || role === "PARENT");
   const todayQuery = useTodaySchedule(null, isTeacher);
@@ -178,6 +180,15 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
             );
           })}
         </ul>
+      )}
+
+      {role === "PARENT" && selectedChild && (
+        <QuickAbsence
+          studentId={selectedChild.id}
+          childName={selectedChild.full_name.split(" ")[1] ?? selectedChild.full_name}
+          today={dateString(0)}
+          requests={pendingAbsences.data ?? []}
+        />
       )}
     </section>
   );

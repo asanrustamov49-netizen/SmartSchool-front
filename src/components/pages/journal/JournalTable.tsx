@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, CircleCheck, LoaderCircle } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle, UserCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type KeyboardEvent } from "react";
 import type { AttendanceCode, JournalDay, JournalRow } from "@/apis/journal.api";
@@ -110,6 +110,19 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
     }
   };
 
+  // Обычно присутствуют почти все: отмечаем всех разом, потом меняем только отсутствующих.
+  const unmarkedRows = journal.students.filter((row) => !row.excused && drafts[row.student_id].attendance === null);
+  const markAllPresent = () => {
+    setDrafts((current) => {
+      const next = { ...current };
+      for (const row of unmarkedRows) {
+        next[row.student_id] = { ...next[row.student_id], attendance: "Б" };
+      }
+      return next;
+    });
+    setChangeVersion((version) => version + 1);
+  };
+
   const grades = journal.students
     .map((row) => drafts[row.student_id].grade)
     .filter((grade): grade is number => grade !== null);
@@ -130,6 +143,12 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
 
       {!journal.can_edit && <p className={adminStyles.notice}>{t("readOnly")}</p>}
       {journal.can_edit && isFutureDay && <p className={adminStyles.notice}>{t("futureDay")}</p>}
+      {canEdit && unmarkedRows.length > 0 && (
+        <button type="button" className={cn(adminStyles.secondaryButton, styles.allPresent)} onClick={markAllPresent}>
+          <UserCheck size={16} aria-hidden="true" />
+          {t("allPresent", { count: unmarkedRows.length })}
+        </button>
+      )}
       {canEdit && <p className={styles.keyboardHint}>{t("keyboardHint")}</p>}
 
       <div className={adminStyles.tableWrap}>

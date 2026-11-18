@@ -148,3 +148,13 @@
     display: none;
   }
 }
+
+.allPresent {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 640px) {
+  .allPresent {
+    width: 100%;
+  }
+}
