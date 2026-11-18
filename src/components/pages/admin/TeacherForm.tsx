@@ -9,6 +9,7 @@ import type { Teacher, TeacherCreated } from "@/apis/teachers.api";
 import { useCreateTeacher, useUpdateTeacher } from "@/hooks/useTeachers";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
+import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type TeacherFormValues = {
@@ -28,6 +29,7 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
   const t = useTranslations("admin.teachers");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const createTeacher = useCreateTeacher();
   const updateTeacher = useUpdateTeacher();
   const isEditing = teacher !== null;
@@ -40,7 +42,8 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
-      .max(200, tForm("maxLength", { count: 200 })),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     phone: z.string(),
   });
 

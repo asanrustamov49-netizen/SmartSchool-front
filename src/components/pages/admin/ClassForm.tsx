@@ -9,6 +9,7 @@ import type { SchoolClass } from "@/apis/classes.api";
 import { Select } from "@/components/ui/Select";
 import { useCreateClass, useUpdateClass } from "@/hooks/useClasses";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { textRule, validateClassLetter } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type ClassFormValues = {
@@ -28,6 +29,7 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
   const t = useTranslations("admin.classes");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const createClass = useCreateClass();
   const updateClass = useUpdateClass();
   const mutation = schoolClass ? updateClass : createClass;
@@ -35,7 +37,11 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
   // Правила из схемы ClassCreate: grade_number 1–11, letter 1–5 символов, academic_year обязателен.
   const classSchema = z.object({
     grade_number: z.string().min(1, tForm("required")),
-    letter: z.string().trim().min(1, tForm("required")).max(5, tForm("maxLength", { count: 5 })),
+    letter: z
+      .string()
+      .trim()
+      .min(1, tForm("required"))
+      .superRefine(textRule(validateClassLetter, (problem) => tChecks(problem))),
     academic_year: z.string().trim().min(1, tForm("required")),
   });
 

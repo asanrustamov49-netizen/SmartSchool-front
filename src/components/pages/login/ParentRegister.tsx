@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { useRegisterParent } from "@/hooks/useParents";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { textRule, validatePersonName } from "@/lib/textChecks";
 import { AuthLayout } from "./AuthLayout";
 import { PasswordField } from "./PasswordField";
 import styles from "./login.module.scss";
@@ -89,6 +90,7 @@ const ParentRegister = () => {
   const t = useTranslations("parentLink");
   const tAuth = useTranslations("auth");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const router = useRouter();
   const registerMutation = useRegisterParent();
 
@@ -96,7 +98,11 @@ const ParentRegister = () => {
   const innRule = z.string().trim().regex(/^\d{14}$/, t("errors.innDigits"));
   const registerSchema = z
     .object({
-      fullName: z.string().trim().min(3, t("errors.fullNameMin")),
+      fullName: z
+        .string()
+        .trim()
+        .min(3, t("errors.fullNameMin"))
+        .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
       inn: innRule,
       phone: z.string().trim().max(20, t("errors.phoneMax")),
       password: z.string().min(8, t("errors.passwordMin")),

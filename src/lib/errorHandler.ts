@@ -40,7 +40,7 @@ export const handleApiError = (
     }
 
     if (Array.isArray(detail) && detail.length > 0) {
-      return detail.map((item) => item.msg).join(". ");
+      return detail.map((item) => String(item.msg).replace(/^Value error, /, "")).join(". ");
     }
 
     return t("server");
@@ -81,7 +81,8 @@ export const getApiFieldErrors = (error: unknown): Record<string, string> => {
     const fieldName = item.loc[item.loc.length - 1];
 
     if (typeof fieldName === "string") {
-      fieldErrors[fieldName] = item.msg;
+      // Pydantic добавляет к тексту ValueError служебное «Value error, ».
+      fieldErrors[fieldName] = String(item.msg).replace(/^Value error, /, "");
     }
   }
 

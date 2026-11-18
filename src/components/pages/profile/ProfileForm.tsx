@@ -9,6 +9,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 import { useUpdateProfile } from "@/hooks/useProfile";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
+import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "../admin/admin.module.scss";
 
 type ProfileFormValues = {
@@ -23,6 +24,7 @@ export function ProfileForm({ user }: { user: CurrentUser }) {
   const t = useTranslations("profile");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const updateProfile = useUpdateProfile();
   const canEditName = ROLES_WITH_EDITABLE_NAME.includes(user.role);
 
@@ -32,7 +34,8 @@ export function ProfileForm({ user }: { user: CurrentUser }) {
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
-      .max(200, tForm("maxLength", { count: 200 })),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
   });
 

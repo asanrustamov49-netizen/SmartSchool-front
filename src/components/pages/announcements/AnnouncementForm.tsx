@@ -9,6 +9,7 @@ import { z } from "zod";
 import type { Announcement } from "@/apis/announcements.api";
 import { useSaveAnnouncement } from "@/hooks/useAnnouncements";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { textRule, validateFreeText } from "@/lib/textChecks";
 import styles from "../admin/admin.module.scss";
 
 type AnnouncementFormValues = {
@@ -26,6 +27,7 @@ export function AnnouncementForm({ announcement, onClose }: AnnouncementFormProp
   const t = useTranslations("announcements");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const saveAnnouncement = useSaveAnnouncement();
   const [image, setImage] = useState<File | null>(null);
   const isEditing = announcement !== null;
@@ -36,8 +38,9 @@ export function AnnouncementForm({ announcement, onClose }: AnnouncementFormProp
       .string()
       .trim()
       .min(2, tForm("minLength", { count: 2 }))
-      .max(200, tForm("maxLength", { count: 200 })),
-    body: z.string(),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
+    body: z.string().superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
     event_date: z.string(),
   });
 

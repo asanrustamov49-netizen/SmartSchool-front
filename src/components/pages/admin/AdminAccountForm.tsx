@@ -10,6 +10,7 @@ import type { SchoolAdmin, SchoolAdminFields, SchoolAdminRole } from "@/apis/sys
 import { Select } from "@/components/ui/Select";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
+import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type AdminAccountFormValues = {
@@ -47,6 +48,7 @@ export function AdminAccountForm({
   const tRole = useTranslations("app.role");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
 
   const accountSchema = z.object({
     inn: isEditing ? z.string() : z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
@@ -54,7 +56,8 @@ export function AdminAccountForm({
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
-      .max(200, tForm("maxLength", { count: 200 })),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
     role: z.enum(["DIRECTOR", "DEPUTY"]).refine((role) => isEditing || allowedRoles.includes(role)),
   });

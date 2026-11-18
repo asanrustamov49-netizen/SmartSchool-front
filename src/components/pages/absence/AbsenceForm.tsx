@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { useAbsenceRules, useCreateAbsenceRequest } from "@/hooks/useAbsenceRequests";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
+import { textRule, validateFreeText } from "@/lib/textChecks";
 import adminStyles from "../admin/admin.module.scss";
 
 type AbsenceFormValues = {
@@ -40,6 +41,7 @@ export function AbsenceForm({ childrenList, onClose }: AbsenceFormProps) {
   const t = useTranslations("absence");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const rulesQuery = useAbsenceRules(true);
   const createRequest = useCreateAbsenceRequest();
 
@@ -59,8 +61,12 @@ export function AbsenceForm({ childrenList, onClose }: AbsenceFormProps) {
       .string()
       .trim()
       .min(2, tForm("minLength", { count: 2 }))
-      .max(100, tForm("maxLength", { count: 100 })),
-    comment: z.string().max(1000, tForm("maxLength", { count: 1000 })),
+      .max(100, tForm("maxLength", { count: 100 }))
+      .superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
+    comment: z
+      .string()
+      .max(1000, tForm("maxLength", { count: 1000 }))
+      .superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
   });
 
   const {

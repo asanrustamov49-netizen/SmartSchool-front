@@ -11,6 +11,7 @@ import { Select } from "@/components/ui/Select";
 import { useCreateStudent, useUpdateStudent } from "@/hooks/useStudents";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { emptyToNull } from "@/lib/utils";
+import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type StudentFormValues = {
@@ -33,6 +34,7 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   const t = useTranslations("admin.students");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const createStudent = useCreateStudent();
   const updateStudent = useUpdateStudent();
   const mutation = student ? updateStudent : createStudent;
@@ -48,7 +50,8 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
-      .max(200, tForm("maxLength", { count: 200 })),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
     class_id: isEditing ? z.string() : z.string().min(1, tForm("required")),
   });

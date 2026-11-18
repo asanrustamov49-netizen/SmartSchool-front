@@ -9,6 +9,7 @@ import type { SystemSchool, SystemSchoolCreated } from "@/apis/system.api";
 import { useCreateSystemSchool, useUpdateSystemSchool } from "@/hooks/useSystem";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { cn, emptyToNull } from "@/lib/utils";
+import { textRule, validateFreeText, validatePersonName } from "@/lib/textChecks";
 import styles from "../admin/admin.module.scss";
 
 type SchoolFormValues = {
@@ -42,6 +43,7 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
   const t = useTranslations("system");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
+  const tChecks = useTranslations("textChecks");
   const createSchool = useCreateSystemSchool();
   const updateSchool = useUpdateSystemSchool();
   const isEditing = school !== null;
@@ -55,8 +57,9 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
       .string()
       .trim()
       .min(2, tForm("minLength", { count: 2 }))
-      .max(200, tForm("maxLength", { count: 200 })),
-    address: z.string(),
+      .max(200, tForm("maxLength", { count: 200 }))
+      .superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
+    address: z.string().superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
     phone: z.string(),
     email: z.union([z.literal(""), z.string().trim().email(t("errors.email"))]),
     directorInn: directorRule(z.string().trim().regex(/^\d{14}$/, tForm("innFormat"))),
@@ -65,7 +68,8 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
         .string()
         .trim()
         .min(3, tForm("minLength", { count: 3 }))
-        .max(200, tForm("maxLength", { count: 200 })),
+        .max(200, tForm("maxLength", { count: 200 }))
+        .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     ),
     directorPhone: z.string(),
   });
