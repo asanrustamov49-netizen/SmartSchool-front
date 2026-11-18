@@ -269,6 +269,13 @@
   margin-left: auto;
 }
 
+// На планшете и телефоне боковое меню заменено нижней панелью — настройка не нужна.
+@media (max-width: 1024px) {
+  .sidebarSection {
+    display: none;
+  }
+}
+
 @media (max-width: 1100px) {
   .columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));

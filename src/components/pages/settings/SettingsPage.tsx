@@ -143,7 +143,7 @@ export function SettingsPage() {
           />
         </section>
 
-        <section className={adminStyles.card}>
+        <section className={cn(adminStyles.card, styles.sidebarSection)}>
           <h2 className={adminStyles.cardTitle}>{t("sidebarTitle")}</h2>
           <OptionGroup
             label={t("sidebarTitle")}
