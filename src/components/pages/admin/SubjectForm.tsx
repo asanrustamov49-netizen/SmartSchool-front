@@ -3,14 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import type { Subject } from "@/apis/subjects.api";
+import { Select } from "@/components/ui/Select";
 import { useCreateSubject, useUpdateSubject } from "@/hooks/useSubjects";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { SUBJECT_CATALOG } from "@/lib/subjectName";
 import { emptyToNull } from "@/lib/utils";
-import { textRule, validateSubjectName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type SubjectFormValues = {
@@ -28,33 +28,26 @@ export function SubjectForm({ subject, onClose }: SubjectFormProps) {
   const t = useTranslations("admin.subjects");
   const tForm = useTranslations("admin.form");
   const tApiErrors = useTranslations("apiErrors");
-  const tChecks = useTranslations("textChecks");
   const locale = useLocale();
   const createSubject = useCreateSubject();
   const updateSubject = useUpdateSubject();
   const activeMutation = subject ? updateSubject : createSubject;
 
-  // Правила из схемы SubjectCreate: name — от 2 до 100 символов и проходит проверку на допустимость.
   const subjectSchema = z.object({
-    name: z
-      .string()
-      .trim()
-      .min(2, tForm("minLength", { count: 2 }))
-      .max(100, tForm("maxLength", { count: 100 }))
-      .superRefine(textRule(validateSubjectName, (problem) => tChecks(problem))),
+    name: z.string().min(1, tForm("required")),
     code: z.string(),
   });
 
-  // Сначала названия на языке интерфейса, затем на втором языке — школа может вести предмет на любом.
-  const otherLocale = locale === "ky" ? "ru" : "ky";
-  const suggestions = [
-    ...new Set([
-      ...SUBJECT_CATALOG.map((item) => (locale === "ky" ? item.ky : item.ru)),
-      ...SUBJECT_CATALOG.map((item) => item[otherLocale]),
-    ]),
-  ];
+  // Название — только из списка, чтобы нельзя было вписать что угодно. Backend проверяет то же.
+  // Старое название не из списка остаётся в вариантах, чтобы предмет можно было открыть и сохранить.
+  const catalogNames = SUBJECT_CATALOG.map((item) => (locale === "ky" ? item.ky : item.ru));
+  const nameOptions = [...new Set([...(subject ? [subject.name] : []), ...catalogNames])].map((name) => ({
+    value: name,
+    label: name,
+  }));
 
   const {
+    control,
     register,
     handleSubmit,
     setError,
@@ -108,21 +101,20 @@ export function SubjectForm({ subject, onClose }: SubjectFormProps) {
 
         <div className={styles.field}>
           <label htmlFor="subject-name">{t("name")}</label>
-          <input
-            id="subject-name"
-            className={styles.input}
-            list="subject-name-suggestions"
-            autoComplete="off"
-            aria-invalid={Boolean(errors.name)}
-            aria-describedby="subject-name-hint"
-            {...register("name")}
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <Select
+                id="subject-name"
+                value={field.value}
+                onValueChange={field.onChange}
+                options={nameOptions}
+                placeholder={t("nameHint")}
+                invalid={Boolean(errors.name)}
+              />
+            )}
           />
-          <datalist id="subject-name-suggestions">
-            {suggestions.map((name) => (
-              <option key={name} value={name} />
-            ))}
-          </datalist>
-          <span id="subject-name-hint" className={styles.fieldHint}>{t("nameHint")}</span>
           {errors.name && <p className={styles.fieldError}>{errors.name.message}</p>}
         </div>
 

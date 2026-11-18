@@ -1,5 +1,5 @@
-// Школьные предметы Кыргызстана — подсказки в форме предмета. Своё название тоже можно ввести,
-// но оно проходит проверку validateSubjectName из textChecks.ts.
+// Школьные предметы Кыргызстана: название предмета выбирается только из этого списка.
+// Такой же список есть в backend (SmartSchool: mysite/services/text_checks.py, SUBJECT_CATALOG).
 export const SUBJECT_CATALOG: { ky: string; ru: string }[] = [
   { ky: "Кыргыз тили", ru: "Кыргызский язык" },
   { ky: "Кыргыз адабияты", ru: "Кыргызская литература" },

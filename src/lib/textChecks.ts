@@ -28,7 +28,6 @@ const BLOCKED_WORDS = ["хер", "лох", "амың", "амыңды", "дура
 const BLOCKED_LATIN_ROOTS = ["fuck", "fck", "shit", "bitch", "cunt", "porn", "pussy", "whore", "nigg", "dick", "penis"];
 const BLOCKED_LATIN_WORDS = ["ass", "sex", "xxx", "cock", "fag", "slut", "boobs"];
 
-const SUBJECT_CHARACTERS = /^[\p{L}\d\s().,-]+$/u;
 const NAME_CHARACTERS = /^[\p{L}\s'ʼ’.-]+$/u;
 const CLASS_LETTER = /^\p{L}{1,3}$/u;
 const REPEATED_LETTER = /(\p{L})\1\1/u;
@@ -58,20 +57,6 @@ export function hasInappropriateWords(text: string, joinWords = true) {
     latinParts.some((part) => BLOCKED_LATIN_ROOTS.some((root) => part.includes(root))) ||
     latinWords.some((word) => BLOCKED_LATIN_WORDS.includes(word))
   );
-}
-
-export function validateSubjectName(name: string): TextProblem | null {
-  const trimmedName = name.trim();
-  if (!SUBJECT_CHARACTERS.test(trimmedName) || countLetters(trimmedName) < 2) {
-    return "invalidChars";
-  }
-  if (REPEATED_LETTER.test(trimmedName.toLowerCase())) {
-    return "gibberish";
-  }
-  if (hasInappropriateWords(trimmedName)) {
-    return "subjectInappropriate";
-  }
-  return null;
 }
 
 // «Асанов Бакыт уулу», «O'Neil», «Анна-Мария»: только буквы, пробел, дефис и апостроф.
