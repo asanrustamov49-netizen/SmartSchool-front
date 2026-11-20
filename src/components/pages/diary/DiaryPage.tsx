@@ -1,18 +1,19 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MessageSquareText, Printer, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, LayoutGrid, MessageSquareText, Printer, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
-import type { AttendanceCode, DiaryLesson, GradesSummary, SubjectSummary } from "@/apis/journal.api";
+import type { AttendanceCode, DiaryLesson, GradesSummary, PeriodKey, SubjectSummary } from "@/apis/journal.api";
 import { ChildTabs } from "@/components/ui/ChildTabs";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useDateFormat } from "@/hooks/useDateFormat";
-import { useDiary, useGradesSummary } from "@/hooks/useJournal";
+import { useDiary, useGradesSummary, useStudentMonth } from "@/hooks/useJournal";
 import { useSelectedChild } from "@/hooks/useSelectedChild";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
+import { JournalMonthTable, MonthSwitcher } from "../journal/JournalMonthTable";
 import adminStyles from "../admin/admin.module.scss";
 import journalStyles from "../journal/journal.module.scss";
 import styles from "./diary.module.scss";
@@ -162,6 +163,29 @@ function TrendLine({ trend }: { trend: SubjectSummary["trend"] }) {
   );
 }
 
+const PERIOD_KEYS: PeriodKey[] = ["Q1", "Q2", "Q3", "Q4", "YEAR"];
+
+// Четвертные и годовая: показываются, когда учитель поставил хотя бы одну.
+function PeriodGradesRow({ periodGrades }: { periodGrades: SubjectSummary["period_grades"] }) {
+  const tJournal = useTranslations("journal");
+  const periods = PERIOD_KEYS.filter((period) => periodGrades?.[period] !== undefined);
+
+  if (periods.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={styles.periodGrades}>
+      {periods.map((period) => (
+        <span key={period}>
+          {tJournal(`periodNames.${period}`)}
+          <GradeBadge value={periodGrades?.[period] ?? 0} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function SubjectsSummary({ summary }: { summary: GradesSummary }) {
   const t = useTranslations("diary");
 
@@ -188,9 +212,59 @@ function SubjectsSummary({ summary }: { summary: GradesSummary }) {
             )}
             <small className={styles.subjectXp}>{t("xp", { count: subject.xp })}</small>
           </div>
+          <PeriodGradesRow periodGrades={subject.period_grades} />
         </li>
       ))}
     </ul>
+  );
+}
+
+// «Мой табель»: предметы × дни месяца, как бумажный табель.
+function StudentMonthCard({ studentId, enabled }: { studentId: number | null; enabled: boolean }) {
+  const t = useTranslations("diary");
+  const tApiErrors = useTranslations("apiErrors");
+  const today = toDateString(new Date());
+  const currentMonth = today.slice(0, 7);
+  const [month, setMonth] = useState(currentMonth);
+  const monthQuery = useStudentMonth(studentId, month, enabled);
+
+  const renderTable = () => {
+    if (monthQuery.isPending) {
+      return <DataState status="loading" />;
+    }
+    if (monthQuery.isError) {
+      return (
+        <DataState
+          status="error"
+          message={handleApiError(monthQuery.error, tApiErrors)}
+          onRetry={() => monthQuery.refetch()}
+        />
+      );
+    }
+    if (monthQuery.data.rows.length === 0) {
+      return <DataState status="empty" message={t("noSubjects")} />;
+    }
+    return (
+      <JournalMonthTable
+        month={monthQuery.data.month}
+        rows={monthQuery.data.rows.map((row) => ({ ...row, id: row.subject_id, title: row.subject_name }))}
+        today={today}
+        titleHeader={t("monthTable.subject")}
+        hint={t("monthTable.hint")}
+      />
+    );
+  };
+
+  return (
+    <section className={cn(adminStyles.card, styles.monthCard)}>
+      <div className={styles.monthCardHeading}>
+        <h2 className={adminStyles.cardTitle}>
+          <LayoutGrid size={17} aria-hidden="true" /> {t("monthTable.title")}
+        </h2>
+        <MonthSwitcher month={month} maxMonth={currentMonth} onChange={setMonth} />
+      </div>
+      {renderTable()}
+    </section>
   );
 }
 
@@ -333,6 +407,8 @@ function StudentDiary({ user }: { user: CurrentUser }) {
           {summaryQuery.data && <SubjectsSummary summary={summaryQuery.data} />}
         </section>
       </div>
+      <StudentMonthCard key={studentId ?? "me"} studentId={studentId} enabled={enabled} />
+
       {summaryQuery.data && hasGrades && (
         <ReportCard
           summary={summaryQuery.data}

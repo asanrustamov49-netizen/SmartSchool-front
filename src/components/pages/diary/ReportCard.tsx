@@ -1,8 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { GradesSummary } from "@/apis/journal.api";
+import type { GradesSummary, PeriodKey } from "@/apis/journal.api";
 import scss from "./reportCard.module.scss";
+
+const PERIOD_KEYS: PeriodKey[] = ["Q1", "Q2", "Q3", "Q4", "YEAR"];
 
 type ReportCardProps = {
   summary: GradesSummary;
@@ -16,6 +18,10 @@ type ReportCardProps = {
 export function ReportCard({ summary, schoolName, className, date }: ReportCardProps) {
   const t = useTranslations("diary.reportCard");
   const tJournal = useTranslations("journal");
+  // Колонки четвертей печатаются, только если хоть одна итоговая оценка уже есть.
+  const hasPeriodGrades = summary.subjects.some(
+    (subject) => Object.keys(subject.period_grades ?? {}).length > 0,
+  );
 
   return (
     <section className={scss.reportCard} aria-hidden="true">
@@ -46,6 +52,8 @@ export function ReportCard({ summary, schoolName, className, date }: ReportCardP
             <th>{t("average")}</th>
             <th>{tJournal("attendanceCodes.Ж")}</th>
             <th>{tJournal("attendanceCodes.К")}</th>
+            {hasPeriodGrades &&
+              PERIOD_KEYS.map((period) => <th key={period}>{tJournal(`periodNames.${period}`)}</th>)}
           </tr>
         </thead>
         <tbody>
@@ -56,6 +64,8 @@ export function ReportCard({ summary, schoolName, className, date }: ReportCardP
               <td>{subject.average?.toFixed(1) ?? "—"}</td>
               <td>{subject.attendance["Ж"] ?? 0}</td>
               <td>{subject.attendance["К"] ?? 0}</td>
+              {hasPeriodGrades &&
+                PERIOD_KEYS.map((period) => <td key={period}>{subject.period_grades?.[period] ?? "—"}</td>)}
             </tr>
           ))}
         </tbody>
@@ -66,6 +76,7 @@ export function ReportCard({ summary, schoolName, className, date }: ReportCardP
             <td>{summary.overall_average?.toFixed(1) ?? "—"}</td>
             <td>{summary.attendance["Ж"] ?? 0}</td>
             <td>{summary.attendance["К"] ?? 0}</td>
+            {hasPeriodGrades && PERIOD_KEYS.map((period) => <td key={period} />)}
           </tr>
         </tfoot>
       </table>

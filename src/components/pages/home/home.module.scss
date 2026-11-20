@@ -863,64 +863,293 @@
   gap: 12px;
 }
 
-// ---------- График директора ----------
-.chart {
+// ---------- График успеваемости (директор) ----------
+.perfHeading {
   display: flex;
-  min-height: 220px;
-  align-items: stretch;
-  gap: 14px;
-  overflow-x: auto;
-  margin: 0;
-  padding: 8px 2px 0;
-  list-style: none;
-}
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 14px;
 
-.chartColumn {
-  display: flex;
-  min-width: 52px;
-  flex: 1 0 52px;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--ss-ink);
+    font-size: 15px;
+    font-weight: 750;
 
-.chartValue {
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 800;
-}
+    svg {
+      color: var(--ss-accent);
+    }
+  }
 
-.chartTrack {
-  position: relative;
-  display: flex;
-  width: 100%;
-  max-width: 56px;
-  flex: 1;
-  align-items: flex-end;
-  border-radius: 12px;
-  background: var(--ss-surface-2);
-}
-
-.chartBar {
-  display: block;
-  width: 100%;
-  height: var(--bar-height);
-  border-radius: 12px;
-  background: var(--ss-gradient);
-  box-shadow: var(--ss-glow);
-  transform-origin: bottom;
-  transition: filter 0.2s ease;
-
-  &:hover {
-    filter: brightness(1.12);
+  p {
+    margin: 4px 0 0 28px;
+    color: var(--ss-muted);
+    font-size: 12px;
   }
 }
 
-.chartLabel {
+.perfPeriods {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--ss-line);
+  border-radius: 999px;
+  background: var(--ss-surface-2);
+
+  button {
+    min-width: 64px;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: var(--ss-muted);
+    font-size: 13px;
+    font-weight: 650;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      color: var(--ss-ink);
+    }
+  }
+}
+
+.perfPeriodActive {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff !important;
+}
+
+.perfSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0 0 12px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  dt {
+    color: var(--ss-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  dd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--ss-ink);
+    font-size: 24px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+  }
+}
+
+.perfChange {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ss-success, #059669) 14%, transparent);
+  color: var(--ss-success, #059669);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.perfChangeDown {
+  background: color-mix(in srgb, var(--danger, #dc2626) 14%, transparent);
+  color: var(--danger, #dc2626);
+}
+
+// Сетка: слева шкала, справа область графика, снизу подписи дат.
+.perfChart {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: 220px auto;
+  column-gap: 8px;
+}
+
+.perfAxis,
+.perfLabels {
+  position: relative;
+  margin: 0;
+  padding: 0;
   color: var(--ss-muted);
-  font-size: 13px;
-  font-weight: 650;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  list-style: none;
+}
+
+// Те же вертикальные отступы, что у области графика, — подписи совпадают с линиями сетки.
+.perfAxis {
+  margin: 26px 0 8px;
+}
+
+.perfAxis li {
+  position: absolute;
+  top: var(--y);
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.perfPlot {
+  position: relative;
+  // Отступы, чтобы крайние точки и подписи над ними не обрезались.
+  margin: 26px 12px 8px;
+}
+
+.perfGridLine {
+  position: absolute;
+  top: var(--y);
+  right: 0;
+  left: 0;
+  border-top: 1px dashed var(--ss-line);
+}
+
+.perfSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.perfLine {
+  fill: none;
+  stroke: var(--ss-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  // Толщина линии не растягивается вместе с SVG.
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--ss-accent) 45%, transparent));
+}
+
+.perfPoint {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+
+  &::before {
+    width: 11px;
+    height: 11px;
+    border: 2.5px solid var(--ss-accent);
+    border-radius: 50%;
+    background: var(--ss-surface);
+    content: "";
+    transition: transform 0.15s ease;
+  }
+
+  &:hover::before,
+  &:focus-visible::before {
+    transform: scale(1.3);
+  }
+}
+
+.perfPointLast::before,
+.perfPointActive::before {
+  border-color: #ffffff;
+  background: var(--ss-accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--ss-accent) 25%, transparent);
+}
+
+.perfBubble {
+  position: absolute;
+  bottom: calc(100% - 2px);
+  left: 50%;
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: var(--ss-surface-2);
+  color: var(--ss-ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+  transform: translateX(-50%);
   white-space: nowrap;
+}
+
+.perfPointLast .perfBubble,
+.perfPointActive .perfBubble {
+  background: var(--ss-gradient);
+  box-shadow: var(--ss-glow);
+  color: #ffffff;
+}
+
+.perfTooltip {
+  position: absolute;
+  z-index: 3;
+  top: var(--y);
+  left: var(--x);
+  display: flex;
+  min-width: 150px;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--ss-line);
+  border-radius: 10px;
+  background: var(--ss-surface);
+  box-shadow: var(--ss-shadow);
+  color: var(--ss-muted);
+  font-size: 12px;
+  pointer-events: none;
+  transform: translate(14px, 10px);
+
+  strong {
+    color: var(--ss-ink);
+    font-size: 13px;
+  }
+}
+
+.perfTooltipLeft {
+  transform: translate(calc(-100% - 14px), 10px);
+}
+
+.perfLabels {
+  grid-column: 2;
+  height: 20px;
+  margin: 0 12px;
+
+  li {
+    position: absolute;
+    left: var(--x);
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .perfChart {
+    grid-template-rows: 180px auto;
+  }
+
+  .perfPeriods {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+
+  .perfSummary dd {
+    font-size: 20px;
+  }
 }
 
 // ---------- Лента событий ----------
@@ -1124,8 +1353,8 @@
     animation: bar-grow 0.9s var(--ss-ease) 0.3s both;
   }
 
-  .chartBar {
-    animation: column-grow 0.9s var(--ss-ease) var(--bar-delay) both;
+  .perfSvg {
+    animation: perf-draw 0.9s var(--ss-ease) both;
   }
 
   .panelsGrid3 > * {
@@ -1170,9 +1399,10 @@
   }
 }
 
-@keyframes column-grow {
+// График «прорисовывается» слева направо.
+@keyframes perf-draw {
   from {
-    transform: scaleY(0);
+    clip-path: inset(0 100% 0 0);
   }
 }
 

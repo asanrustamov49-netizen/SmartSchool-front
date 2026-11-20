@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAnnouncements } from "@/apis/announcements.api";
-import { getDashboardStats } from "@/apis/dashboard.api";
+import { getDashboardStats, getPerformance, type PerformancePeriod } from "@/apis/dashboard.api";
 import { getSchoolRating } from "@/apis/ratings.api";
 
 export function useDashboardStats() {
   return useQuery({
     queryKey: ["dashboard", "stats"],
     queryFn: getDashboardStats,
+  });
+}
+
+export function usePerformance(period: PerformancePeriod) {
+  return useQuery({
+    queryKey: ["dashboard", "performance", period],
+    queryFn: () => getPerformance(period),
   });
 }
 

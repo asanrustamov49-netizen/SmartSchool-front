@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
 import { useDashboardStats } from "@/hooks/useDashboard";
 import { handleApiError } from "@/lib/errorHandler";
-import { ClassesChart } from "./ClassesChart";
 import { MetricCard } from "./MetricCard";
+import { PerformanceChart } from "./PerformanceChart";
 import { SetupChecklist } from "./SetupChecklist";
 import scss from "./home.module.scss";
 
@@ -45,7 +45,7 @@ export function AdminDashboard() {
           tone="amber"
         />
       </section>
-      <ClassesChart />
+      <PerformanceChart />
     </>
   );
 }

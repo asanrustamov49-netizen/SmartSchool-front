@@ -3,6 +3,410 @@
   flex: 0 0 auto;
 }
 
+// ---------- Панель журнала: предмет, месяц/дата и виды ----------
+.journalToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.assignmentSelect {
+  flex: 1 1 280px;
+  max-width: 460px;
+}
+
+.monthSwitcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  strong {
+    min-width: 132px;
+    font-size: 15px;
+    font-weight: 750;
+    text-align: center;
+  }
+
+  button {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.viewTabs {
+  margin-bottom: 14px;
+}
+
+.tab {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  small {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+}
+
+.tabActive {
+  border-color: transparent;
+  background: var(--ss-gradient);
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+  }
+}
+
+// ---------- Табель за месяц и четверти ----------
+.monthToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  .keyboardHint {
+    display: block;
+  }
+}
+
+.scrollButtons {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  margin-bottom: 10px;
+
+  button {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+
+    &:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+  }
+}
+
+// Прокрутка только внутри таблицы: страница по ширине не расползается.
+.monthWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  overscroll-behavior-x: contain;
+}
+
+.monthTable {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+
+  th,
+  td {
+    height: 44px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  thead th {
+    background: var(--soft);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover td {
+    background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  }
+}
+
+// № и ФИО закреплены слева при прокрутке дней.
+.stickyNumber {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 40px;
+  min-width: 40px;
+  color: var(--muted);
+}
+
+.stickyName {
+  position: sticky;
+  left: 40px;
+  z-index: 2;
+  overflow: hidden;
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  padding: 0 12px;
+  box-shadow: 4px 0 8px -6px rgb(0 0 0 / 25%);
+  text-align: left !important;
+  text-overflow: ellipsis;
+}
+
+.dayHeader {
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+
+  .dayContent {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    color: inherit;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.45;
+    }
+  }
+
+  strong {
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  small {
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+// День урока по расписанию подсвечен полоской, как в бумажном журнале.
+.lessonDay {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.today strong {
+  color: var(--accent);
+}
+
+.sunday {
+  background: color-mix(in srgb, var(--muted) 8%, var(--surface)) !important;
+}
+
+.dayCell {
+  width: 42px;
+  min-width: 42px;
+  padding: 0;
+
+  .dayContent {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+
+    &:is(button):not(:disabled):hover {
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  .grade {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+}
+
+.presentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ss-success, #059669) 55%, transparent);
+}
+
+.attendanceMark {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.attendanceAbsent {
+  color: var(--danger);
+}
+
+.attendanceLate {
+  color: var(--ss-warning, #d97706);
+}
+
+.attendanceExcused {
+  color: var(--ss-success, #059669);
+}
+
+.totalHeader,
+.totalCell {
+  min-width: 76px;
+  padding: 0 10px;
+}
+
+.totalCell {
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.periodToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.periodHeader,
+.periodCell {
+  min-width: 150px;
+  padding: 6px 10px;
+}
+
+.periodCell {
+  .gradeButtons {
+    justify-content: center;
+  }
+}
+
+.periodEditing {
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface)) !important;
+}
+
+.yearColumn {
+  font-weight: 750;
+}
+
+.averageHint {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.emptyGrade {
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .assignmentSelect {
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .monthSwitcher {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  // Три вида в один ряд на всю ширину, без иконок — всё помещается на телефоне.
+  .viewTabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .tab {
+      justify-content: center;
+      padding: 0 6px;
+      font-size: 12px;
+
+      svg {
+        display: none;
+      }
+    }
+  }
+
+  .monthToolbar .keyboardHint {
+    font-size: 12px;
+  }
+
+  // На телефоне без колонки № и с узким ФИО: больше места для дней.
+  .stickyNumber {
+    display: none;
+  }
+
+  .stickyName {
+    left: 0;
+    width: 132px;
+    min-width: 132px;
+    max-width: 132px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .periodHeader,
+  .periodCell {
+    min-width: 132px;
+  }
+
+  .periodCell .gradeButton {
+    width: 28px;
+    height: 28px;
+  }
+}
+
 .summary {
   display: flex;
   flex-wrap: wrap;

@@ -1,6 +1,16 @@
 "use client";
 
-import { AlertCircle, ArrowRight, CircleCheck, GraduationCap, LoaderCircle, RotateCcw, TrendingUp } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  ChevronDown,
+  CircleCheck,
+  GraduationCap,
+  LoaderCircle,
+  RotateCcw,
+  Search,
+  TrendingUp,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { getNextAcademicYear, type PromotionResult, type PromotionStudent } from "@/apis/promotion.api";
@@ -12,6 +22,9 @@ import { getApiErrorStatus, handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import styles from "./admin.module.scss";
 import promotionStyles from "./promotion.module.scss";
+
+// Если классов немного, они раскрыты сразу; в большой школе — свёрнуты, чтобы список не был бесконечным.
+const OPEN_GROUPS_LIMIT = 6;
 
 type ClassGroup = { name: string; nextClass: string | null; students: PromotionStudent[] };
 
@@ -26,7 +39,9 @@ function groupByClass(students: PromotionStudent[]): ClassGroup[] {
     group.students.push(student);
     groups.set(student.current_class, group);
   }
-  return [...groups.values()];
+  return [...groups.values()].sort((first, second) =>
+    first.name.localeCompare(second.name, undefined, { numeric: true }),
+  );
 }
 
 // Перевод учеников на следующий учебный год. Backend переводит всех активных учеников
@@ -49,13 +64,18 @@ export function PromotionPage() {
   const [confirming, setConfirming] = useState(false);
   const [result, setResult] = useState<PromotionResult | null>(null);
 
-  const toggleExcluded = (studentId: number) => {
+  const [search, setSearch] = useState("");
+
+  // Один ученик или весь класс сразу: stay = true — остаются на второй год.
+  const setStaying = (studentIds: number[], stay: boolean) => {
     setExcludedIds((current) => {
       const next = new Set(current);
-      if (next.has(studentId)) {
-        next.delete(studentId);
-      } else {
-        next.add(studentId);
+      for (const studentId of studentIds) {
+        if (stay) {
+          next.add(studentId);
+        } else {
+          next.delete(studentId);
+        }
       }
       return next;
     });
@@ -64,6 +84,7 @@ export function PromotionPage() {
   const changeYear = (year: string) => {
     setSelectedYear(year);
     setExcludedIds(new Set());
+    setSearch("");
     setConfirming(false);
     setResult(null);
   };
@@ -121,6 +142,10 @@ export function PromotionPage() {
       (student) => student.will_graduate && !excludedIds.has(student.student_id),
     ).length;
     const promoted = students.length - repeating - graduating;
+    const searchText = search.trim().toLowerCase();
+    const matchesSearch = (student: PromotionStudent) => student.full_name.toLowerCase().includes(searchText);
+    // Поиск только скрывает строки: «весь класс» и счётчики считаются по полному составу класса.
+    const visibleGroups = groupByClass(students).filter((group) => group.students.some(matchesSearch));
 
     return (
       <>
@@ -144,37 +169,94 @@ export function PromotionPage() {
 
         <p className={styles.fieldHint}>{t("excludeHint")}</p>
 
-        <div className={promotionStyles.groups}>
-          {groupByClass(students).map((group) => (
-            <section key={group.name} className={promotionStyles.group}>
-              <h3>
-                <span>{group.name}</span>
-                <ArrowRight size={16} aria-hidden="true" />
-                <span className={cn(!group.nextClass && promotionStyles.graduate)}>
-                  {group.nextClass ?? t("graduation")}
-                </span>
-              </h3>
-              <ul>
-                {group.students.map((student) => {
-                  const excluded = excludedIds.has(student.student_id);
-                  return (
-                    <li key={student.student_id} className={cn(excluded && promotionStyles.excluded)}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={excluded}
-                          onChange={() => toggleExcluded(student.student_id)}
-                        />
-                        <span>{student.full_name}</span>
-                      </label>
-                      {excluded && <span className={promotionStyles.badge}>{t("stays")}</span>}
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
+        <div className={promotionStyles.toolbar}>
+          <label className={promotionStyles.search}>
+            <Search size={16} aria-hidden="true" />
+            <input
+              type="search"
+              className={styles.input}
+              placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </label>
+          {repeating > 0 && (
+            <button type="button" className={styles.secondaryButton} onClick={() => setExcludedIds(new Set())}>
+              <RotateCcw size={16} aria-hidden="true" />
+              {t("clearMarks")}
+            </button>
+          )}
         </div>
+
+        {visibleGroups.length === 0 ? (
+          <DataState status="empty" message={t("noMatches")} />
+        ) : (
+          <div className={promotionStyles.groups}>
+            {visibleGroups.map((group) => {
+              const groupIds = group.students.map((student) => student.student_id);
+              const stayingInGroup = groupIds.filter((studentId) => excludedIds.has(studentId)).length;
+              const allStaying = stayingInGroup === groupIds.length;
+              return (
+                <details
+                  key={group.name}
+                  className={promotionStyles.group}
+                  open={searchText !== "" || visibleGroups.length <= OPEN_GROUPS_LIMIT}
+                >
+                  <summary>
+                    <span className={promotionStyles.groupTitle}>
+                      <span>{group.name}</span>
+                      <ArrowRight size={16} aria-hidden="true" />
+                      <span className={cn(!group.nextClass && promotionStyles.graduate)}>
+                        {group.nextClass ?? t("graduation")}
+                      </span>
+                    </span>
+                    <span className={promotionStyles.groupMeta}>
+                      {t("studentsCount", { count: groupIds.length })}
+                      {stayingInGroup > 0 && (
+                        <span className={promotionStyles.badge}>{t("stayingCount", { count: stayingInGroup })}</span>
+                      )}
+                    </span>
+                    <ChevronDown className={promotionStyles.chevron} size={18} aria-hidden="true" />
+                  </summary>
+
+                  <label className={promotionStyles.wholeClass}>
+                    <input
+                      type="checkbox"
+                      checked={allStaying}
+                      ref={(input) => {
+                        if (input) {
+                          input.indeterminate = stayingInGroup > 0 && !allStaying;
+                        }
+                      }}
+                      onChange={() => setStaying(groupIds, !allStaying)}
+                    />
+                    <span>{t("wholeClassStays")}</span>
+                  </label>
+
+                  <ul>
+                    {group.students.filter(matchesSearch).map((student) => {
+                      const excluded = excludedIds.has(student.student_id);
+                      return (
+                        <li key={student.student_id} className={cn(excluded && promotionStyles.excluded)}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={excluded}
+                              onChange={() => setStaying([student.student_id], !excluded)}
+                            />
+                            <span>{student.full_name}</span>
+                          </label>
+                          {excluded && <span className={promotionStyles.badge}>{t("stays")}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </details>
+              );
+            })}
+          </div>
+        )}
 
         {executeMutation.isError && (
           <p className={styles.formError} role="alert">

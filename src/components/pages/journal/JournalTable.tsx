@@ -2,7 +2,7 @@
 
 import { CircleAlert, CircleCheck, LoaderCircle, UserCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { AttendanceCode, JournalDay, JournalRow } from "@/apis/journal.api";
 import { Select } from "@/components/ui/Select";
 import { useSaveJournalDay } from "@/hooks/useJournal";
@@ -83,6 +83,14 @@ export function JournalTable({ journal, isFutureDay }: JournalTableProps) {
     // handleSave пересоздаётся каждый рендер; запуск зависит только от номера изменения.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changeVersion, canEdit, saveJournal.isPending, saveJournal.isError]);
+
+  // Переход на табель или другую дату раньше автосохранения не теряет оценки:
+  // при закрытии редактора несохранённые изменения отправляются сразу.
+  const saveOnCloseRef = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    saveOnCloseRef.current = canEdit && isDirty && !saveJournal.isPending ? handleSave : null;
+  });
+  useEffect(() => () => saveOnCloseRef.current?.(), []);
 
   // Пока изменения не сохранены, браузер переспросит перед закрытием вкладки — оценки не потеряются.
   useEffect(() => {

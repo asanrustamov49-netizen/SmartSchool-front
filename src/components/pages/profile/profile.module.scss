@@ -5,6 +5,7 @@
 }
 
 .avatar {
+  position: relative;
   display: grid;
   width: 96px;
   height: 96px;
@@ -17,7 +18,12 @@
   font-size: 36px;
   font-weight: 800;
 
+  // Абсолютно, а не height: 100% в grid-ячейке: в Safari (iPhone) фото
+  // съезжало вниз и сверху оставалась полоса фона.
   img {
+    position: absolute;
+    inset: 0;
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;

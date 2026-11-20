@@ -1,13 +1,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Info, LoaderCircle } from "lucide-react";
+import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import type { SchoolClass } from "@/apis/classes.api";
+import { getClassName, type SchoolClass } from "@/apis/classes.api";
 import { Select } from "@/components/ui/Select";
-import { useCreateClass, useUpdateClass } from "@/hooks/useClasses";
+import { useClasses, useCreateClass, useUpdateClass } from "@/hooks/useClasses";
+import { useTeachers } from "@/hooks/useTeachers";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { textRule, validateClassLetter } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
@@ -16,6 +17,7 @@ type ClassFormValues = {
   grade_number: string;
   letter: string;
   academic_year: string;
+  class_teacher_id: string;
 };
 
 const GRADE_NUMBERS = Array.from({ length: 11 }, (_, index) => String(index + 1));
@@ -33,6 +35,8 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
   const createClass = useCreateClass();
   const updateClass = useUpdateClass();
   const mutation = schoolClass ? updateClass : createClass;
+  const teachersQuery = useTeachers();
+  const classesQuery = useClasses();
 
   // Правила из схемы ClassCreate: grade_number 1–11, letter 1–5 символов, academic_year обязателен.
   const classSchema = z.object({
@@ -43,6 +47,7 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
       .min(1, tForm("required"))
       .superRefine(textRule(validateClassLetter, (problem) => tChecks(problem))),
     academic_year: z.string().trim().min(1, tForm("required")),
+    class_teacher_id: z.string(),
   });
 
   const {
@@ -57,6 +62,7 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
       grade_number: schoolClass ? String(schoolClass.grade_number) : "",
       letter: schoolClass?.letter ?? "",
       academic_year: schoolClass?.academic_year ?? "",
+      class_teacher_id: schoolClass?.class_teacher_id ? String(schoolClass.class_teacher_id) : "",
     },
   });
 
@@ -77,12 +83,11 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
   };
 
   const onSubmit = (values: ClassFormValues) => {
-    // PUT перезаписывает все поля: без текущего class_teacher_id классный руководитель снимется.
     const data = {
       grade_number: Number(values.grade_number),
       letter: values.letter.trim(),
       academic_year: values.academic_year.trim(),
-      class_teacher_id: schoolClass?.class_teacher_id ?? null,
+      class_teacher_id: values.class_teacher_id ? Number(values.class_teacher_id) : null,
     };
 
     if (schoolClass) {
@@ -95,6 +100,25 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
 
     createClass.mutate(data, { onSuccess: onClose, onError: handleError });
   };
+
+  // Рядом с именем учителя — классы, которые он уже ведёт, чтобы случайно не назначить его дважды.
+  const ledClassNames = new Map<number, string[]>();
+  for (const otherClass of classesQuery.data ?? []) {
+    if (otherClass.class_teacher_id !== null && otherClass.id !== schoolClass?.id) {
+      const names = ledClassNames.get(otherClass.class_teacher_id) ?? [];
+      names.push(getClassName(otherClass));
+      ledClassNames.set(otherClass.class_teacher_id, names);
+    }
+  }
+  const teacherOptions = (teachersQuery.data ?? [])
+    .filter((teacher) => teacher.is_active || teacher.id === schoolClass?.class_teacher_id)
+    .map((teacher) => {
+      const ledNames = ledClassNames.get(teacher.id);
+      return {
+        value: String(teacher.id),
+        label: ledNames ? `${teacher.full_name} · ${ledNames.join(", ")}` : teacher.full_name,
+      };
+    });
 
   const hasFieldErrors = Object.keys(getApiFieldErrors(mutation.error)).length > 0;
   const formError =
@@ -164,10 +188,25 @@ export function ClassForm({ schoolClass, onClose }: ClassFormProps) {
           )}
         </div>
 
-        <p className={styles.notice}>
-          <Info size={16} aria-hidden="true" />
-          {t("classTeacherUnavailable")}
-        </p>
+        <div className={styles.field}>
+          <label htmlFor="class-teacher">{t("classTeacher")}</label>
+          <Controller
+            control={control}
+            name="class_teacher_id"
+            render={({ field }) => (
+              <Select
+                id="class-teacher"
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={teachersQuery.isPending}
+                options={[{ value: "", label: t("noClassTeacher") }, ...teacherOptions]}
+              />
+            )}
+          />
+          {teachersQuery.isError && (
+            <p className={styles.fieldError}>{handleApiError(teachersQuery.error, tApiErrors)}</p>
+          )}
+        </div>
 
         <div className={styles.formActions}>
           <button type="button" className={styles.secondaryButton} onClick={onClose}>
