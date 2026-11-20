@@ -9,9 +9,15 @@ export type Announcement = {
   body: string | null;
   image_url: string | null;
   event_date: string | null;
+  // Для кого объявление; null — для всех.
+  audience: AudienceGroup[] | null;
   created_by: number | null;
   created_at: string;
 };
+
+// Группы получателей (backend: AUDIENCE_GROUPS). Классный руководитель входит в TEACHER.
+export const AUDIENCE_GROUPS = ["STUDENT", "PARENT", "TEACHER", "DEPUTY"] as const;
+export type AudienceGroup = (typeof AUDIENCE_GROUPS)[number];
 
 export async function getAnnouncements(limit: number): Promise<Announcement[]> {
   const response = await api.get<Announcement[]>("/announcements", {
@@ -33,6 +39,8 @@ export type AnnouncementInput = {
   title: string;
   body: string;
   event_date: string;
+  // Пустой список — для всех.
+  audience: AudienceGroup[];
   image: File | null;
 };
 
@@ -47,6 +55,9 @@ function toFormData(data: AnnouncementInput) {
   if (data.event_date !== "") {
     formData.append("event_date", data.event_date);
   }
+
+  // "ALL" нужен и при редактировании: пустое поле PUT оставил бы старую аудиторию.
+  formData.append("audience", data.audience.length === 0 ? "ALL" : data.audience.join(","));
 
   if (data.image) {
     formData.append("image", data.image);

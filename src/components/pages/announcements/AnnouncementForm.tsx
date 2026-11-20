@@ -6,11 +6,13 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import type { Announcement } from "@/apis/announcements.api";
+import { AUDIENCE_GROUPS, type Announcement, type AudienceGroup } from "@/apis/announcements.api";
 import { useSaveAnnouncement } from "@/hooks/useAnnouncements";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { textRule, validateFreeText } from "@/lib/textChecks";
+import { cn } from "@/lib/utils";
 import styles from "../admin/admin.module.scss";
+import announcementStyles from "./announcements.module.scss";
 
 type AnnouncementFormValues = {
   title: string;
@@ -58,9 +60,18 @@ export function AnnouncementForm({ announcement, onClose }: AnnouncementFormProp
     },
   });
 
+  // Пустой список = «Всем». Если выбраны все группы — это тоже «Всем».
+  const [audience, setAudience] = useState<AudienceGroup[]>(announcement?.audience ?? []);
+  const toggleGroup = (group: AudienceGroup) => {
+    setAudience((current) => {
+      const next = current.includes(group) ? current.filter((item) => item !== group) : [...current, group];
+      return next.length === AUDIENCE_GROUPS.length ? [] : next;
+    });
+  };
+
   const onSubmit = (values: AnnouncementFormValues) => {
     saveAnnouncement.mutate(
-      { announcementId: announcement?.id ?? null, data: { ...values, image } },
+      { announcementId: announcement?.id ?? null, data: { ...values, audience, image } },
       {
         onSuccess: onClose,
         onError: (error) => {
@@ -140,6 +151,32 @@ export function AnnouncementForm({ announcement, onClose }: AnnouncementFormProp
         </div>
 
         {isEditing && <p className={styles.fieldHint}>{t("partialUpdateHint")}</p>}
+
+        <fieldset className={announcementStyles.audienceField}>
+          <legend>{t("audience")}</legend>
+          <div className={announcementStyles.chips}>
+            <button
+              type="button"
+              aria-pressed={audience.length === 0}
+              className={cn(announcementStyles.chip, audience.length === 0 && announcementStyles.chipActive)}
+              onClick={() => setAudience([])}
+            >
+              {t("audienceAll")}
+            </button>
+            {AUDIENCE_GROUPS.map((group) => (
+              <button
+                key={group}
+                type="button"
+                aria-pressed={audience.includes(group)}
+                className={cn(announcementStyles.chip, audience.includes(group) && announcementStyles.chipActive)}
+                onClick={() => toggleGroup(group)}
+              >
+                {t(`audienceGroups.${group}`)}
+              </button>
+            ))}
+          </div>
+          <p className={styles.fieldHint}>{t("audienceHint")}</p>
+        </fieldset>
 
         <div className={styles.formActions}>
           <button type="button" className={styles.secondaryButton} onClick={onClose}>

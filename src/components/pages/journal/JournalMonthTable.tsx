@@ -177,7 +177,40 @@ export function JournalMonthTable({
         </div>
       </div>
 
-      <div className={styles.monthWrap} ref={scrollRef}>
+      {/* Телефон: вместо узкой матрицы — карточки, как в бумажном дневнике:
+          строка, средний балл и отметки месяца с числом под каждой. */}
+      <ul className={styles.monthCards}>
+        {rows.map((row) => {
+          const marks = row.cells.filter((cell) => cell.grade_value !== null || (cell.attendance && cell.attendance !== "Б"));
+          return (
+            <li key={row.id}>
+              <div className={styles.monthCardHead}>
+                <strong>{row.title}</strong>
+                <span className={cn(styles.monthCardAverage, row.average !== null && styles[`grade${Math.round(row.average)}`])}>
+                  {row.average?.toFixed(1) ?? "—"}
+                </span>
+              </div>
+              {marks.length === 0 ? (
+                <small className={styles.monthCardEmpty}>{t("noMarks")}</small>
+              ) : (
+                <div className={styles.monthCardMarks}>
+                  {marks.map((cell) => (
+                    <span key={cell.date} className={styles.monthCardMark}>
+                      {renderDay(cell.date, renderCell(cell), true)}
+                      <small>{Number(cell.date.slice(8))}</small>
+                    </span>
+                  ))}
+                </div>
+              )}
+              {row.absent_count > 0 && (
+                <small className={styles.monthCardAbsent}>{t("absencesCount", { count: row.absent_count })}</small>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className={cn(styles.monthWrap, styles.monthMatrix)} ref={scrollRef}>
         <table className={styles.monthTable}>
           <thead>
             <tr>

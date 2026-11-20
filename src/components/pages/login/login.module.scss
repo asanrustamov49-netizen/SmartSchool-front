@@ -228,6 +228,21 @@
 }
 
 // ---------- Регистрация родителя ----------
+.stepCounter {
+  margin: 0;
+  color: var(--ss-muted, #64748b);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stepActions {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+}
+
 .formSection {
   display: flex;
   flex-direction: column;
@@ -493,5 +508,39 @@
 @keyframes panel-fade {
   from {
     opacity: 0;
+  }
+}
+
+// ---------- Телефон: компактная форма ----------
+@media (max-width: 640px) {
+  // 16px — иначе iPhone приближает страницу при фокусе на поле.
+  .input {
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .card {
+    padding-top: 14px;
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    margin-bottom: 16px;
+    font-size: 14px;
+  }
+
+  .formSection {
+    gap: 14px;
+  }
+
+  .submitButton {
+    min-height: 50px;
   }
 }

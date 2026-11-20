@@ -14,6 +14,7 @@ import type { CSSProperties } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { DataState } from "@/components/ui/DataState";
 import { useSchoolRating } from "@/hooks/useDashboard";
+import { cn } from "@/lib/utils";
 import { XpRing } from "./XpRing";
 import scss from "./home.module.scss";
 
@@ -25,7 +26,9 @@ const BADGE_ICONS: Record<string, LucideIcon> = {
   OLYMPIAD_CANDIDATE: Star,
 };
 
-const KNOWN_BADGES = Object.keys(BADGE_ICONS);
+// Порядок показа: все четыре значка видны всегда — полученные цветные, остальные серые
+// с подсказкой, как их получить.
+const BADGE_TYPES = ["SUBJECT_LEADER", "PARALLEL_CHAMP", "PERFECT_ATTENDANCE", "OLYMPIAD_CANDIDATE"];
 
 // Рейтинг ученика (XP, места, значки) приходит в /me в поле student.
 export function StudentDashboard({ currentUser }: { currentUser: CurrentUser }) {
@@ -138,29 +141,38 @@ export function StudentDashboard({ currentUser }: { currentUser: CurrentUser }) 
               <Award size={20} aria-hidden="true" />
               <h2>{t("badges")}</h2>
             </div>
+            <span className={scss.panelMeta}>
+              {t("badgesCount", { count: new Set(standing.badges.map((badge) => badge.badge_type)).size })}
+            </span>
           </div>
-          {standing.badges.length === 0 ? (
-            <DataState status="empty" message={t("noBadges")} />
-          ) : (
-            <ul className={scss.badgeGrid}>
-              {standing.badges.map((badge, index) => {
-                const Icon = BADGE_ICONS[badge.badge_type] ?? Award;
-                const label = KNOWN_BADGES.includes(badge.badge_type)
-                  ? t(`badgeTypes.${badge.badge_type}`)
-                  : badge.badge_type;
-
-                return (
-                  <li key={`${badge.badge_type}-${badge.subject_id}-${index}`} className={scss.badge}>
-                    <span className={scss.badgeIcon}>
-                      <Icon size={22} aria-hidden="true" />
-                    </span>
-                    <strong>{label}</strong>
-                    {badge.subject_name && <span>{badge.subject_name}</span>}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+          <ul className={scss.badgeGrid}>
+            {BADGE_TYPES.map((badgeType) => {
+              const Icon = BADGE_ICONS[badgeType];
+              const earned = standing.badges.filter((badge) => badge.badge_type === badgeType);
+              const subjects = earned
+                .map((badge) => badge.subject_name)
+                .filter((name): name is string => Boolean(name));
+              return (
+                <li
+                  key={badgeType}
+                  className={cn(scss.badge, scss[`badge${badgeType}`], earned.length === 0 && scss.badgeLocked)}
+                >
+                  <span className={scss.badgeIcon}>
+                    <Icon size={22} aria-hidden="true" />
+                  </span>
+                  <strong>{t(`badgeTypes.${badgeType}`)}</strong>
+                  <small>{t(`badgeHints.${badgeType}`)}</small>
+                  <span className={scss.badgeStatus}>
+                    {earned.length === 0
+                      ? t("badgeLocked")
+                      : subjects.length > 0
+                        ? subjects.join(", ")
+                        : t("badgeEarned")}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
         </section>
       </div>
     </>

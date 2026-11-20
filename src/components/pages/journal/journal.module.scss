@@ -310,6 +310,96 @@
   font-variant-numeric: tabular-nums;
 }
 
+// Карточки табеля — только на телефоне (см. медиазапрос ниже).
+.monthCards {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--ss-radius);
+    background: var(--surface);
+  }
+}
+
+.monthCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  strong {
+    overflow: hidden;
+    font-size: 14px;
+    text-overflow: ellipsis;
+  }
+}
+
+.monthCardAverage {
+  display: inline-grid;
+  min-width: 40px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.monthCardMarks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.monthCardMark {
+  display: flex;
+  min-width: 32px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+
+  .dayContent {
+    display: grid;
+    min-width: 32px;
+    height: 32px;
+    place-items: center;
+  }
+
+  .grade {
+    width: 30px;
+    height: 30px;
+  }
+
+  > small {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+.monthCardEmpty,
+.monthCardAbsent {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.monthCardAbsent {
+  color: var(--danger);
+  font-weight: 600;
+}
+
 .periodToolbar {
   display: flex;
   flex-wrap: wrap;
@@ -380,6 +470,15 @@
 
   .monthToolbar .keyboardHint {
     font-size: 12px;
+  }
+
+  .monthCards {
+    display: flex;
+  }
+
+  .monthMatrix,
+  .scrollButtons {
+    display: none;
   }
 
   // На телефоне без колонки № и с узким ФИО: больше места для дней.

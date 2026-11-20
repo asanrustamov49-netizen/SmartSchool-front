@@ -374,3 +374,14 @@
     display: none;
   }
 }
+
+// Телефон: вместо иллюстрации — короткая тёмная шапка под кнопками, форма видна сразу.
+@media (max-width: 640px) {
+  .visual {
+    padding: 72px 16px 24px;
+  }
+
+  .layerScene {
+    display: none;
+  }
+}

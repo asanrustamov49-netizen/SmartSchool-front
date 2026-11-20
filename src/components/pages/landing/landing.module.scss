@@ -1858,3 +1858,93 @@
     margin-bottom: 48px;
   }
 }
+
+// ---------- Телефон: короче и спокойнее ----------
+// Меньше вертикальных отступов, компактные карточки, роли — горизонтальная лента.
+@media (max-width: 640px) {
+  .hero {
+    gap: 32px;
+    padding-top: 24px;
+    padding-bottom: 40px;
+  }
+
+  .heroRoles {
+    margin-top: 20px;
+  }
+
+  .section {
+    padding-block: 44px;
+  }
+
+  .sectionIntro {
+    margin-bottom: 22px;
+  }
+
+  .featureGrid {
+    gap: 10px;
+  }
+
+  // Иконка слева, текст справа — шесть карточек занимают вдвое меньше места.
+  .featureCard {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 14px;
+    padding: 16px;
+
+    .featureIcon {
+      grid-row: span 2;
+    }
+
+    h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  .audienceGrid {
+    display: flex;
+    gap: 12px;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) 6px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .audienceItem {
+    flex: 0 0 84%;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    scroll-snap-align: start;
+
+    ul {
+      margin-top: 14px;
+      font-size: 14px;
+    }
+  }
+
+  .audienceHead h3 {
+    font-size: 17px;
+  }
+
+  .steps {
+    row-gap: 20px;
+  }
+
+  .accessInner {
+    padding: 28px 18px;
+  }
+}

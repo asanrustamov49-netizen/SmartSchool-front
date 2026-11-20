@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays, Plus, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Announcement } from "@/apis/announcements.api";
@@ -88,6 +88,14 @@ export function AnnouncementsPage() {
                 {formatDate(announcement.event_date ?? announcement.created_at)}
               </span>
               <h2>{announcement.title}</h2>
+              {canManage && (
+                <span className={styles.audienceTag}>
+                  <Users size={13} aria-hidden="true" />
+                  {announcement.audience
+                    ? announcement.audience.map((group) => t(`audienceGroups.${group}`)).join(", ")
+                    : t("audienceAll")}
+                </span>
+              )}
               {announcement.body && <p>{announcement.body}</p>}
 
               {canManage && (

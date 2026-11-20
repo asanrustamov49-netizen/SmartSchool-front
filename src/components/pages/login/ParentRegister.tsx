@@ -2,16 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  ArrowLeft,
+  ArrowRight,
   Baby,
   CircleAlert,
   IdCard,
   Info,
   LoaderCircle,
-  Phone,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { z } from "zod";
 import { getParentLinkErrorKey } from "@/apis/parents.api";
@@ -29,9 +31,7 @@ import styles from "./login.module.scss";
 type ParentRegisterFormValues = {
   fullName: string;
   inn: string;
-  phone: string;
   password: string;
-  confirmPassword: string;
   studentInn: string;
   studentPassword: string;
 };
@@ -80,7 +80,6 @@ function TextField({ id, label, icon: Icon, error, registration, ...inputProps }
 const apiFieldNames: Record<string, keyof ParentRegisterFormValues> = {
   full_name: "fullName",
   inn: "inn",
-  phone: "phone",
   password: "password",
   student_inn: "studentInn",
   student_password: "studentPassword",
@@ -104,15 +103,9 @@ const ParentRegister = () => {
         .min(3, t("errors.fullNameMin"))
         .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
       inn: innRule,
-      phone: z.string().trim().max(20, t("errors.phoneMax")),
       password: z.string().min(8, t("errors.passwordMin")),
-      confirmPassword: z.string(),
       studentInn: innRule,
       studentPassword: z.string().min(1, t("errors.childPasswordRequired")),
-    })
-    .refine((values) => values.password === values.confirmPassword, {
-      message: t("errors.passwordsMismatch"),
-      path: ["confirmPassword"],
     })
     .refine((values) => values.inn !== values.studentInn, {
       message: t("errors.sameInn"),
@@ -123,26 +116,34 @@ const ParentRegister = () => {
     register,
     handleSubmit,
     setError,
+    trigger,
     formState: { errors },
   } = useForm<ParentRegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
       inn: "",
-      phone: "",
       password: "",
-      confirmPassword: "",
       studentInn: "",
       studentPassword: "",
     },
   });
+
+  // Два коротких шага: сначала ребёнок (данные выдала школа), потом сам родитель.
+  const [step, setStep] = useState<1 | 2>(1);
+
+  const goToParentStep = async () => {
+    if (await trigger(["studentInn", "studentPassword"])) {
+      setStep(2);
+    }
+  };
 
   const onSubmit = (values: ParentRegisterFormValues) => {
     registerMutation.mutate(
       {
         full_name: values.fullName.trim(),
         inn: values.inn.trim(),
-        phone: values.phone.trim() || null,
+        phone: null,
         password: values.password,
         student_inn: values.studentInn.trim(),
         student_password: values.studentPassword,
@@ -151,6 +152,11 @@ const ParentRegister = () => {
         onSuccess: () => router.replace("/"),
         onError: (error) => {
           const fieldErrors = getApiFieldErrors(error);
+          // Ошибка про данные ребёнка — возвращаем на первый шаг, где эти поля.
+          const errorKey = getParentLinkErrorKey(error);
+          if ((errorKey && errorKey !== "innTaken") || fieldErrors.student_inn || fieldErrors.student_password) {
+            setStep(1);
+          }
 
           for (const [apiField, message] of Object.entries(fieldErrors)) {
             const formField = apiFieldNames[apiField];
@@ -183,92 +189,87 @@ const ParentRegister = () => {
           </p>
         )}
 
-        <fieldset className={styles.formSection}>
-          <legend className={styles.formSectionTitle}>
-            <UserRound size={17} aria-hidden="true" />
-            {t("parentSection")}
-          </legend>
-          <TextField
-            id="parent-full-name"
-            label={t("fullName")}
-            icon={UserRound}
-            autoComplete="name"
-            placeholder={t("fullNamePlaceholder")}
-            error={errors.fullName?.message}
-            registration={register("fullName")}
-          />
-          <TextField
-            id="parent-inn"
-            label={t("parentInn")}
-            icon={IdCard}
-            inputMode="numeric"
-            autoComplete="username"
-            maxLength={14}
-            placeholder={tAuth("innPlaceholder")}
-            error={errors.inn?.message}
-            registration={register("inn")}
-          />
-          <TextField
-            id="parent-phone"
-            label={t("phone")}
-            icon={Phone}
-            inputMode="tel"
-            autoComplete="tel"
-            maxLength={20}
-            placeholder="+996 700 000 000"
-            error={errors.phone?.message}
-            registration={register("phone")}
-          />
-          <PasswordField
-            id="parent-password"
-            label={t("password")}
-            autoComplete="new-password"
-            hint={t("passwordHint")}
-            error={errors.password?.message}
-            registration={register("password")}
-          />
-          <PasswordField
-            id="parent-confirm-password"
-            label={t("confirmPassword")}
-            autoComplete="new-password"
-            error={errors.confirmPassword?.message}
-            registration={register("confirmPassword")}
-          />
-        </fieldset>
+        <p className={styles.stepCounter}>{t("step", { step })}</p>
 
-        <fieldset className={styles.formSection}>
-          <legend className={styles.formSectionTitle}>
-            <Baby size={17} aria-hidden="true" />
-            {t("childSection")}
-          </legend>
-          <p className={styles.infoNote}>
-            <Info size={16} aria-hidden="true" />
-            {t("childNote")}
-          </p>
-          <TextField
-            id="child-inn"
-            label={t("childInn")}
-            icon={IdCard}
-            inputMode="numeric"
-            autoComplete="off"
-            maxLength={14}
-            placeholder={tAuth("innPlaceholder")}
-            error={errors.studentInn?.message}
-            registration={register("studentInn")}
-          />
-          <PasswordField
-            id="child-password"
-            label={t("childPassword")}
-            autoComplete="off"
-            error={errors.studentPassword?.message}
-            registration={register("studentPassword")}
-          />
-        </fieldset>
-
-        <Button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-          {isSubmitting && <LoaderCircle className={styles.spinner} size={18} aria-hidden="true" />}
-          {isSubmitting ? t("registering") : t("register")}
-        </Button>
+        {step === 1 ? (
+          <fieldset className={styles.formSection}>
+            <legend className={styles.formSectionTitle}>
+              <Baby size={17} aria-hidden="true" />
+              {t("childSection")}
+            </legend>
+            <p className={styles.infoNote}>
+              <Info size={16} aria-hidden="true" />
+              {t("childNote")}
+            </p>
+            <TextField
+              id="child-inn"
+              label={t("childInn")}
+              icon={IdCard}
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={14}
+              placeholder={tAuth("innPlaceholder")}
+              error={errors.studentInn?.message}
+              registration={register("studentInn")}
+            />
+            <PasswordField
+              id="child-password"
+              label={t("childPassword")}
+              autoComplete="off"
+              error={errors.studentPassword?.message}
+              registration={register("studentPassword")}
+            />
+            <Button type="button" className={styles.submitButton} onClick={goToParentStep}>
+              {t("next")}
+              <ArrowRight size={18} aria-hidden="true" />
+            </Button>
+          </fieldset>
+        ) : (
+          <fieldset className={styles.formSection}>
+            <legend className={styles.formSectionTitle}>
+              <UserRound size={17} aria-hidden="true" />
+              {t("parentSection")}
+            </legend>
+            <TextField
+              id="parent-full-name"
+              label={t("fullName")}
+              icon={UserRound}
+              autoComplete="name"
+              placeholder={t("fullNamePlaceholder")}
+              error={errors.fullName?.message}
+              registration={register("fullName")}
+            />
+            <TextField
+              id="parent-inn"
+              label={t("parentInn")}
+              icon={IdCard}
+              inputMode="numeric"
+              autoComplete="username"
+              maxLength={14}
+              placeholder={tAuth("innPlaceholder")}
+              error={errors.inn?.message}
+              registration={register("inn")}
+            />
+            <PasswordField
+              id="parent-password"
+              label={t("password")}
+              autoComplete="new-password"
+              hint={t("passwordHint")}
+              error={errors.password?.message}
+              registration={register("password")}
+            />
+            <div className={styles.stepActions}>
+              <Button type="button" variant="outline" onClick={() => setStep(1)}>
+                <ArrowLeft size={18} aria-hidden="true" />
+                {t("back")}
+              </Button>
+              <Button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                {isSubmitting && <LoaderCircle className={styles.spinner} size={18} aria-hidden="true" />}
+                {isSubmitting ? t("registering") : t("register")}
+              </Button>
+            </div>
+          </fieldset>
+        )}
 
         <p className={styles.switchAuth}>
           {t("haveAccount")}

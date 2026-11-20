@@ -36,9 +36,12 @@
   height: 100vh;
   flex-direction: column;
   padding: 18px 12px 14px;
+  // Подписи не переносятся, пока меняется ширина: они плавно гаснут и обрезаются в пункте меню.
+  // overflow здесь не ставим — иначе обрежется меню аккаунта, которое шире свёрнутой панели.
+  white-space: nowrap;
   transition:
-    width 260ms var(--ss-ease),
-    min-width 260ms var(--ss-ease);
+    width 280ms var(--ss-ease),
+    min-width 280ms var(--ss-ease);
   background: var(--sidebar-background);
   color: var(--sidebar-foreground);
   isolation: isolate;
@@ -218,7 +221,8 @@
   min-height: 44px;
   align-items: center;
   gap: 11px;
-  padding: 0 14px;
+  overflow: hidden;
+  padding: 0 14px 0 17px;
   border: 0;
   border-radius: 12px;
   background: transparent;
@@ -969,22 +973,47 @@
 }
 
 // ---------- Свёрнутое боковое меню (только иконки, настройка в /settings) ----------
+@media (min-width: 1025px) and (prefers-reduced-motion: no-preference) {
+  .navText,
+  .schoolCardText {
+    transition: opacity 180ms ease;
+  }
+
+  .navLabel {
+    max-height: 32px;
+    overflow: hidden;
+    transition:
+      opacity 180ms ease,
+      max-height 280ms var(--ss-ease),
+      margin 280ms var(--ss-ease),
+      padding 280ms var(--ss-ease);
+  }
+}
+
 @media (min-width: 1025px) {
   :global(html[data-sidebar="collapsed"]) {
     .sidebar {
       width: 76px;
       min-width: 76px;
-      padding-right: 10px;
-      padding-left: 10px;
     }
 
     .brandFull,
     .brandDescription,
-    .navLabel,
-    .navText,
-    .comingSoon,
-    .schoolCardText {
+    .comingSoon {
       display: none !important;
+    }
+
+    .navText,
+    .schoolCardText {
+      opacity: 0;
+    }
+
+    .navLabel {
+      max-height: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      opacity: 0;
     }
 
     .brandCompact {
@@ -1006,13 +1035,7 @@
       position: static;
     }
 
-    .navItem {
-      justify-content: center;
-      padding: 0;
-    }
-
     .schoolCard {
-      justify-content: center;
       padding: 6px;
     }
   }
