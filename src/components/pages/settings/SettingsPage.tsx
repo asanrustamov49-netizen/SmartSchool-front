@@ -72,7 +72,7 @@ function OptionGroup<TValue extends string>({ label, options, value, onChange }:
 
 const FLAG_GROUPS: { title: "securityTitle" | "comfortTitle"; flags: Flag[] }[] = [
   { title: "securityTitle", flags: ["privacy", "autoLogout"] },
-  { title: "comfortTitle", flags: ["reduceMotion", "colorBlind", "readableText", "strongFocus", "underlineLinks"] },
+  { title: "comfortTitle", flags: ["reduceMotion", "readableText", "underlineLinks"] },
 ];
 
 // Переключатель «вкл/выкл» с названием и пояснением.

@@ -30,16 +30,13 @@ const SIDEBAR_KEY = "smart-school-sidebar";
 
 // Переключатели вида: ключ в браузере и атрибут <html data-…="on">.
 // privacy — режим стримера (личные данные размыты); autoLogout — выход после 15 минут без действий
-// (общий компьютер в учительской); reduceMotion — без анимаций; colorBlind — цвета оценок,
-// различимые при дальтонизме; readableText — шире интервалы между буквами и строками;
-// strongFocus — заметная рамка фокуса для клавиатуры; underlineLinks — ссылки подчёркнуты.
+// (общий компьютер в учительской); reduceMotion — без анимаций;
+// readableText — шире интервалы между буквами и строками; underlineLinks — ссылки подчёркнуты.
 export const FLAGS = [
   "privacy",
   "autoLogout",
   "reduceMotion",
-  "colorBlind",
   "readableText",
-  "strongFocus",
   "underlineLinks",
 ] as const;
 export type Flag = (typeof FLAGS)[number];
