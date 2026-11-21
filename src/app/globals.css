@@ -649,8 +649,8 @@ html[data-text-size="large"] {
   --ss-logo-light: #1559c1;
   --ss-gradient: #1559c1;
   --ss-gradient-soft: #e8f0fb;
-  --ss-sidebar: #ffffff;
-  --ss-sidebar-accent: #1559c1;
+  --ss-sidebar: #0f2d5c;
+  --ss-sidebar-accent: #a9c8ff;
   --ss-glow: none;
   --ss-shadow: none;
   --ss-shadow-md: 0 2px 8px rgb(15 23 42 / 6%);
@@ -668,16 +668,16 @@ html[data-text-size="large"] {
   --ss-accent-soft: rgb(79 139 230 / 14%);
   --ss-gradient: #2f6fd1;
   --ss-gradient-soft: rgb(79 139 230 / 14%);
-  --ss-sidebar: #111a28;
-  --ss-sidebar-accent: #7aa8ee;
+  --ss-sidebar: #0a1f40;
+  --ss-sidebar-accent: #a9c8ff;
 }
 
 /* Минимализм: без градиентов, свечения и теней, выбранный цвет сохраняется. */
 :root[data-style="minimal"] {
   --ss-gradient: var(--ss-accent);
   --ss-gradient-soft: var(--ss-surface-2);
-  --ss-sidebar: var(--ss-surface);
-  --ss-sidebar-accent: var(--ss-accent);
+  --ss-sidebar: #17191e;
+  --ss-sidebar-accent: color-mix(in srgb, var(--ss-accent) 55%, #ffffff);
   --ss-glow: none;
   --ss-shadow: none;
   --ss-shadow-md: none;
@@ -699,6 +699,8 @@ html[data-text-size="large"] {
   --ss-muted: #1f2937;
   --ss-line: #6b7280;
   --ss-glow: none;
+  --ss-sidebar: #000000;
+  --ss-sidebar-accent: #ffffff;
 }
 
 :root.dark[data-style="contrast"] {

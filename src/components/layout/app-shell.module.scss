@@ -1204,26 +1204,43 @@
   }
 }
 
-// ---------- Светлое боковое меню (стили «Государственный» и «Минимализм») ----------
+// ---------- Меню под стиль дизайна ----------
+// Меню всегда тёмное, но в строгих стилях — плоское, без свечения;
+// в «Мягком» пункты сильнее скруглены; в «Контрасте» — ярче подписи.
 :global(html[data-style="gov"]),
-:global(html[data-style="minimal"]) {
+:global(html[data-style="minimal"]),
+:global(html[data-style="contrast"]) {
+  .sidebarGlow {
+    display: none;
+  }
+}
+
+:global(html[data-style="gov"]) {
   .shell {
-    --sidebar-foreground: var(--ss-ink);
-    --sidebar-muted: var(--ss-muted);
+    --sidebar-muted: #b9c9e4;
+  }
+
+  .navItem,
+  .navIndicator {
+    border-radius: 4px;
+  }
+}
+
+:global(html[data-style="soft"]) {
+  .navItem,
+  .navIndicator {
+    border-radius: 16px;
+  }
+}
+
+:global(html[data-style="contrast"]) {
+  .shell {
+    --sidebar-foreground: #ffffff;
+    --sidebar-muted: #e5e7eb;
   }
 
   .sidebar {
-    border-right: 1px solid var(--ss-line);
-
-    --text: var(--ss-ink);
-    --border: var(--ss-line);
-    --soft: var(--ss-surface-2);
-    --accent: var(--ss-accent);
-    --accent-soft: var(--ss-accent-soft);
-  }
-
-  .sidebarGlow {
-    display: none;
+    border-right: 2px solid #ffffff;
   }
 }
 
