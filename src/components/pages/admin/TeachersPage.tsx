@@ -207,8 +207,8 @@ export function TeachersPage() {
                       </span>
                     )}
                   </td>
-                  <td data-label={t("inn")} className={styles.cellMuted}>{teacher.inn}</td>
-                  <td data-label={t("phone")} className={cn(styles.cellMuted, styles.optionalColumn)}>{teacher.phone ?? "—"}</td>
+                  <td data-private data-label={t("inn")} className={styles.cellMuted}>{teacher.inn}</td>
+                  <td data-private data-label={t("phone")} className={cn(styles.cellMuted, styles.optionalColumn)}>{teacher.phone ?? "—"}</td>
                   <td data-label={t("classesLed")}>
                     {teacher.classes_led.length > 0
                       ? teacher.classes_led.map((schoolClass) => schoolClass.name).join(", ")

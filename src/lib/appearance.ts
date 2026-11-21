@@ -27,6 +27,13 @@ export const DEFAULT_ACCENT: Accent = "blue";
 export const THEME_STORAGE_KEY = "smart-school-theme";
 const ACCENT_KEY = "smart-school-accent";
 const SIDEBAR_KEY = "smart-school-sidebar";
+
+// Переключатели вида: ключ в браузере и атрибут <html data-…="on">.
+// privacy — режим стримера (личные данные размыты), largeText — крупный текст,
+// reduceMotion — без анимаций.
+export const FLAGS = ["privacy", "largeText", "reduceMotion"] as const;
+export type Flag = (typeof FLAGS)[number];
+const flagKey = (flag: Flag) => `smart-school-${flag}`;
 const CHANGE_EVENT = "smart-school-appearance";
 
 function isAccent(value: string | null): value is Accent {
@@ -62,6 +69,20 @@ export function setSidebarCollapsed(collapsed: boolean) {
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
+export function getFlag(flag: Flag) {
+  return document.documentElement.dataset[flag] === "on";
+}
+
+export function setFlag(flag: Flag, on: boolean) {
+  if (on) {
+    document.documentElement.dataset[flag] = "on";
+  } else {
+    delete document.documentElement.dataset[flag];
+  }
+  writeStorage(flagKey(flag), on ? "on" : "off");
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
 // При выходе из аккаунта настройки сбрасываются к значениям по умолчанию:
 // следующий пользователь этого браузера и гостевые страницы видят синюю светлую тему.
 // Язык не сбрасывается — он задаётся адресом страницы.
@@ -70,12 +91,18 @@ export function resetAppearance() {
     window.localStorage.removeItem(ACCENT_KEY);
     window.localStorage.removeItem(SIDEBAR_KEY);
     window.localStorage.removeItem(THEME_STORAGE_KEY);
+    for (const flag of FLAGS) {
+      window.localStorage.removeItem(flagKey(flag));
+    }
   } catch {
     // Хранилище недоступно: сбрасывать нечего.
   }
 
   delete document.documentElement.dataset.accent;
   delete document.documentElement.dataset.sidebar;
+  for (const flag of FLAGS) {
+    delete document.documentElement.dataset[flag];
+  }
 }
 
 // Кабинет применяет сохранённые настройки сам: после входа переход идёт без
@@ -89,6 +116,11 @@ export function applySavedAppearance() {
     }
     if (sidebar) {
       document.documentElement.dataset.sidebar = sidebar;
+    }
+    for (const flag of FLAGS) {
+      if (window.localStorage.getItem(flagKey(flag)) === "on") {
+        document.documentElement.dataset[flag] = "on";
+      }
     }
   } catch {
     // Хранилище недоступно: остаются значения по умолчанию.
@@ -104,4 +136,4 @@ export function subscribeAppearance(onChange: () => void) {
 // Используется до гидратации, поэтому написан строкой без зависимостей.
 // Личные настройки применяются только вошедшему пользователю (есть cookie с токеном):
 // лендинг и страница входа всегда в оформлении по умолчанию.
-export const APPEARANCE_INIT_SCRIPT = `try{if(document.cookie.indexOf("${TOKEN_COOKIE_NAME}=")>-1){var d=document.documentElement;var a=localStorage.getItem("${ACCENT_KEY}");if(a)d.dataset.accent=a;var s=localStorage.getItem("${SIDEBAR_KEY}");if(s)d.dataset.sidebar=s;}}catch(e){}`;
+export const APPEARANCE_INIT_SCRIPT = `try{if(document.cookie.indexOf("${TOKEN_COOKIE_NAME}=")>-1){var d=document.documentElement;var a=localStorage.getItem("${ACCENT_KEY}");if(a)d.dataset.accent=a;var s=localStorage.getItem("${SIDEBAR_KEY}");if(s)d.dataset.sidebar=s;${FLAGS.map((flag) => `if(localStorage.getItem("${flagKey(flag)}")==="on")d.dataset.${flag}="on";`).join("")}}}catch(e){}`;

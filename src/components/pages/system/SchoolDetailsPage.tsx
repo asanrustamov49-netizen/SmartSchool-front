@@ -319,11 +319,11 @@ export function SchoolDetailsPage() {
               <MapPin size={16} aria-hidden="true" />
               {school.address ?? t("noAddress")}
             </li>
-            <li>
+            <li data-private>
               <Phone size={16} aria-hidden="true" />
               {school.phone ?? "—"}
             </li>
-            <li>
+            <li data-private>
               <Mail size={16} aria-hidden="true" />
               {school.email ?? "—"}
             </li>

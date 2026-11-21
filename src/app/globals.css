@@ -605,3 +605,34 @@ select option:checked {
   --ss-glow: 0 4px 14px -8px rgb(248 113 113 / 32%);
   --ss-sidebar: linear-gradient(180deg, #110404 0%, #220808 55%, #310b0b 100%);
 }
+
+/* ---------- Личные настройки вида (lib/appearance.ts) ---------- */
+
+/* Режим стримера: ИНН, телефоны, почта и пароли размыты — экран можно показывать
+   на трансляции или проекторе. Поле в фокусе видно, чтобы его можно было заполнить. */
+html[data-privacy="on"] [data-private],
+html[data-privacy="on"] [class*="secret"],
+html[data-privacy="on"] input[type="password"]:not(:focus),
+html[data-privacy="on"] input[type="email"]:not(:focus),
+html[data-privacy="on"] input[type="tel"]:not(:focus),
+html[data-privacy="on"] input[id*="inn"]:not(:focus),
+html[data-privacy="on"] input[id*="phone"]:not(:focus),
+html[data-privacy="on"] input[id*="email"]:not(:focus) {
+  filter: blur(6px);
+  user-select: none;
+}
+
+/* Крупный текст: весь интерфейс на ~12% крупнее. */
+html[data-large-text="on"] {
+  zoom: 1.12;
+}
+
+/* Без анимаций: для слабых устройств и тех, кого укачивает движение. */
+html[data-reduce-motion="on"] *,
+html[data-reduce-motion="on"] *::before,
+html[data-reduce-motion="on"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}

@@ -22,7 +22,7 @@ import { Toaster } from "@/components/ui/Toaster";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
-import { applySavedAppearance, setSidebarCollapsed } from "@/lib/appearance";
+import { applySavedAppearance, getFlag, setFlag, setSidebarCollapsed } from "@/lib/appearance";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
@@ -144,6 +144,12 @@ function AuthenticatedShell({
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setPaletteOpen((value) => !value);
+      }
+      // Ctrl+Shift+H — быстро включить режим стримера, если экран внезапно показывают.
+      // event.code: работает на любой раскладке.
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.code === "KeyH") {
+        event.preventDefault();
+        setFlag("privacy", !getFlag("privacy"));
       }
     };
 

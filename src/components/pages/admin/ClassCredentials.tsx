@@ -82,7 +82,7 @@ export function ClassCredentials({ classId, onClose }: ClassCredentialsProps) {
             <div className={peopleStyles.personInfo}>
               <strong>{row.full_name}</strong>
               <span className={peopleStyles.personMeta}>
-                <span>
+                <span data-private>
                   {t("login")}: {row.inn}
                 </span>
               </span>

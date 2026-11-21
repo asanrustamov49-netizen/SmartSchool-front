@@ -11,10 +11,10 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useAccent, useSidebarCollapsed } from "@/hooks/useAppearance";
+import { useAccent, useFlag, useSidebarCollapsed } from "@/hooks/useAppearance";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { ACCENTS, setAccent, setSidebarCollapsed } from "@/lib/appearance";
+import { ACCENTS, FLAGS, setAccent, setFlag, setSidebarCollapsed, type Flag } from "@/lib/appearance";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./settings.module.scss";
@@ -55,6 +55,28 @@ function OptionGroup<TValue extends string>({ label, options, value, onChange }:
         );
       })}
     </div>
+  );
+}
+
+// Переключатель «вкл/выкл» с названием и пояснением.
+function FlagSwitch({ flag }: { flag: Flag }) {
+  const t = useTranslations("settings.flags");
+  const isOn = useFlag(flag);
+
+  return (
+    <label className={styles.flag}>
+      <span>
+        <strong>{t(`${flag}.title`)}</strong>
+        <small>{t(`${flag}.hint`)}</small>
+      </span>
+      <input
+        type="checkbox"
+        role="switch"
+        className={styles.switch}
+        checked={isOn}
+        onChange={(event) => setFlag(flag, event.target.checked)}
+      />
+    </label>
   );
 }
 
@@ -157,6 +179,15 @@ export function SettingsPage() {
           <p className={styles.hint}>{t("sidebarHint")}</p>
         </section>
       </div>
+
+      <section className={adminStyles.card}>
+        <h2 className={adminStyles.cardTitle}>{t("flagsTitle")}</h2>
+        <div className={styles.flags}>
+          {FLAGS.map((flag) => (
+            <FlagSwitch key={flag} flag={flag} />
+          ))}
+        </div>
+      </section>
 
       <p className={styles.storageNote}>{t("storageNote")}</p>
     </div>

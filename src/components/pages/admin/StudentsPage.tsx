@@ -188,9 +188,9 @@ export function StudentsPage() {
             {students.map((student) => (
               <tr key={student.id}>
                 <td data-label={t("fullName")}>{student.full_name}</td>
-                <td data-label={t("inn")} className={styles.cellMuted}>{student.inn}</td>
+                <td data-private data-label={t("inn")} className={styles.cellMuted}>{student.inn}</td>
                 <td data-label={t("class")}>{getStudentClassName(student)}</td>
-                <td data-label={t("phone")} className={styles.cellMuted}>{student.phone ?? "—"}</td>
+                <td data-private data-label={t("phone")} className={styles.cellMuted}>{student.phone ?? "—"}</td>
                 <td data-label={t("status")} className={student.is_active ? undefined : styles.statusInactive}>
                   {student.is_active ? t("active") : t("inactive")}
                 </td>

@@ -38,11 +38,11 @@ export function AdminPersonCard({ person, actions }: AdminPersonCardProps) {
         <strong>{person.full_name}</strong>
         <span className={styles.personMeta}>
           <span className={styles.roleBadge}>{tRole(person.role)}</span>
-          <span>
+          <span data-private>
             {t("inn")}: {person.inn}
           </span>
           {person.phone && (
-            <span>
+            <span data-private>
               <Phone size={12} aria-hidden="true" />
               {person.phone}
             </span>

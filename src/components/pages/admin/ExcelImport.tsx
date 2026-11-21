@@ -385,7 +385,7 @@ export function ExcelImport({
                 {rows.map((row) => (
                   <tr key={row.rowNumber}>
                     <td className={styles.cellMuted}>{row.rowNumber}</td>
-                    <td>{row.inn || "—"}</td>
+                    <td data-private>{row.inn || "—"}</td>
                     <td>{row.fullName || "—"}</td>
                     <td className={styles.cellMuted}>{row.phone || "—"}</td>
                     <td
@@ -441,7 +441,7 @@ export function ExcelImport({
                   <tbody>
                     {outcome.result.added_users.map((user) => (
                       <tr key={user.inn}>
-                        <td className={styles.cellMuted}>{user.inn}</td>
+                        <td data-private className={styles.cellMuted}>{user.inn}</td>
                         <td>{user.full_name}</td>
                         <td className={styles.secret}>
                           {user.temporary_password}

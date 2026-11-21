@@ -69,7 +69,7 @@ export function ProfilePage() {
           <h2>{user.full_name}</h2>
           <p>{tRole(user.role)}</p>
           {user.school && <p>{user.school.name}</p>}
-          <p className={styles.inn}>
+          <p data-private className={styles.inn}>
             {t("inn")}: {user.inn}
           </p>
 
