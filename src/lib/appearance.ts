@@ -29,8 +29,19 @@ const ACCENT_KEY = "smart-school-accent";
 const SIDEBAR_KEY = "smart-school-sidebar";
 
 // Переключатели вида: ключ в браузере и атрибут <html data-…="on">.
-// privacy — режим стримера (личные данные размыты), reduceMotion — без анимаций.
-export const FLAGS = ["privacy", "reduceMotion"] as const;
+// privacy — режим стримера (личные данные размыты); autoLogout — выход после 15 минут без действий
+// (общий компьютер в учительской); reduceMotion — без анимаций; colorBlind — цвета оценок,
+// различимые при дальтонизме; readableText — шире интервалы между буквами и строками;
+// strongFocus — заметная рамка фокуса для клавиатуры; underlineLinks — ссылки подчёркнуты.
+export const FLAGS = [
+  "privacy",
+  "autoLogout",
+  "reduceMotion",
+  "colorBlind",
+  "readableText",
+  "strongFocus",
+  "underlineLinks",
+] as const;
 export type Flag = (typeof FLAGS)[number];
 const flagKey = (flag: Flag) => `smart-school-${flag}`;
 

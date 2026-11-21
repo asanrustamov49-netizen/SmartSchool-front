@@ -2,10 +2,12 @@
 
 import {
   Check,
+  Keyboard,
   Monitor,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  RotateCcw,
   Sun,
   type LucideIcon,
 } from "lucide-react";
@@ -17,13 +19,14 @@ import { routing } from "@/i18n/routing";
 import {
   ACCENTS,
   CHOICES,
-  FLAGS,
   setAccent,
   setChoice,
   setFlag,
+  resetAppearance,
   setSidebarCollapsed,
   type Flag,
 } from "@/lib/appearance";
+import { OPEN_SHORTCUTS_EVENT } from "@/components/layout/ShortcutsDialog";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./settings.module.scss";
@@ -66,6 +69,11 @@ function OptionGroup<TValue extends string>({ label, options, value, onChange }:
     </div>
   );
 }
+
+const FLAG_GROUPS: { title: "securityTitle" | "comfortTitle"; flags: Flag[] }[] = [
+  { title: "securityTitle", flags: ["privacy", "autoLogout"] },
+  { title: "comfortTitle", flags: ["reduceMotion", "colorBlind", "readableText", "strongFocus", "underlineLinks"] },
+];
 
 // Переключатель «вкл/выкл» с названием и пояснением.
 function FlagSwitch({ flag }: { flag: Flag }) {
@@ -224,14 +232,42 @@ export function SettingsPage() {
         />
       </section>
 
-      <section className={adminStyles.card}>
-        <h2 className={adminStyles.cardTitle}>{t("flagsTitle")}</h2>
-        <div className={styles.flags}>
-          {FLAGS.map((flag) => (
-            <FlagSwitch key={flag} flag={flag} />
-          ))}
-        </div>
-      </section>
+      <div className={styles.flagColumns}>
+        {FLAG_GROUPS.map((group) => (
+          <section key={group.title} className={adminStyles.card}>
+            <h2 className={adminStyles.cardTitle}>{t(group.title)}</h2>
+            <div className={styles.flags}>
+              {group.flags.map((flag) => (
+                <FlagSwitch key={flag} flag={flag} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <div className={styles.footerActions}>
+        <button
+          type="button"
+          className={adminStyles.secondaryButton}
+          onClick={() => window.dispatchEvent(new Event(OPEN_SHORTCUTS_EVENT))}
+        >
+          <Keyboard size={16} aria-hidden="true" />
+          {t("shortcuts")}
+        </button>
+        <button
+          type="button"
+          className={adminStyles.secondaryButton}
+          onClick={() => {
+            if (window.confirm(t("resetConfirm"))) {
+              resetAppearance();
+              setTheme("light");
+            }
+          }}
+        >
+          <RotateCcw size={16} aria-hidden="true" />
+          {t("reset")}
+        </button>
+      </div>
 
       <p className={styles.storageNote}>{t("storageNote")}</p>
     </div>

@@ -1226,3 +1226,66 @@
     display: none;
   }
 }
+
+// ---------- Нет интернета ----------
+.offlineBanner {
+  position: fixed;
+  z-index: 60;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #1b2430;
+  box-shadow: var(--ss-shadow-lg);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 1025px) {
+  .offlineBanner {
+    bottom: 24px;
+  }
+}
+
+// ---------- Горячие клавиши ----------
+.shortcuts {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--ss-line);
+    font-size: 14px;
+  }
+}
+
+.shortcutKeys {
+  display: flex;
+  gap: 4px;
+
+  kbd {
+    min-width: 26px;
+    padding: 3px 7px;
+    border: 1px solid var(--ss-line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: var(--ss-surface-2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: center;
+  }
+}

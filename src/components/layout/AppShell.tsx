@@ -14,15 +14,28 @@ import {
   Search,
   ShieldAlert,
   Sun,
+  WifiOff,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { CurrentUser } from "@/apis/auth.api";
 import { Logo } from "@/components/ui/Logo";
 import { Toaster } from "@/components/ui/Toaster";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
 import { applySavedAppearance, getFlag, setFlag, setSidebarCollapsed } from "@/lib/appearance";
+
+const AUTO_LOGOUT_MS = 15 * 60 * 1000;
+
+function subscribeOnline(onChange: () => void) {
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, getMediaUrl } from "@/lib/utils";
 import { AccountMenu } from "./AccountMenu";
@@ -30,6 +43,7 @@ import { MobileMoreSheet } from "./MobileMoreSheet";
 import { CabinetSpotlight } from "./CabinetSpotlight";
 import { SidebarTooltip } from "./SidebarTooltip";
 import { CommandPalette } from "./CommandPalette";
+import { OPEN_SHORTCUTS_EVENT, ShortcutsDialog } from "./ShortcutsDialog";
 import {
   getAllowedItems,
   getCurrentNavigationItem,
@@ -117,6 +131,36 @@ function AuthenticatedShell({
   // Лист «Ещё» на телефоне и планшете — там все остальные разделы, профиль, язык и выход.
   const [moreOpen, setMoreOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const logout = useLogout();
+  const isOnline = useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
+  const unreadQuery = useUnreadNotificationsCount();
+  const unreadCount = unreadQuery.data?.unread ?? 0;
+
+  // Число непрочитанных во вкладке браузера, как в Gmail: «(3) Smart School».
+  // pathname в зависимостях: при переходе Next.js ставит заголовок страницы заново.
+  useEffect(() => {
+    const baseTitle = document.title.replace(/^\(\d+\+?\)\s/, "");
+    document.title = unreadCount > 0 ? `(${unreadCount > 99 ? "99+" : unreadCount}) ${baseTitle}` : baseTitle;
+  }, [unreadCount, pathname]);
+
+  // Окно горячих клавиш: клавиша «?» (не в поле ввода) или кнопка в настройках.
+  useEffect(() => {
+    const open = () => setShortcutsOpen(true);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (event.key === "?" && !target?.closest("input, textarea, select, [contenteditable='true']")) {
+        event.preventDefault();
+        setShortcutsOpen(true);
+      }
+    };
+    window.addEventListener(OPEN_SHORTCUTS_EVENT, open);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener(OPEN_SHORTCUTS_EVENT, open);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const navigation = getRoleNavigation(currentUser);
   const mobileItems = getMobileItems(navigation);
@@ -136,6 +180,35 @@ function AuthenticatedShell({
 
   useEffect(() => {
     applySavedAppearance();
+  }, []);
+
+  // Автовыход: 15 минут без движения мыши, нажатий и касаний — выход из аккаунта.
+  // Нужен на общих компьютерах, где ученик может открыть кабинет учителя.
+  // logout через ref: функция новая на каждый рендер, а таймер не должен перезапускаться.
+  const logoutRef = useRef(logout);
+  useEffect(() => {
+    logoutRef.current = logout;
+  });
+  useEffect(() => {
+    let lastActivity = Date.now();
+    const markActivity = () => {
+      lastActivity = Date.now();
+    };
+    const events = ["pointerdown", "keydown", "scroll", "mousemove"];
+    for (const name of events) {
+      window.addEventListener(name, markActivity, { passive: true });
+    }
+    const timer = window.setInterval(() => {
+      if (getFlag("autoLogout") && Date.now() - lastActivity > AUTO_LOGOUT_MS) {
+        logoutRef.current();
+      }
+    }, 30_000);
+    return () => {
+      window.clearInterval(timer);
+      for (const name of events) {
+        window.removeEventListener(name, markActivity);
+      }
+    };
   }, []);
 
   // Ctrl+K / ⌘K открывает быстрый поиск с любой страницы кабинета.
@@ -412,6 +485,13 @@ function AuthenticatedShell({
 
       {paletteOpen && (
         <CommandPalette pages={getAllowedItems(navigation)} onClose={() => setPaletteOpen(false)} />
+      )}
+      <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+      {!isOnline && (
+        <p className={styles.offlineBanner} role="status">
+          <WifiOff size={16} aria-hidden="true" />
+          {t("offline")}
+        </p>
       )}
       <Toaster />
     </div>

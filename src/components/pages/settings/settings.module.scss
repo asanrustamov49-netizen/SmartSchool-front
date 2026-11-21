@@ -304,6 +304,14 @@
 }
 
 // ---------- Переключатели: стример, крупный текст, без анимаций ----------
+// Две колонки: «Безопасность» и «Удобство»; на узком экране — одна.
+.flagColumns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
 .flags {
   display: flex;
   flex-direction: column;
@@ -501,4 +509,11 @@
     background: linear-gradient(#000000, #000000) bottom left / 60% 14px no-repeat, #ffffff;
     box-shadow: none;
   }
+}
+
+.footerActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
 }

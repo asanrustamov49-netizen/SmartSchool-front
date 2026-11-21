@@ -634,11 +634,15 @@ html[data-text-size="large"] {
 /* ---------- Стили дизайна (настройки → «Дизайн») ----------
    Меняют только токены: каждая страница перекрашивается сама. */
 
-/* Государственный: строгий официальный вид — белые плоские поверхности,
-   синий цвет, светлое меню, маленькие скругления, без градиентов и свечения. */
+/* Государственный: строгий официальный вид, как у гос. сервисов КР — всё белое,
+   тонкие серые границы, синий цвет, светлое меню, маленькие скругления,
+   без градиентов, свечения и теней. */
 :root[data-style="gov"] {
-  --ss-bg: #f3f5f8;
-  --ss-line: #dde3ea;
+  --ss-bg: #ffffff;
+  --ss-surface: #ffffff;
+  --ss-surface-2: #f5f7fa;
+  --ss-ink: #1b2430;
+  --ss-line: #e1e6ed;
   --ss-accent: #1559c1;
   --ss-accent-strong: #0f4699;
   --ss-accent-soft: #e8f0fb;
@@ -648,8 +652,9 @@ html[data-text-size="large"] {
   --ss-sidebar: #ffffff;
   --ss-sidebar-accent: #1559c1;
   --ss-glow: none;
-  --ss-shadow: 0 1px 2px rgb(15 23 42 / 6%);
-  --ss-shadow-md: 0 2px 6px rgb(15 23 42 / 8%);
+  --ss-shadow: none;
+  --ss-shadow-md: 0 2px 8px rgb(15 23 42 / 6%);
+  --ss-shadow-lg: 0 8px 24px rgb(15 23 42 / 10%);
   --ss-radius: 6px;
   --ss-radius-sm: 4px;
   --ss-radius-lg: 8px;
@@ -710,4 +715,42 @@ html[data-reduce-motion="on"] *::after {
   animation-iteration-count: 1 !important;
   scroll-behavior: auto !important;
   transition-duration: 0.01ms !important;
+}
+
+/* Цвета оценок для дальтонизма (палитра Okabe–Ito): различимы при любом типе. */
+html[data-color-blind="on"] [class*="grade5"] {
+  background: #0072b2 !important;
+}
+
+html[data-color-blind="on"] [class*="grade4"] {
+  background: #56b4e9 !important;
+  color: #0b1f33 !important;
+}
+
+html[data-color-blind="on"] [class*="grade3"] {
+  background: #e69f00 !important;
+  color: #1f1300 !important;
+}
+
+html[data-color-blind="on"] [class*="grade2"] {
+  background: #d55e00 !important;
+}
+
+/* Удобное чтение: шире интервалы — легче при дислексии и на маленьких экранах. */
+html[data-readable-text="on"] body {
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  word-spacing: 0.08em;
+}
+
+/* Заметная рамка фокуса: видно, где курсор, при работе с клавиатуры. */
+html[data-strong-focus="on"] :focus-visible {
+  outline: 3px solid var(--ss-accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* Ссылки всегда подчёркнуты: их не нужно угадывать по цвету. */
+html[data-underline-links="on"] main a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
