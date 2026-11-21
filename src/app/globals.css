@@ -622,9 +622,84 @@ html[data-privacy="on"] input[id*="email"]:not(:focus) {
   user-select: none;
 }
 
-/* Крупный текст: весь интерфейс на ~12% крупнее. */
-html[data-large-text="on"] {
+/* Размер текста: весь интерфейс мельче или крупнее. */
+html[data-text-size="small"] {
+  zoom: 0.92;
+}
+
+html[data-text-size="large"] {
   zoom: 1.12;
+}
+
+/* ---------- Стили дизайна (настройки → «Дизайн») ----------
+   Меняют только токены: каждая страница перекрашивается сама. */
+
+/* Государственный: строгий официальный вид — белые плоские поверхности,
+   синий цвет, светлое меню, маленькие скругления, без градиентов и свечения. */
+:root[data-style="gov"] {
+  --ss-bg: #f3f5f8;
+  --ss-line: #dde3ea;
+  --ss-accent: #1559c1;
+  --ss-accent-strong: #0f4699;
+  --ss-accent-soft: #e8f0fb;
+  --ss-logo-light: #1559c1;
+  --ss-gradient: #1559c1;
+  --ss-gradient-soft: #e8f0fb;
+  --ss-sidebar: #ffffff;
+  --ss-sidebar-accent: #1559c1;
+  --ss-glow: none;
+  --ss-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+  --ss-shadow-md: 0 2px 6px rgb(15 23 42 / 8%);
+  --ss-radius: 6px;
+  --ss-radius-sm: 4px;
+  --ss-radius-lg: 8px;
+}
+
+:root.dark[data-style="gov"] {
+  --ss-bg: #0d1420;
+  --ss-line: #233044;
+  --ss-accent: #4f8be6;
+  --ss-accent-strong: #7aa8ee;
+  --ss-accent-soft: rgb(79 139 230 / 14%);
+  --ss-gradient: #2f6fd1;
+  --ss-gradient-soft: rgb(79 139 230 / 14%);
+  --ss-sidebar: #111a28;
+  --ss-sidebar-accent: #7aa8ee;
+}
+
+/* Минимализм: без градиентов, свечения и теней, выбранный цвет сохраняется. */
+:root[data-style="minimal"] {
+  --ss-gradient: var(--ss-accent);
+  --ss-gradient-soft: var(--ss-surface-2);
+  --ss-sidebar: var(--ss-surface);
+  --ss-sidebar-accent: var(--ss-accent);
+  --ss-glow: none;
+  --ss-shadow: none;
+  --ss-shadow-md: none;
+  --ss-shadow-lg: none;
+  --ss-radius: 10px;
+}
+
+/* Мягкий: большие скругления и лёгкие тени. */
+:root[data-style="soft"] {
+  --ss-radius: 20px;
+  --ss-radius-sm: 12px;
+  --ss-radius-lg: 26px;
+  --ss-shadow: 0 10px 30px -18px rgb(15 23 42 / 22%);
+}
+
+/* Высокий контраст: чёткий тёмный текст и заметные границы — легче читать. */
+:root[data-style="contrast"] {
+  --ss-ink: #000000;
+  --ss-muted: #1f2937;
+  --ss-line: #6b7280;
+  --ss-glow: none;
+}
+
+:root.dark[data-style="contrast"] {
+  --ss-ink: #ffffff;
+  --ss-muted: #e5e7eb;
+  --ss-line: #9ca3af;
 }
 
 /* Без анимаций: для слабых устройств и тех, кого укачивает движение. */

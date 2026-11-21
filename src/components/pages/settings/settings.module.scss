@@ -379,3 +379,126 @@
     outline-offset: 2px;
   }
 }
+
+// ---------- Стиль дизайна: карточки с маленьким образцом ----------
+.styleCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
+  gap: 10px;
+}
+
+.styleCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  strong {
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+}
+
+.styleCardSelected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+// Образец: слева меню, справа карточка с кнопкой — в цветах стиля.
+.styleSample {
+  display: grid;
+  width: 100%;
+  height: 56px;
+  grid-template-columns: 28% 1fr;
+  gap: 6px;
+  padding: 6px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #eef1f6;
+
+  i {
+    border-radius: 5px;
+    background: linear-gradient(180deg, #0b1230, #1e1b4b);
+  }
+
+  b {
+    border-radius: 5px;
+    background: linear-gradient(135deg, #2f6bff, #7c5cff) bottom left / 60% 14px no-repeat, #ffffff;
+    box-shadow: 0 4px 10px -6px rgb(15 23 42 / 30%);
+  }
+}
+
+.sample_gov {
+  background: #f3f5f8;
+
+  i {
+    border: 1px solid #dde3ea;
+    border-radius: 2px;
+    background: #ffffff;
+  }
+
+  b {
+    border: 1px solid #dde3ea;
+    border-radius: 2px;
+    background: #1559c1 bottom left / 60% 14px no-repeat linear-gradient(#1559c1, #1559c1), #ffffff;
+    box-shadow: none;
+  }
+}
+
+.sample_minimal {
+  background: #f5f6f8;
+
+  i {
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+  }
+
+  b {
+    border: 1px solid #e5e7eb;
+    background: linear-gradient(#2f6bff, #2f6bff) bottom left / 60% 14px no-repeat, #ffffff;
+    box-shadow: none;
+  }
+}
+
+.sample_soft {
+  i,
+  b {
+    border-radius: 14px;
+  }
+}
+
+.sample_contrast {
+  background: #ffffff;
+
+  i {
+    background: #000000;
+  }
+
+  b {
+    border: 2px solid #000000;
+    background: linear-gradient(#000000, #000000) bottom left / 60% 14px no-repeat, #ffffff;
+    box-shadow: none;
+  }
+}

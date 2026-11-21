@@ -1,11 +1,15 @@
 import { useSyncExternalStore } from "react";
 import {
   DEFAULT_ACCENT,
+  CHOICES,
   getAccent,
+  getChoice,
   getFlag,
   getSidebarCollapsed,
   subscribeAppearance,
   type Accent,
+  type ChoiceName,
+  type ChoiceValue,
   type Flag,
 } from "@/lib/appearance";
 
@@ -20,4 +24,8 @@ export function useSidebarCollapsed(): boolean {
 
 export function useFlag(flag: Flag): boolean {
   return useSyncExternalStore(subscribeAppearance, () => getFlag(flag), () => false);
+}
+
+export function useChoice<TName extends ChoiceName>(name: TName): ChoiceValue<TName> {
+  return useSyncExternalStore(subscribeAppearance, () => getChoice(name), () => CHOICES[name][0]);
 }

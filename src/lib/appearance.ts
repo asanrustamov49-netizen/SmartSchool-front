@@ -29,11 +29,23 @@ const ACCENT_KEY = "smart-school-accent";
 const SIDEBAR_KEY = "smart-school-sidebar";
 
 // Переключатели вида: ключ в браузере и атрибут <html data-…="on">.
-// privacy — режим стримера (личные данные размыты), largeText — крупный текст,
-// reduceMotion — без анимаций.
-export const FLAGS = ["privacy", "largeText", "reduceMotion"] as const;
+// privacy — режим стримера (личные данные размыты), reduceMotion — без анимаций.
+export const FLAGS = ["privacy", "reduceMotion"] as const;
 export type Flag = (typeof FLAGS)[number];
 const flagKey = (flag: Flag) => `smart-school-${flag}`;
+
+// Настройки с выбором из нескольких вариантов: атрибут <html data-style="gov">.
+// Первый вариант — по умолчанию, для него атрибут не ставится.
+// style: основной, государственный (строгий официальный вид, как на гос. платформах),
+// минимализм, мягкий, высокий контраст. textSize: мелкий, обычный, крупный.
+export const CHOICES = {
+  style: ["default", "gov", "minimal", "soft", "contrast"],
+  textSize: ["normal", "small", "large"],
+} as const;
+export type ChoiceName = keyof typeof CHOICES;
+export type ChoiceValue<TName extends ChoiceName> = (typeof CHOICES)[TName][number];
+const CHOICE_NAMES = Object.keys(CHOICES) as ChoiceName[];
+const choiceKey = (name: ChoiceName) => `smart-school-${name}`;
 const CHANGE_EVENT = "smart-school-appearance";
 
 function isAccent(value: string | null): value is Accent {
@@ -83,6 +95,23 @@ export function setFlag(flag: Flag, on: boolean) {
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
+export function getChoice<TName extends ChoiceName>(name: TName): ChoiceValue<TName> {
+  const options: readonly string[] = CHOICES[name];
+  const value = document.documentElement.dataset[name];
+  const match = options.find((option) => option === value) ?? options[0];
+  return match as ChoiceValue<TName>;
+}
+
+export function setChoice<TName extends ChoiceName>(name: TName, value: ChoiceValue<TName>) {
+  if (value === CHOICES[name][0]) {
+    delete document.documentElement.dataset[name];
+  } else {
+    document.documentElement.dataset[name] = value;
+  }
+  writeStorage(choiceKey(name), value);
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
 // При выходе из аккаунта настройки сбрасываются к значениям по умолчанию:
 // следующий пользователь этого браузера и гостевые страницы видят синюю светлую тему.
 // Язык не сбрасывается — он задаётся адресом страницы.
@@ -94,6 +123,9 @@ export function resetAppearance() {
     for (const flag of FLAGS) {
       window.localStorage.removeItem(flagKey(flag));
     }
+    for (const name of CHOICE_NAMES) {
+      window.localStorage.removeItem(choiceKey(name));
+    }
   } catch {
     // Хранилище недоступно: сбрасывать нечего.
   }
@@ -102,6 +134,9 @@ export function resetAppearance() {
   delete document.documentElement.dataset.sidebar;
   for (const flag of FLAGS) {
     delete document.documentElement.dataset[flag];
+  }
+  for (const name of CHOICE_NAMES) {
+    delete document.documentElement.dataset[name];
   }
 }
 
@@ -122,6 +157,13 @@ export function applySavedAppearance() {
         document.documentElement.dataset[flag] = "on";
       }
     }
+    for (const name of CHOICE_NAMES) {
+      const value = window.localStorage.getItem(choiceKey(name));
+      const options: readonly string[] = CHOICES[name];
+      if (value && value !== options[0] && options.includes(value)) {
+        document.documentElement.dataset[name] = value;
+      }
+    }
   } catch {
     // Хранилище недоступно: остаются значения по умолчанию.
   }
@@ -136,4 +178,4 @@ export function subscribeAppearance(onChange: () => void) {
 // Используется до гидратации, поэтому написан строкой без зависимостей.
 // Личные настройки применяются только вошедшему пользователю (есть cookie с токеном):
 // лендинг и страница входа всегда в оформлении по умолчанию.
-export const APPEARANCE_INIT_SCRIPT = `try{if(document.cookie.indexOf("${TOKEN_COOKIE_NAME}=")>-1){var d=document.documentElement;var a=localStorage.getItem("${ACCENT_KEY}");if(a)d.dataset.accent=a;var s=localStorage.getItem("${SIDEBAR_KEY}");if(s)d.dataset.sidebar=s;${FLAGS.map((flag) => `if(localStorage.getItem("${flagKey(flag)}")==="on")d.dataset.${flag}="on";`).join("")}}}catch(e){}`;
+export const APPEARANCE_INIT_SCRIPT = `try{if(document.cookie.indexOf("${TOKEN_COOKIE_NAME}=")>-1){var d=document.documentElement;var a=localStorage.getItem("${ACCENT_KEY}");if(a)d.dataset.accent=a;var s=localStorage.getItem("${SIDEBAR_KEY}");if(s)d.dataset.sidebar=s;${FLAGS.map((flag) => `if(localStorage.getItem("${flagKey(flag)}")==="on")d.dataset.${flag}="on";`).join("")}${CHOICE_NAMES.map((name) => `var c_${name}=localStorage.getItem("${choiceKey(name)}");if(c_${name}&&c_${name}!=="${CHOICES[name][0]}")d.dataset.${name}=c_${name};`).join("")}}}catch(e){}`;

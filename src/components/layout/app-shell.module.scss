@@ -1204,3 +1204,25 @@
   }
 }
 
+// ---------- Светлое боковое меню (стили «Государственный» и «Минимализм») ----------
+:global(html[data-style="gov"]),
+:global(html[data-style="minimal"]) {
+  .shell {
+    --sidebar-foreground: var(--ss-ink);
+    --sidebar-muted: var(--ss-muted);
+  }
+
+  .sidebar {
+    border-right: 1px solid var(--ss-line);
+
+    --text: var(--ss-ink);
+    --border: var(--ss-line);
+    --soft: var(--ss-surface-2);
+    --accent: var(--ss-accent);
+    --accent-soft: var(--ss-accent-soft);
+  }
+
+  .sidebarGlow {
+    display: none;
+  }
+}

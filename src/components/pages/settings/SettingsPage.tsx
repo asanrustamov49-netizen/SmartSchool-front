@@ -11,10 +11,19 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { useAccent, useFlag, useSidebarCollapsed } from "@/hooks/useAppearance";
+import { useAccent, useChoice, useFlag, useSidebarCollapsed } from "@/hooks/useAppearance";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { ACCENTS, FLAGS, setAccent, setFlag, setSidebarCollapsed, type Flag } from "@/lib/appearance";
+import {
+  ACCENTS,
+  CHOICES,
+  FLAGS,
+  setAccent,
+  setChoice,
+  setFlag,
+  setSidebarCollapsed,
+  type Flag,
+} from "@/lib/appearance";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
 import styles from "./settings.module.scss";
@@ -89,6 +98,8 @@ export function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const accent = useAccent();
   const sidebarCollapsed = useSidebarCollapsed();
+  const designStyle = useChoice("style");
+  const textSize = useChoice("textSize");
 
   return (
     <div className={adminStyles.page}>
@@ -179,6 +190,39 @@ export function SettingsPage() {
           <p className={styles.hint}>{t("sidebarHint")}</p>
         </section>
       </div>
+
+      <section className={adminStyles.card}>
+        <h2 className={adminStyles.cardTitle}>{t("styleTitle")}</h2>
+        <div className={styles.styleCards} role="radiogroup" aria-label={t("styleTitle")}>
+          {CHOICES.style.map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={designStyle === option}
+              className={cn(styles.styleCard, designStyle === option && styles.styleCardSelected)}
+              onClick={() => setChoice("style", option)}
+            >
+              <span className={cn(styles.styleSample, styles[`sample_${option}`])} aria-hidden="true">
+                <i />
+                <b />
+              </span>
+              <strong>{t(`styles.${option}.title`)}</strong>
+              <small>{t(`styles.${option}.hint`)}</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className={adminStyles.card}>
+        <h2 className={adminStyles.cardTitle}>{t("textSizeTitle")}</h2>
+        <OptionGroup
+          label={t("textSizeTitle")}
+          value={textSize}
+          onChange={(value) => setChoice("textSize", value)}
+          options={CHOICES.textSize.map((option) => ({ value: option, label: t(`textSizes.${option}`) }))}
+        />
+      </section>
 
       <section className={adminStyles.card}>
         <h2 className={adminStyles.cardTitle}>{t("flagsTitle")}</h2>
