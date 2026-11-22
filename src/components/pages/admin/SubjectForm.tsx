@@ -10,12 +10,10 @@ import { Select } from "@/components/ui/Select";
 import { useCreateSubject, useUpdateSubject } from "@/hooks/useSubjects";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { SUBJECT_CATALOG } from "@/lib/subjectName";
-import { emptyToNull } from "@/lib/utils";
 import styles from "./admin.module.scss";
 
 type SubjectFormValues = {
   name: string;
-  code: string;
 };
 
 type SubjectFormProps = {
@@ -35,7 +33,6 @@ export function SubjectForm({ subject, onClose }: SubjectFormProps) {
 
   const subjectSchema = z.object({
     name: z.string().min(1, tForm("required")),
-    code: z.string(),
   });
 
   // Название — только из списка, чтобы нельзя было вписать что угодно. Backend проверяет то же.
@@ -48,26 +45,21 @@ export function SubjectForm({ subject, onClose }: SubjectFormProps) {
 
   const {
     control,
-    register,
     handleSubmit,
     setError,
     formState: { errors },
   } = useForm<SubjectFormValues>({
     resolver: zodResolver(subjectSchema),
-    defaultValues: { name: subject?.name ?? "", code: subject?.code ?? "" },
+    defaultValues: { name: subject?.name ?? "" },
   });
 
   const onSubmit = (values: SubjectFormValues) => {
-    const data = { name: values.name.trim(), code: emptyToNull(values.code) };
+    const data = { name: values.name.trim() };
     const handleError = (error: unknown) => {
       const fieldErrors = getApiFieldErrors(error);
 
       if (fieldErrors.name) {
         setError("name", { message: fieldErrors.name });
-      }
-
-      if (fieldErrors.code) {
-        setError("code", { message: fieldErrors.code });
       }
     };
 
@@ -116,18 +108,6 @@ export function SubjectForm({ subject, onClose }: SubjectFormProps) {
             )}
           />
           {errors.name && <p className={styles.fieldError}>{errors.name.message}</p>}
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="subject-code">{t("code")}</label>
-          <input
-            id="subject-code"
-            className={styles.input}
-            aria-invalid={Boolean(errors.code)}
-            {...register("code")}
-          />
-          <span className={styles.fieldHint}>{tForm("optional")}</span>
-          {errors.code && <p className={styles.fieldError}>{errors.code.message}</p>}
         </div>
 
         <div className={styles.formActions}>

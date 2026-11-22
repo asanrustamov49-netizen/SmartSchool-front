@@ -10,14 +10,12 @@ import type { Student, StudentCreated } from "@/apis/students.api";
 import { Select } from "@/components/ui/Select";
 import { useCreateStudent, useUpdateStudent } from "@/hooks/useStudents";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
-import { emptyToNull } from "@/lib/utils";
 import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type StudentFormValues = {
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string;
   class_id: string;
 };
 
@@ -28,8 +26,8 @@ type StudentFormProps = {
   onClose: () => void;
 };
 
-// Backend разрешает менять у ученика только ФИО и телефон (StudentUpdate):
-// ИНН и класс после создания не редактируются.
+// Backend разрешает менять у ученика только ФИО (StudentUpdate):
+// почта (логин) и класс после создания не редактируются.
 export function StudentForm({ student, classes, onCreated, onClose }: StudentFormProps) {
   const t = useTranslations("admin.students");
   const tForm = useTranslations("admin.form");
@@ -40,19 +38,16 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   const mutation = student ? updateStudent : createStudent;
   const isEditing = student !== null;
 
-  // Правила из StudentCreate/StudentUpdate: ИНН — 14 цифр, ФИО 3–200, телефон до 20 символов.
-  // При редактировании ИНН и класс не показываются в полях формы и не отправляются.
+  // Правила из StudentCreate/StudentUpdate: почта, ФИО 3–200 символов.
+  // При редактировании почта и класс не показываются в полях формы и не отправляются.
   const studentSchema = z.object({
-    inn: isEditing
-      ? z.string()
-      : z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
+    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
     full_name: z
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
       .max(200, tForm("maxLength", { count: 200 }))
       .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
-    phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
     class_id: isEditing ? z.string() : z.string().min(1, tForm("required")),
   });
 
@@ -65,9 +60,8 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   } = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
-      inn: student?.inn ?? "",
+      email: student?.email ?? "",
       full_name: student?.full_name ?? "",
-      phone: student?.phone ?? "",
       class_id: student?.class_id ? String(student.class_id) : "",
     },
   });
@@ -75,16 +69,12 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   const handleError = (error: Error) => {
     const fieldErrors = getApiFieldErrors(error);
 
-    if (fieldErrors.inn) {
-      setError("inn", { message: fieldErrors.inn });
+    if (fieldErrors.email) {
+      setError("email", { message: fieldErrors.email });
     }
 
     if (fieldErrors.full_name) {
       setError("full_name", { message: fieldErrors.full_name });
-    }
-
-    if (fieldErrors.phone) {
-      setError("phone", { message: fieldErrors.phone });
     }
 
     if (fieldErrors.class_id) {
@@ -94,11 +84,10 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
 
   const onSubmit = (values: StudentFormValues) => {
     const fullName = values.full_name.trim();
-    const phone = emptyToNull(values.phone);
 
     if (student) {
       updateStudent.mutate(
-        { studentId: student.id, data: { full_name: fullName, phone } },
+        { studentId: student.id, data: { full_name: fullName } },
         { onSuccess: onClose, onError: handleError },
       );
       return;
@@ -106,9 +95,8 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
 
     createStudent.mutate(
       {
-        inn: values.inn.trim(),
+        email: values.email.trim(),
         full_name: fullName,
-        phone,
         class_id: Number(values.class_id),
       },
       { onSuccess: onCreated, onError: handleError },
@@ -148,9 +136,9 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
         {student ? (
           <>
             <div className={styles.field}>
-              <label htmlFor="student-inn">{t("inn")}</label>
-              <input id="student-inn" className={styles.input} value={student.inn} readOnly disabled />
-              <span className={styles.fieldHint}>{t("innReadonly")}</span>
+              <label htmlFor="student-email">{t("email")}</label>
+              <input id="student-email" className={styles.input} value={student.email} readOnly disabled />
+              <span className={styles.fieldHint}>{t("emailReadonly")}</span>
             </div>
 
             <div className={styles.field}>
@@ -168,17 +156,18 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
         ) : (
           <>
             <div className={styles.field}>
-              <label htmlFor="student-inn">{t("inn")}</label>
+              <label htmlFor="student-email">{t("email")}</label>
               <input
-                id="student-inn"
+                id="student-email"
+                type="email"
                 className={styles.input}
-                inputMode="numeric"
-                maxLength={14}
+                inputMode="email"
                 autoComplete="off"
-                aria-invalid={Boolean(errors.inn)}
-                {...register("inn")}
+                placeholder={tForm("emailPlaceholder")}
+                aria-invalid={Boolean(errors.email)}
+                {...register("email")}
               />
-              {errors.inn && <p className={styles.fieldError}>{errors.inn.message}</p>}
+              {errors.email && <p className={styles.fieldError}>{errors.email.message}</p>}
             </div>
 
             <div className={styles.field}>
@@ -206,20 +195,6 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
             </div>
           </>
         )}
-
-        <div className={styles.field}>
-          <label htmlFor="student-phone">{t("phone")}</label>
-          <input
-            id="student-phone"
-            className={styles.input}
-            type="tel"
-            autoComplete="off"
-            aria-invalid={Boolean(errors.phone)}
-            {...register("phone")}
-          />
-          <span className={styles.fieldHint}>{tForm("optional")}</span>
-          {errors.phone && <p className={styles.fieldError}>{errors.phone.message}</p>}
-        </div>
 
         <div className={styles.formActions}>
           <button type="button" className={styles.secondaryButton} onClick={onClose}>

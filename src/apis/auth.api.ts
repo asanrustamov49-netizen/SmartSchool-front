@@ -12,7 +12,7 @@ export type UserRole =
 
 // POST /auth/login — схема LoginRequest
 export type LoginRequest = {
-  inn: string;
+  email: string;
   password: string;
 };
 
@@ -32,7 +32,6 @@ export type TokenResponse = {
 export type CurrentUserSchool = {
   id: number;
   name: string;
-  address: string | null;
   logo_url: string | null;
   banner_url: string | null;
 };
@@ -96,10 +95,9 @@ export type TeacherAssignmentSummary = {
 // поля взяты из backend: mysite/api/me.py (get_me).
 export type CurrentUser = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
   role: UserRole;
-  phone: string | null;
   avatar_url: string | null;
   school_id: number;
   is_temp_password: boolean;

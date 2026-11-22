@@ -39,8 +39,7 @@ export function SubjectsPage() {
   const subjects = (subjectsQuery.data ?? []).filter(
     (subject) =>
       !hiddenIds.has(subject.id) &&
-      (subject.name.toLowerCase().includes(normalizedSearch) ||
-      (subject.code ?? "").toLowerCase().includes(normalizedSearch)),
+      subject.name.toLowerCase().includes(normalizedSearch),
   );
 
   const renderList = () => {
@@ -76,7 +75,6 @@ export function SubjectsPage() {
           <thead>
             <tr>
               <th>{t("name")}</th>
-              <th>{t("code")}</th>
               <th>
                 <span className="sr-only">{tForm("actions")}</span>
               </th>
@@ -86,7 +84,6 @@ export function SubjectsPage() {
             {subjects.map((subject) => (
               <tr key={subject.id}>
                 <td data-label={t("name")}>{subject.name}</td>
-                <td data-label={t("code")} className={styles.cellMuted}>{subject.code ?? "—"}</td>
                 <td data-actions>
                   <RowActions
                     menuLabel={`${tForm("actions")}: ${subject.name}`}

@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 import type { CurrentUser, UserRole } from "@/apis/auth.api";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import { getMediaUrl } from "@/lib/utils";
+import { HeroBanner } from "./HeroBanner";
 import scss from "./home.module.scss";
 
 type HeroTone = "admin" | "teacher" | "student" | "parent" | "system";
@@ -107,13 +108,7 @@ export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
       {/* Свет за курсором — только на градиентном баннере, не поверх фото школы. */}
       {!bannerUrl && <span data-spotlight-glow aria-hidden="true" />}
       {/* Баннер школы из «Настроек школы»: фон с затемнением, чтобы текст оставался читаемым. */}
-      {bannerUrl && (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element -- файл лежит на сервере API */}
-          <img className={scss.heroBanner} src={getMediaUrl(bannerUrl)} alt="" />
-          <span className={scss.heroBannerShade} aria-hidden="true" />
-        </>
-      )}
+      {bannerUrl && <HeroBanner userId={currentUser.id} bannerUrl={bannerUrl} />}
       <div className={scss.heroCopy}>
         <span className={scss.heroBrand}>
           <CalendarDays size={15} strokeWidth={2} aria-hidden="true" />

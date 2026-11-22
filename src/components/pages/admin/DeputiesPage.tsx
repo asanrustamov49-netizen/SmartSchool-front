@@ -235,15 +235,15 @@ export function DeputiesPage() {
           allowedRoles={["DEPUTY"]}
           isPending={createDeputy.isPending}
           error={createDeputy.error}
-          onSubmit={({ inn, full_name, phone }) =>
+          onSubmit={({ email, full_name }) =>
             createDeputy.mutate(
-              { inn, full_name, phone },
+              { email, full_name },
               {
                 onSuccess: (person) => {
                   setPanel({ type: "none" });
                   if (person.temporary_password) {
                     setSecret({
-                      message: t("createdNotice", { name: person.full_name, inn: person.inn }),
+                      message: t("createdNotice", { name: person.full_name, email: person.email }),
                       secret: person.temporary_password,
                     });
                   }
@@ -263,9 +263,9 @@ export function DeputiesPage() {
           allowedRoles={["DEPUTY"]}
           isPending={updateDeputy.isPending}
           error={updateDeputy.error}
-          onSubmit={({ full_name, phone }) =>
+          onSubmit={({ full_name }) =>
             updateDeputy.mutate(
-              { userId: panel.person.id, data: { full_name, phone } },
+              { userId: panel.person.id, data: { full_name } },
               {
                 onSuccess: (person) => {
                   setPanel({ type: "none" });

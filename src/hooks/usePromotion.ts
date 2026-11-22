@@ -1,12 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { executePromotion, getPromotionPreview } from "@/apis/promotion.api";
+import { executePromotion, getPromotionPreview, getPromotionReview, moveStudent } from "@/apis/promotion.api";
 
-export function usePromotionPreview(sourceYear: string, targetYear: string | null) {
+export function usePromotionPreview(sourceYear: string, targetYear: string | null, enabled: boolean) {
   return useQuery({
-    queryKey: ["promotion", sourceYear, targetYear],
+    queryKey: ["promotion", "preview", sourceYear, targetYear],
     queryFn: () => getPromotionPreview(sourceYear, targetYear ?? ""),
-    enabled: sourceYear !== "" && targetYear !== null,
+    enabled: enabled && sourceYear !== "" && targetYear !== null,
     retry: false,
+  });
+}
+
+export function usePromotionReview(targetYear: string | null) {
+  return useQuery({
+    queryKey: ["promotion", "review", targetYear],
+    queryFn: () => getPromotionReview(targetYear ?? ""),
+    enabled: targetYear !== null,
   });
 }
 
@@ -16,5 +24,18 @@ export function useExecutePromotion() {
   return useMutation({
     mutationFn: executePromotion,
     onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+// Перевод одного ученика: меняется его класс и, возможно, появляется новый класс.
+export function useMoveStudent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: moveStudent,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["promotion", "review"] });
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
   });
 }

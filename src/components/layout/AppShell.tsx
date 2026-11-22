@@ -24,7 +24,7 @@ import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
-import { applySavedAppearance, getFlag, setFlag, setSidebarCollapsed } from "@/lib/appearance";
+import { applySavedAppearance, getFlag, setSidebarCollapsed } from "@/lib/appearance";
 
 const AUTO_LOGOUT_MS = 15 * 60 * 1000;
 
@@ -218,12 +218,6 @@ function AuthenticatedShell({
         event.preventDefault();
         setPaletteOpen((value) => !value);
       }
-      // Ctrl+Shift+H — быстро включить режим стримера, если экран внезапно показывают.
-      // event.code: работает на любой раскладке.
-      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.code === "KeyH") {
-        event.preventDefault();
-        setFlag("privacy", !getFlag("privacy"));
-      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -357,7 +351,6 @@ function AuthenticatedShell({
             </span>
             <span className={styles.schoolCardText}>
               <strong>{currentUser.school.name}</strong>
-              {currentUser.school.address && <small>{currentUser.school.address}</small>}
             </span>
           </div>
         )}

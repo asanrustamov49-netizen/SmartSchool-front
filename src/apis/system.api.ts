@@ -19,9 +19,8 @@ export type SchoolAdminRole = "DIRECTOR" | "DEPUTY";
 // пока человек не сменил выданный пароль.
 export type SchoolAdmin = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
   role: SchoolAdminRole;
   is_active: boolean;
   is_temp_password: boolean;
@@ -32,8 +31,6 @@ export type SchoolAdmin = {
 export type SystemSchool = {
   id: number;
   name: string;
-  address: string | null;
-  phone: string | null;
   email: string | null;
   logo_url: string | null;
   banner_url: string | null;
@@ -47,27 +44,24 @@ export type SystemSchool = {
 // Поля школы из схем SchoolCreate / SchoolUpdate.
 export type SystemSchoolFields = {
   name: string;
-  address: string | null;
-  phone: string | null;
   email: string | null;
 };
 
 // Схема SchoolAdminCreate.
 export type SchoolAdminFields = {
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
 };
 
 export type SystemSchoolCreated = {
   message: string;
   school: SystemSchool;
-  director: { id: number; inn: string; full_name: string; temporary_password: string };
+  director: { id: number; email: string; full_name: string; temporary_password: string };
 };
 
 export type AdminPasswordReset = {
   user_id: number;
-  inn: string;
+  email: string;
   full_name: string;
   temporary_password: string;
 };

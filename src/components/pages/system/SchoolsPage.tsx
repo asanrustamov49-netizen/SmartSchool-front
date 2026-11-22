@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, GraduationCap, MapPin, Plus, School, UserRound, Users } from "lucide-react";
+import { ChevronRight, GraduationCap, Plus, School, UserRound, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { SystemSchool, SystemSchoolCreated } from "@/apis/system.api";
@@ -44,10 +44,7 @@ export function SchoolCard({ school }: { school: SystemSchool }) {
         )}
         <span className={styles.schoolTitle}>
           <strong>{school.name}</strong>
-          <span>
-            <MapPin size={13} aria-hidden="true" />
-            {school.address ?? t("noAddress")}
-          </span>
+          {school.director_name && <span>{school.director_name}</span>}
         </span>
         <span className={cn(styles.status, !school.is_active && styles.statusClosed)}>
           {school.is_active ? t("active") : t("closed")}
@@ -99,8 +96,7 @@ export function SchoolsPage() {
   const normalizedSearch = search.trim().toLowerCase();
   const schools = (schoolsQuery.data ?? []).filter((school) => {
     const matchesSearch =
-      school.name.toLowerCase().includes(normalizedSearch) ||
-      (school.address ?? "").toLowerCase().includes(normalizedSearch);
+      school.name.toLowerCase().includes(normalizedSearch);
     const matchesStatus = statusFilter === "all" || (statusFilter === "active") === school.is_active;
     return matchesSearch && matchesStatus;
   });
@@ -159,7 +155,7 @@ export function SchoolsPage() {
           message={t("createdNotice", {
             school: created.school.name,
             name: created.director.full_name,
-            inn: created.director.inn,
+            email: created.director.email,
           })}
           secret={created.director.temporary_password}
           onClose={() => setCreated(null)}

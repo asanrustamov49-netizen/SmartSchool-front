@@ -14,7 +14,7 @@ import adminStyles from "../admin/admin.module.scss";
 import scss from "./home.module.scss";
 
 type AddChildFormValues = {
-  studentInn: string;
+  studentEmail: string;
   studentPassword: string;
 };
 
@@ -26,12 +26,13 @@ type AddChildFormProps = {
 // Привязка ещё одного ребёнка к аккаунту родителя: POST /parents/add-child.
 export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
   const t = useTranslations("parentLink");
+  const tAuth = useTranslations("auth");
   const tApiErrors = useTranslations("apiErrors");
   const addChildMutation = useAddChild();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const addChildSchema = z.object({
-    studentInn: z.string().trim().regex(/^\d{14}$/, t("errors.innDigits")),
+    studentEmail: z.string().trim().pipe(z.email(tAuth("errors.emailFormat"))),
     studentPassword: z.string().min(1, t("errors.childPasswordRequired")),
   });
 
@@ -43,12 +44,12 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
     formState: { errors },
   } = useForm<AddChildFormValues>({
     resolver: zodResolver(addChildSchema),
-    defaultValues: { studentInn: "", studentPassword: "" },
+    defaultValues: { studentEmail: "", studentPassword: "" },
   });
 
   const onSubmit = (values: AddChildFormValues) => {
     addChildMutation.mutate(
-      { student_inn: values.studentInn.trim(), student_password: values.studentPassword },
+      { student_email: values.studentEmail.trim(), student_password: values.studentPassword },
       {
         onSuccess: (response) => {
           reset();
@@ -56,8 +57,8 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
         },
         onError: (error) => {
           const fieldErrors = getApiFieldErrors(error);
-          if (fieldErrors.student_inn) {
-            setError("studentInn", { message: fieldErrors.student_inn });
+          if (fieldErrors.student_email) {
+            setError("studentEmail", { message: fieldErrors.student_email });
           }
           if (fieldErrors.student_password) {
             setError("studentPassword", { message: fieldErrors.student_password });
@@ -91,18 +92,18 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
       )}
 
       <div className={adminStyles.field}>
-        <label htmlFor="add-child-inn">{t("childInn")}</label>
+        <label htmlFor="add-child-email">{t("childEmail")}</label>
         <input
-          id="add-child-inn"
+          id="add-child-email"
+          type="email"
           className={adminStyles.input}
-          inputMode="numeric"
+          inputMode="email"
           autoComplete="off"
-          maxLength={14}
-          placeholder="00000000000000"
-          aria-invalid={Boolean(errors.studentInn)}
-          {...register("studentInn")}
+          placeholder={tAuth("emailPlaceholder")}
+          aria-invalid={Boolean(errors.studentEmail)}
+          {...register("studentEmail")}
         />
-        {errors.studentInn && <p className={adminStyles.fieldError}>{errors.studentInn.message}</p>}
+        {errors.studentEmail && <p className={adminStyles.fieldError}>{errors.studentEmail.message}</p>}
       </div>
 
       <div className={adminStyles.field}>

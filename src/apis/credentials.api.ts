@@ -5,7 +5,7 @@ import api from "@/lib/axios";
 // temporary_password приходит, пока человек не сменил выданный пароль.
 export type CredentialRow = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
   role: string;
   is_temp_password: boolean;
@@ -21,7 +21,7 @@ export type ClassCredentials = {
 
 export type StudentPasswordReset = {
   student_id: number;
-  inn: string;
+  email: string;
   full_name: string;
   temporary_password: string;
 };

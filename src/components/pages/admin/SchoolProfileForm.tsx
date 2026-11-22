@@ -13,8 +13,6 @@ import styles from "./admin.module.scss";
 
 type SchoolFormValues = {
   name: string;
-  address: string;
-  phone: string;
   email: string;
   director_name: string;
 };
@@ -22,8 +20,6 @@ type SchoolFormValues = {
 const FIELDS: { name: keyof SchoolFormValues; type: string }[] = [
   { name: "name", type: "text" },
   { name: "director_name", type: "text" },
-  { name: "address", type: "text" },
-  { name: "phone", type: "tel" },
   { name: "email", type: "email" },
 ];
 
@@ -40,8 +36,6 @@ export function SchoolProfileForm({ school }: { school: School }) {
       .trim()
       .min(2, tForm("minLength", { count: 2 }))
       .max(200, tForm("maxLength", { count: 200 })),
-    address: z.string(),
-    phone: z.string(),
     email: z.string(),
     director_name: z.string(),
   });
@@ -56,8 +50,6 @@ export function SchoolProfileForm({ school }: { school: School }) {
     resolver: zodResolver(schoolSchema),
     defaultValues: {
       name: school.name,
-      address: school.address ?? "",
-      phone: school.phone ?? "",
       email: school.email ?? "",
       director_name: school.director_name ?? "",
     },
@@ -67,8 +59,6 @@ export function SchoolProfileForm({ school }: { school: School }) {
     updateSchool.mutate(
       {
         name: values.name.trim(),
-        address: emptyToNull(values.address),
-        phone: emptyToNull(values.phone),
         email: emptyToNull(values.email),
         director_name: emptyToNull(values.director_name),
       },
@@ -76,8 +66,6 @@ export function SchoolProfileForm({ school }: { school: School }) {
         onSuccess: (updatedSchool) =>
           reset({
             name: updatedSchool.name,
-            address: updatedSchool.address ?? "",
-            phone: updatedSchool.phone ?? "",
             email: updatedSchool.email ?? "",
             director_name: updatedSchool.director_name ?? "",
           }),

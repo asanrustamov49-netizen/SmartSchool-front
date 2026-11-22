@@ -113,16 +113,7 @@ const schoolSettingsItem: NavigationItem = {
 
 // Разделы взяты из backend FRONTEND.md («Экраны → эндпоинты»).
 // available: true ставится только после того, как страница реально сделана.
-// Перевод учеников на новый учебный год backend разрешает только директору.
-const promotionItem: NavigationItem = {
-  key: "promotion",
-  href: "/admin/promotion",
-  icon: TrendingUp,
-  available: true,
-  group: "learning",
-};
-
-function getAdminItems(isDirector: boolean): NavigationItem[] {
+function getAdminItems(): NavigationItem[] {
   return [
     homeItem,
     scheduleItem,
@@ -133,7 +124,8 @@ function getAdminItems(isDirector: boolean): NavigationItem[] {
     { key: "classes", href: "/admin/classes", icon: School, available: true, group: "learning" },
     { key: "subjects", href: "/admin/subjects", icon: Library, available: true, group: "learning" },
     { key: "journal", href: "/journal", icon: NotebookPen, available: true, group: "learning" },
-    ...(isDirector ? [promotionItem] : []),
+    // Перевод учеников на новый учебный год: директор и завуч.
+    { key: "promotion", href: "/admin/promotion", icon: TrendingUp, available: true, group: "learning" },
     {
       key: "absenceRequests",
       href: "/absence-requests",
@@ -201,7 +193,7 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
     case "DEPUTY":
       return {
         sectionKey: "admin",
-        items: getAdminItems(user.role === "DIRECTOR"),
+        items: getAdminItems(),
         accountItems: [profileItem, schoolSettingsItem, settingsItem],
       };
     case "TEACHER":

@@ -59,14 +59,14 @@ export function StudentsPage() {
     classes.map((schoolClass) => [schoolClass.id, getClassName(schoolClass)]),
   );
   const allStudents = studentsQuery.data ?? [];
-  const existingInns = new Set(allStudents.map((student) => student.inn));
+  const existingEmails = new Set(allStudents.map((student) => student.email));
 
   // Backend не поддерживает поиск и фильтры, список фильтруется на клиенте.
   const normalizedSearch = search.trim().toLowerCase();
   const students = allStudents.filter((student) => {
     const matchesSearch =
       student.full_name.toLowerCase().includes(normalizedSearch) ||
-      student.inn.includes(normalizedSearch);
+      student.email.includes(normalizedSearch);
     const matchesClass = classFilter === "" || String(student.class_id) === classFilter;
     return matchesSearch && matchesClass;
   });
@@ -91,20 +91,19 @@ export function StudentsPage() {
     }
   };
 
-  // Экспортируется текущий отфильтрованный список. ИНН — текстом, чтобы сохранить ведущие нули.
+  // Экспортируется текущий отфильтрованный список.
   const handleExport = async () => {
     const XLSX = await import("xlsx");
     const sheet = XLSX.utils.aoa_to_sheet([
-      [t("fullName"), t("inn"), t("class"), t("phone"), t("status")],
+      [t("fullName"), t("email"), t("class"), t("status")],
       ...students.map((student) => [
         student.full_name,
-        student.inn,
+        student.email,
         getStudentClassName(student),
-        student.phone ?? "",
         student.is_active ? t("active") : t("inactive"),
       ]),
     ]);
-    sheet["!cols"] = [{ wch: 34 }, { wch: 18 }, { wch: 10 }, { wch: 16 }, { wch: 12 }];
+    sheet["!cols"] = [{ wch: 34 }, { wch: 30 }, { wch: 10 }, { wch: 12 }];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Students");
     const fileData: ArrayBuffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" });
@@ -175,9 +174,8 @@ export function StudentsPage() {
           <thead>
             <tr>
               <th>{t("fullName")}</th>
-              <th>{t("inn")}</th>
+              <th>{t("email")}</th>
               <th>{t("class")}</th>
-              <th>{t("phone")}</th>
               <th>{t("status")}</th>
               <th>
                 <span className="sr-only">{tForm("actions")}</span>
@@ -188,9 +186,8 @@ export function StudentsPage() {
             {students.map((student) => (
               <tr key={student.id}>
                 <td data-label={t("fullName")}>{student.full_name}</td>
-                <td data-private data-label={t("inn")} className={styles.cellMuted}>{student.inn}</td>
+                <td data-label={t("email")} className={styles.cellMuted}>{student.email}</td>
                 <td data-label={t("class")}>{getStudentClassName(student)}</td>
-                <td data-private data-label={t("phone")} className={styles.cellMuted}>{student.phone ?? "—"}</td>
                 <td data-label={t("status")} className={student.is_active ? undefined : styles.statusInactive}>
                   {student.is_active ? t("active") : t("inactive")}
                 </td>
@@ -371,7 +368,7 @@ export function StudentsPage() {
         <ExcelImport
           userType="students"
           classes={classes}
-          existingInns={existingInns}
+          existingEmails={existingEmails}
           onClose={() => setPanel({ type: "none" })}
         />
       )}

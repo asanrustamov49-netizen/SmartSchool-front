@@ -19,7 +19,7 @@ export async function getUser(userId: number): Promise<SchoolUser> {
 export type PasswordResetResult = {
   message: string;
   user_id: number;
-  inn: string;
+  email: string;
   full_name: string;
   temporary_password: string;
 };

@@ -68,12 +68,12 @@ export function TeachersPage() {
     panel.type === "assignments"
       ? allTeachers.find((teacher) => teacher.id === panel.teacherId)
       : undefined;
-  const existingInns = new Set(allTeachers.map((teacher) => teacher.inn));
+  const existingEmails = new Set(allTeachers.map((teacher) => teacher.email));
   const normalizedSearch = search.trim().toLowerCase();
   const teachers = allTeachers.filter((teacher) => {
     const matchesSearch =
       teacher.full_name.toLowerCase().includes(normalizedSearch) ||
-      teacher.inn.includes(normalizedSearch);
+      teacher.email.includes(normalizedSearch);
     const matchesStatus =
       statusFilter === "all" || (statusFilter === "active") === teacher.is_active;
     return matchesSearch && matchesStatus;
@@ -183,8 +183,7 @@ export function TeachersPage() {
           <thead>
             <tr>
               <th>{t("fullName")}</th>
-              <th>{t("inn")}</th>
-              <th className={styles.optionalColumn}>{t("phone")}</th>
+              <th className={styles.optionalColumn}>{t("email")}</th>
               <th>{t("classesLed")}</th>
               <th>{t("subjects")}</th>
               <th>{t("status")}</th>
@@ -207,8 +206,7 @@ export function TeachersPage() {
                       </span>
                     )}
                   </td>
-                  <td data-private data-label={t("inn")} className={styles.cellMuted}>{teacher.inn}</td>
-                  <td data-private data-label={t("phone")} className={cn(styles.cellMuted, styles.optionalColumn)}>{teacher.phone ?? "—"}</td>
+                  <td data-label={t("email")} className={cn(styles.cellMuted, styles.optionalColumn)}>{teacher.email}</td>
                   <td data-label={t("classesLed")}>
                     {teacher.classes_led.length > 0
                       ? teacher.classes_led.map((schoolClass) => schoolClass.name).join(", ")
@@ -398,7 +396,7 @@ export function TeachersPage() {
         <ExcelImport
           userType="teachers"
           classes={[]}
-          existingInns={existingInns}
+          existingEmails={existingEmails}
           onClose={() => setPanel({ type: "none" })}
         />
       )}

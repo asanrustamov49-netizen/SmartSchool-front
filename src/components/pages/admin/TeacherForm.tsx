@@ -8,18 +8,16 @@ import { z } from "zod";
 import type { Teacher, TeacherCreated } from "@/apis/teachers.api";
 import { useCreateTeacher, useUpdateTeacher } from "@/hooks/useTeachers";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
-import { emptyToNull } from "@/lib/utils";
 import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type TeacherFormValues = {
-  inn: string;
+  email: string;
   fullName: string;
-  phone: string;
 };
 
 type TeacherFormProps = {
-  // null — новый учитель, иначе редактирование (ИНН менять нельзя).
+  // null — новый учитель, иначе редактирование (почту менять нельзя).
   teacher: Teacher | null;
   onCreated: (teacher: TeacherCreated) => void;
   onClose: () => void;
@@ -35,16 +33,15 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
   const isEditing = teacher !== null;
   const activeMutation = isEditing ? updateTeacher : createTeacher;
 
-  // Правила из схем TeacherCreate и TeacherUpdate: inn — 14 цифр, full_name — 3–200 символов.
+  // Правила из схем TeacherCreate и TeacherUpdate: email — почта, full_name — 3–200 символов.
   const teacherSchema = z.object({
-    inn: isEditing ? z.string() : z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
+    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
     fullName: z
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
       .max(200, tForm("maxLength", { count: 200 }))
       .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
-    phone: z.string(),
   });
 
   const {
@@ -55,19 +52,15 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
   } = useForm<TeacherFormValues>({
     resolver: zodResolver(teacherSchema),
     defaultValues: {
-      inn: teacher?.inn ?? "",
+      email: teacher?.email ?? "",
       fullName: teacher?.full_name ?? "",
-      phone: teacher?.phone ?? "",
     },
   });
 
   const onSubmit = (values: TeacherFormValues) => {
     if (teacher) {
       updateTeacher.mutate(
-        {
-          teacherId: teacher.id,
-          data: { full_name: values.fullName.trim(), phone: emptyToNull(values.phone) },
-        },
+        { teacherId: teacher.id, data: { full_name: values.fullName.trim() } },
         { onSuccess: onClose },
       );
       return;
@@ -75,16 +68,15 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
 
     createTeacher.mutate(
       {
-        inn: values.inn.trim(),
+        email: values.email.trim(),
         full_name: values.fullName.trim(),
-        phone: emptyToNull(values.phone),
       },
       {
         onSuccess: onCreated,
         onError: (error) => {
           const fieldErrors = getApiFieldErrors(error);
-          if (fieldErrors.inn) {
-            setError("inn", { message: fieldErrors.inn });
+          if (fieldErrors.email) {
+            setError("email", { message: fieldErrors.email });
           }
           if (fieldErrors.full_name) {
             setError("fullName", { message: fieldErrors.full_name });
@@ -112,21 +104,6 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
         )}
 
         <div className={styles.field}>
-          <label htmlFor="teacher-inn">{t("inn")}</label>
-          <input
-            id="teacher-inn"
-            inputMode="numeric"
-            maxLength={14}
-            readOnly={isEditing}
-            className={styles.input}
-            aria-invalid={Boolean(errors.inn)}
-            {...register("inn")}
-          />
-          {isEditing && <span className={styles.fieldHint}>{t("innReadonly")}</span>}
-          {errors.inn && <p className={styles.fieldError}>{errors.inn.message}</p>}
-        </div>
-
-        <div className={styles.field}>
           <label htmlFor="teacher-name">{t("fullName")}</label>
           <input
             id="teacher-name"
@@ -138,9 +115,20 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
         </div>
 
         <div className={styles.field}>
-          <label htmlFor="teacher-phone">{t("phone")}</label>
-          <input id="teacher-phone" type="tel" className={styles.input} {...register("phone")} />
-          <span className={styles.fieldHint}>{tForm("optional")}</span>
+          <label htmlFor="teacher-email">{t("email")}</label>
+          <input
+            id="teacher-email"
+            type="email"
+            inputMode="email"
+            autoComplete="off"
+            placeholder={tForm("emailPlaceholder")}
+            readOnly={isEditing}
+            className={styles.input}
+            aria-invalid={Boolean(errors.email)}
+            {...register("email")}
+          />
+          {isEditing && <span className={styles.fieldHint}>{t("emailReadonly")}</span>}
+          {errors.email && <p className={styles.fieldError}>{errors.email.message}</p>}
         </div>
 
         <div className={styles.formActions}>

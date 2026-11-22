@@ -4,8 +4,6 @@ import api from "@/lib/axios";
 export type School = {
   id: number;
   name: string;
-  address: string | null;
-  phone: string | null;
   email: string | null;
   logo_url: string | null;
   banner_url: string | null;
@@ -17,8 +15,6 @@ export type School = {
 // Схема SchoolUpdate (без logo_url и banner_url: они меняются загрузкой файла)
 export type SchoolUpdate = {
   name: string;
-  address: string | null;
-  phone: string | null;
   email: string | null;
   director_name: string | null;
 };

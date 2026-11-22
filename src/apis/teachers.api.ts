@@ -1,17 +1,16 @@
 import api from "@/lib/axios";
 import type { ExcelImportResult } from "@/apis/students.api";
 
-// Схема TeacherCreate: inn — 14 цифр, full_name — 3–200 символов.
+// Схема TeacherCreate: email — логин, full_name — 3–200 символов.
 export type TeacherCreate = {
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
 };
 
 // Схема TeacherCreatedOut. Временный пароль приходит только один раз.
 export type TeacherCreated = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
   temporary_password: string;
   role: string;
@@ -49,9 +48,8 @@ export async function importTeachersExcel(file: Blob): Promise<ExcelImportResult
 // GET /teachers (backend: mysite/api/teachers.py, serialize_teachers).
 export type Teacher = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
   avatar_url: string | null;
   role: string;
   is_active: boolean;
@@ -70,10 +68,9 @@ export type Teacher = {
   }[];
 };
 
-// Схема TeacherUpdate: full_name 3–200 символов, phone до 20.
+// Схема TeacherUpdate: full_name 3–200 символов.
 export type TeacherUpdate = {
   full_name: string;
-  phone: string | null;
 };
 
 export async function getTeachers(): Promise<Teacher[]> {

@@ -14,30 +14,28 @@ import styles from "./admin.module.scss";
 
 // Заголовки и порядок, которые строго проверяет backend (student_import.py, teacher_import.py).
 // Файл пользователя может быть оформлен иначе: в backend уходит новый файл с этими заголовками.
-const TEMPLATE_HEADERS = ["ИНН", "Толук аты-жөнү", "Телефон"];
+const TEMPLATE_HEADERS = ["Почта", "Толук аты-жөнү"];
 // Заголовок ищется в первых строках листа: над ним может быть название таблицы.
 const HEADER_SEARCH_ROWS = 10;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const INN_PATTERN = /^\d{14}$/;
+// Та же проверка, что в backend (normalize_email).
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-type RowProblem = "innFormat" | "duplicate" | "nameShort" | "exists";
+type RowProblem = "emailFormat" | "duplicate" | "nameShort" | "exists";
 
 type ParsedRow = {
   rowNumber: number;
-  inn: string;
+  email: string;
   fullName: string;
-  phone: string;
   problem: RowProblem | null;
 };
 
-type ColumnKey = "inn" | "fullName" | "phone";
+type ColumnKey = "email" | "fullName";
 type ColumnMap = Record<ColumnKey, number | null>;
 
 // Слова, по которым узнаётся столбец (в уже нормализованном заголовке).
-// Проверяются по порядку: «Номер телефона» — это телефон, а не ФИО.
 const COLUMN_HINTS: [ColumnKey, string[]][] = [
-  ["inn", ["инн", "inn", "пин", "pin"]],
-  ["phone", ["тел", "phone", "номер", "mobile"]],
+  ["email", ["почта", "email", "mail", "логин", "login"]],
   ["fullName", ["аты", "фио", "имя", "ысым", "жону", "фамилия", "name"]],
 ];
 
@@ -52,7 +50,7 @@ type ExcelImportProps = {
   userType: "students" | "teachers";
   // Ученики импортируются в выбранный класс, учителя — без класса.
   classes: SchoolClass[];
-  existingInns: Set<string>;
+  existingEmails: Set<string>;
   onClose: () => void;
 };
 
@@ -81,7 +79,7 @@ function normalizeHeader(value: unknown) {
 }
 
 function findColumns(cells: unknown[]): ColumnMap {
-  const columns: ColumnMap = { inn: null, fullName: null, phone: null };
+  const columns: ColumnMap = { email: null, fullName: null };
 
   cells.forEach((cell, index) => {
     const header = normalizeHeader(cell);
@@ -100,19 +98,19 @@ function findColumns(cells: unknown[]): ColumnMap {
   return columns;
 }
 
-// Находит строку заголовка. Если заголовка нет, но в первом столбце уже ИНН,
-// столбцы считаются в порядке шаблона: ИНН, ФИО, телефон.
+// Находит строку заголовка. Если заголовка нет, но в первом столбце уже почта,
+// столбцы считаются в порядке шаблона: почта, ФИО.
 function findTableLayout(table: unknown[][]) {
   for (let index = 0; index < Math.min(table.length, HEADER_SEARCH_ROWS); index += 1) {
     const columns = findColumns(table[index] ?? []);
-    if (columns.inn !== null && columns.fullName !== null) {
+    if (columns.email !== null && columns.fullName !== null) {
       return { columns, firstDataRow: index + 1 };
     }
   }
 
   const firstFilledRow = table.findIndex((cells) => cells.some((cell) => cellToText(cell) !== ""));
-  if (firstFilledRow >= 0 && INN_PATTERN.test(cellToText(table[firstFilledRow][0]).replace(/\s/g, ""))) {
-    return { columns: { inn: 0, fullName: 1, phone: 2 }, firstDataRow: firstFilledRow };
+  if (firstFilledRow >= 0 && EMAIL_PATTERN.test(cellToText(table[firstFilledRow][0]))) {
+    return { columns: { email: 0, fullName: 1 }, firstDataRow: firstFilledRow };
   }
 
   return null;
@@ -123,16 +121,16 @@ function readCell(cells: unknown[], column: number | null) {
 }
 
 function findProblem(
-  inn: string,
+  email: string,
   fullName: string,
-  seenInns: Set<string>,
-  existingInns: Set<string>,
+  seenEmails: Set<string>,
+  existingEmails: Set<string>,
 ) {
-  if (!INN_PATTERN.test(inn)) {
-    return "innFormat";
+  if (!EMAIL_PATTERN.test(email)) {
+    return "emailFormat";
   }
 
-  if (seenInns.has(inn)) {
+  if (seenEmails.has(email)) {
     return "duplicate";
   }
 
@@ -140,7 +138,7 @@ function findProblem(
     return "nameShort";
   }
 
-  if (existingInns.has(inn)) {
+  if (existingEmails.has(email)) {
     return "exists";
   }
 
@@ -150,7 +148,7 @@ function findProblem(
 export function ExcelImport({
   userType,
   classes,
-  existingInns,
+  existingEmails,
   onClose,
 }: ExcelImportProps) {
   const t = useTranslations("admin.excelImport");
@@ -209,29 +207,27 @@ export function ExcelImport({
       }
       const { columns, firstDataRow } = layout;
 
-      const seenInns = new Set<string>();
+      const seenEmails = new Set<string>();
       const parsedRows: ParsedRow[] = [];
 
       table.slice(firstDataRow).forEach((cells, index) => {
-        // В ИНН часто попадают пробелы-разделители: «115 031 985 00456».
-        const inn = readCell(cells, columns.inn).replace(/\s/g, "");
+        // Backend хранит почту строчными буквами — сравнение тоже без учёта регистра.
+        const email = readCell(cells, columns.email).toLowerCase();
         const fullName = readCell(cells, columns.fullName);
-        const phone = readCell(cells, columns.phone);
 
-        if (inn === "" && fullName === "" && phone === "") {
+        if (email === "" && fullName === "") {
           return;
         }
 
-        const problem = findProblem(inn, fullName, seenInns, existingInns);
-        if (INN_PATTERN.test(inn)) {
-          seenInns.add(inn);
+        const problem = findProblem(email, fullName, seenEmails, existingEmails);
+        if (EMAIL_PATTERN.test(email)) {
+          seenEmails.add(email);
         }
 
         parsedRows.push({
           rowNumber: firstDataRow + index + 1,
-          inn,
+          email,
           fullName,
-          phone,
           problem,
         });
       });
@@ -248,7 +244,6 @@ export function ExcelImport({
   };
 
   // В backend уходит новый файл только с валидными строками.
-  // ИНН записывается текстом, чтобы не потерять ведущие нули.
   const handleSubmit = async () => {
     if ((needsClass && classId === "") || validRows.length === 0) {
       return;
@@ -257,7 +252,7 @@ export function ExcelImport({
     const XLSX = await import("xlsx");
     const sheet = XLSX.utils.aoa_to_sheet([
       TEMPLATE_HEADERS,
-      ...validRows.map((row) => [row.inn, row.fullName, row.phone]),
+      ...validRows.map((row) => [row.email, row.fullName]),
     ]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, "Import");
@@ -292,12 +287,12 @@ export function ExcelImport({
     const XLSX = await import("xlsx");
     const sheet = XLSX.utils.aoa_to_sheet([
       [
-        t("passwordColumns.inn"),
+        t("passwordColumns.email"),
         t("passwordColumns.fullName"),
         t("passwordColumns.password"),
       ],
       ...outcome.result.added_users.map((user) => [
-        user.inn,
+        user.email,
         user.full_name,
         user.temporary_password,
       ]),
@@ -375,9 +370,8 @@ export function ExcelImport({
               <thead>
                 <tr>
                   <th>{t("rowNumber")}</th>
-                  <th>{t("passwordColumns.inn")}</th>
+                  <th>{t("passwordColumns.email")}</th>
                   <th>{t("passwordColumns.fullName")}</th>
-                  <th>{t("phone")}</th>
                   <th>{t("check")}</th>
                 </tr>
               </thead>
@@ -385,9 +379,8 @@ export function ExcelImport({
                 {rows.map((row) => (
                   <tr key={row.rowNumber}>
                     <td className={styles.cellMuted}>{row.rowNumber}</td>
-                    <td data-private>{row.inn || "—"}</td>
+                    <td>{row.email || "—"}</td>
                     <td>{row.fullName || "—"}</td>
-                    <td className={styles.cellMuted}>{row.phone || "—"}</td>
                     <td
                       className={
                         row.problem ? styles.statusInactive : styles.statusOk
@@ -433,15 +426,15 @@ export function ExcelImport({
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>{t("passwordColumns.inn")}</th>
+                      <th>{t("passwordColumns.email")}</th>
                       <th>{t("passwordColumns.fullName")}</th>
                       <th>{t("passwordColumns.password")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {outcome.result.added_users.map((user) => (
-                      <tr key={user.inn}>
-                        <td data-private className={styles.cellMuted}>{user.inn}</td>
+                      <tr key={user.email}>
+                        <td className={styles.cellMuted}>{user.email}</td>
                         <td>{user.full_name}</td>
                         <td className={styles.secret}>
                           {user.temporary_password}

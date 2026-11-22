@@ -5,10 +5,8 @@ import {
   ArrowLeft,
   GraduationCap,
   Mail,
-  MapPin,
   KeyRound,
   Pencil,
-  Phone,
   Power,
   RotateCcw,
   UserPlus,
@@ -316,14 +314,6 @@ export function SchoolDetailsPage() {
           <h2 className={adminStyles.cardTitle}>{t("contacts")}</h2>
           <ul className={styles.contactList}>
             <li>
-              <MapPin size={16} aria-hidden="true" />
-              {school.address ?? t("noAddress")}
-            </li>
-            <li data-private>
-              <Phone size={16} aria-hidden="true" />
-              {school.phone ?? "—"}
-            </li>
-            <li data-private>
               <Mail size={16} aria-hidden="true" />
               {school.email ?? "—"}
             </li>
@@ -370,7 +360,7 @@ export function SchoolDetailsPage() {
                       setPanel({ type: "none" });
                       if (person.temporary_password) {
                         setSecret({
-                          message: tPeople("createdNotice", { name: person.full_name, inn: person.inn }),
+                          message: tPeople("createdNotice", { name: person.full_name, email: person.email }),
                           secret: person.temporary_password,
                         });
                       }

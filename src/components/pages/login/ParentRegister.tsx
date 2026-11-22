@@ -6,9 +6,9 @@ import {
   ArrowRight,
   Baby,
   CircleAlert,
-  IdCard,
   Info,
   LoaderCircle,
+  Mail,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
@@ -30,9 +30,9 @@ import styles from "./login.module.scss";
 
 type ParentRegisterFormValues = {
   fullName: string;
-  inn: string;
+  email: string;
   password: string;
-  studentInn: string;
+  studentEmail: string;
   studentPassword: string;
 };
 
@@ -43,9 +43,9 @@ type TextFieldProps = {
   error: string | undefined;
   registration: UseFormRegisterReturn;
   placeholder?: string;
-  inputMode?: "numeric" | "tel" | "text";
+  type?: "email" | "text";
+  inputMode?: "email" | "text";
   autoComplete?: string;
-  maxLength?: number;
 };
 
 function TextField({ id, label, icon: Icon, error, registration, ...inputProps }: TextFieldProps) {
@@ -79,9 +79,9 @@ function TextField({ id, label, icon: Icon, error, registration, ...inputProps }
 // Поля формы → поля схемы ParentRegister, чтобы показать ошибки 422 у нужного поля.
 const apiFieldNames: Record<string, keyof ParentRegisterFormValues> = {
   full_name: "fullName",
-  inn: "inn",
+  email: "email",
   password: "password",
-  student_inn: "studentInn",
+  student_email: "studentEmail",
   student_password: "studentPassword",
 };
 
@@ -93,8 +93,8 @@ const ParentRegister = () => {
   const router = useRouter();
   const registerMutation = useRegisterParent();
 
-  // Правила совпадают со схемой ParentRegister: ИНН — 14 цифр, пароль — от 8 символов.
-  const innRule = z.string().trim().regex(/^\d{14}$/, t("errors.innDigits"));
+  // Правила совпадают со схемой ParentRegister: логин — почта, пароль — от 8 символов.
+  const emailRule = z.string().trim().pipe(z.email(tAuth("errors.emailFormat")));
   const registerSchema = z
     .object({
       fullName: z
@@ -102,14 +102,14 @@ const ParentRegister = () => {
         .trim()
         .min(3, t("errors.fullNameMin"))
         .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
-      inn: innRule,
+      email: emailRule,
       password: z.string().min(8, t("errors.passwordMin")),
-      studentInn: innRule,
+      studentEmail: emailRule,
       studentPassword: z.string().min(1, t("errors.childPasswordRequired")),
     })
-    .refine((values) => values.inn !== values.studentInn, {
-      message: t("errors.sameInn"),
-      path: ["studentInn"],
+    .refine((values) => values.email.toLowerCase() !== values.studentEmail.toLowerCase(), {
+      message: t("errors.sameEmail"),
+      path: ["studentEmail"],
     });
 
   const {
@@ -122,9 +122,9 @@ const ParentRegister = () => {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       fullName: "",
-      inn: "",
+      email: "",
       password: "",
-      studentInn: "",
+      studentEmail: "",
       studentPassword: "",
     },
   });
@@ -133,7 +133,7 @@ const ParentRegister = () => {
   const [step, setStep] = useState<1 | 2>(1);
 
   const goToParentStep = async () => {
-    if (await trigger(["studentInn", "studentPassword"])) {
+    if (await trigger(["studentEmail", "studentPassword"])) {
       setStep(2);
     }
   };
@@ -142,10 +142,9 @@ const ParentRegister = () => {
     registerMutation.mutate(
       {
         full_name: values.fullName.trim(),
-        inn: values.inn.trim(),
-        phone: null,
+        email: values.email.trim(),
         password: values.password,
-        student_inn: values.studentInn.trim(),
+        student_email: values.studentEmail.trim(),
         student_password: values.studentPassword,
       },
       {
@@ -154,7 +153,7 @@ const ParentRegister = () => {
           const fieldErrors = getApiFieldErrors(error);
           // Ошибка про данные ребёнка — возвращаем на первый шаг, где эти поля.
           const errorKey = getParentLinkErrorKey(error);
-          if ((errorKey && errorKey !== "innTaken") || fieldErrors.student_inn || fieldErrors.student_password) {
+          if ((errorKey && errorKey !== "emailTaken") || fieldErrors.student_email || fieldErrors.student_password) {
             setStep(1);
           }
 
@@ -202,15 +201,15 @@ const ParentRegister = () => {
               {t("childNote")}
             </p>
             <TextField
-              id="child-inn"
-              label={t("childInn")}
-              icon={IdCard}
-              inputMode="numeric"
+              id="child-email"
+              label={t("childEmail")}
+              icon={Mail}
+              type="email"
+              inputMode="email"
               autoComplete="off"
-              maxLength={14}
-              placeholder={tAuth("innPlaceholder")}
-              error={errors.studentInn?.message}
-              registration={register("studentInn")}
+              placeholder={tAuth("emailPlaceholder")}
+              error={errors.studentEmail?.message}
+              registration={register("studentEmail")}
             />
             <PasswordField
               id="child-password"
@@ -240,15 +239,15 @@ const ParentRegister = () => {
               registration={register("fullName")}
             />
             <TextField
-              id="parent-inn"
-              label={t("parentInn")}
-              icon={IdCard}
-              inputMode="numeric"
-              autoComplete="username"
-              maxLength={14}
-              placeholder={tAuth("innPlaceholder")}
-              error={errors.inn?.message}
-              registration={register("inn")}
+              id="parent-email"
+              label={t("parentEmail")}
+              icon={Mail}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder={tAuth("emailPlaceholder")}
+              error={errors.email?.message}
+              registration={register("email")}
             />
             <PasswordField
               id="parent-password"

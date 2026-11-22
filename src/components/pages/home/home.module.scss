@@ -1565,6 +1565,94 @@
     linear-gradient(0deg, color-mix(in srgb, var(--ss-accent) 25%, transparent), transparent 60%);
 }
 
+// Личное положение баннера: кнопка в углу и режим перетаскивания поверх баннера.
+.bannerEditButton {
+  position: absolute;
+  z-index: 3;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 10px;
+  background: rgb(8 12 28 / 45%);
+  color: #ffffff;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.bannerEditor {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  border: 2px dashed rgb(255 255 255 / 70%);
+  border-radius: inherit;
+  cursor: grab;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--ss-accent);
+    outline-offset: 2px;
+  }
+}
+
+.bannerEditorHint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(8 12 28 / 70%);
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.bannerEditorActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  cursor: default;
+
+  button {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    border: 1px solid rgb(255 255 255 / 35%);
+    border-radius: 10px;
+    background: rgb(8 12 28 / 70%);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.bannerEditorActions .bannerEditorSave {
+  border-color: transparent;
+  background: var(--ss-accent);
+}
+
 .heroLogo {
   width: 100%;
   height: 100%;

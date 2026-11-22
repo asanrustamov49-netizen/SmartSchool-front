@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, Phone } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import type { SchoolAdmin } from "@/apis/system.api";
@@ -38,15 +38,7 @@ export function AdminPersonCard({ person, actions }: AdminPersonCardProps) {
         <strong>{person.full_name}</strong>
         <span className={styles.personMeta}>
           <span className={styles.roleBadge}>{tRole(person.role)}</span>
-          <span data-private>
-            {t("inn")}: {person.inn}
-          </span>
-          {person.phone && (
-            <span data-private>
-              <Phone size={12} aria-hidden="true" />
-              {person.phone}
-            </span>
-          )}
+          <span>{person.email}</span>
           {!person.is_active && <span className={styles.inactive}>{t("inactive")}</span>}
         </span>
 

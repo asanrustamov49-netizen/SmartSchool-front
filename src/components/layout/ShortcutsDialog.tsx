@@ -10,7 +10,6 @@ export const OPEN_SHORTCUTS_EVENT = "smart-school-shortcuts";
 const SHORTCUTS = [
   { key: "search", keys: ["Ctrl", "K"] },
   { key: "sidebar", keys: ["["] },
-  { key: "privacy", keys: ["Ctrl", "Shift", "H"] },
   { key: "help", keys: ["?"] },
 ] as const;
 

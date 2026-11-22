@@ -9,14 +9,12 @@ import { z } from "zod";
 import type { SchoolAdmin, SchoolAdminFields, SchoolAdminRole } from "@/apis/system.api";
 import { Select } from "@/components/ui/Select";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
-import { emptyToNull } from "@/lib/utils";
 import { textRule, validatePersonName } from "@/lib/textChecks";
 import styles from "./admin.module.scss";
 
 type AdminAccountFormValues = {
-  inn: string;
+  email: string;
   fullName: string;
-  phone: string;
   role: SchoolAdminRole;
 };
 
@@ -28,12 +26,12 @@ type AdminAccountFormProps = {
   error: unknown;
   onSubmit: (data: SchoolAdminFields & { role: SchoolAdminRole }) => void;
   onClose: () => void;
-  // Изменение существующего руководителя: ИНН (логин) только для чтения, без выбора роли.
+  // Изменение существующего руководителя: почта (логин) только для чтения, без выбора роли.
   person?: SchoolAdmin;
 };
 
-// Новый директор или завуч: схема SchoolAdminCreate (ИНН 14 цифр, ФИО 3–200 символов).
-// С person — изменение ФИО и телефона (схема SchoolAdminUpdate).
+// Новый директор или завуч: схема SchoolAdminCreate (почта, ФИО 3–200 символов).
+// С person — изменение ФИО (схема SchoolAdminUpdate).
 export function AdminAccountForm({
   title,
   allowedRoles,
@@ -51,14 +49,13 @@ export function AdminAccountForm({
   const tChecks = useTranslations("textChecks");
 
   const accountSchema = z.object({
-    inn: isEditing ? z.string() : z.string().trim().regex(/^\d{14}$/, tForm("innFormat")),
+    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
     fullName: z
       .string()
       .trim()
       .min(3, tForm("minLength", { count: 3 }))
       .max(200, tForm("maxLength", { count: 200 }))
       .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
-    phone: z.string().trim().max(20, tForm("maxLength", { count: 20 })),
     role: z.enum(["DIRECTOR", "DEPUTY"]).refine((role) => isEditing || allowedRoles.includes(role)),
   });
 
@@ -71,9 +68,8 @@ export function AdminAccountForm({
   } = useForm<AdminAccountFormValues>({
     resolver: zodResolver(accountSchema),
     defaultValues: {
-      inn: person?.inn ?? "",
+      email: person?.email ?? "",
       fullName: person?.full_name ?? "",
-      phone: person?.phone ?? "",
       role: person?.role ?? allowedRoles[0] ?? "DEPUTY",
     },
   });
@@ -82,13 +78,13 @@ export function AdminAccountForm({
   const hasFieldErrors = Object.keys(fieldErrors).length > 0;
 
   useEffect(() => {
-    if (fieldErrors.inn) {
-      setError("inn", { message: fieldErrors.inn });
+    if (fieldErrors.email) {
+      setError("email", { message: fieldErrors.email });
     }
     if (fieldErrors.full_name) {
       setError("fullName", { message: fieldErrors.full_name });
     }
-  }, [fieldErrors.inn, fieldErrors.full_name, setError]);
+  }, [fieldErrors.email, fieldErrors.full_name, setError]);
 
   const formError = error && !hasFieldErrors ? handleApiError(error, tApiErrors) : null;
 
@@ -100,9 +96,8 @@ export function AdminAccountForm({
         noValidate
         onSubmit={handleSubmit((values) =>
           onSubmit({
-            inn: values.inn.trim(),
+            email: values.email.trim(),
             full_name: values.fullName.trim(),
-            phone: emptyToNull(values.phone),
             role: values.role,
           }),
         )}
@@ -133,18 +128,20 @@ export function AdminAccountForm({
         )}
 
         <div className={styles.field}>
-          <label htmlFor="account-inn">{t("inn")}</label>
+          <label htmlFor="account-email">{t("email")}</label>
           <input
-            id="account-inn"
-            inputMode="numeric"
-            maxLength={14}
+            id="account-email"
+            type="email"
+            inputMode="email"
+            autoComplete="off"
+            placeholder={tForm("emailPlaceholder")}
             readOnly={isEditing}
             className={styles.input}
-            aria-invalid={Boolean(errors.inn)}
-            {...register("inn")}
+            aria-invalid={Boolean(errors.email)}
+            {...register("email")}
           />
-          {isEditing && <span className={styles.fieldHint}>{t("innReadonly")}</span>}
-          {errors.inn && <p className={styles.fieldError}>{errors.inn.message}</p>}
+          {isEditing && <span className={styles.fieldHint}>{t("emailReadonly")}</span>}
+          {errors.email && <p className={styles.fieldError}>{errors.email.message}</p>}
         </div>
 
         <div className={styles.field}>
@@ -156,16 +153,6 @@ export function AdminAccountForm({
             {...register("fullName")}
           />
           {errors.fullName && <p className={styles.fieldError}>{errors.fullName.message}</p>}
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="account-phone">{t("phone")}</label>
-          <input id="account-phone" type="tel" className={styles.input} {...register("phone")} />
-          {errors.phone ? (
-            <p className={styles.fieldError}>{errors.phone.message}</p>
-          ) : (
-            <span className={styles.fieldHint}>{tForm("optional")}</span>
-          )}
         </div>
 
         {!isEditing && <p className={styles.notice}>{t("tempPasswordNote")}</p>}

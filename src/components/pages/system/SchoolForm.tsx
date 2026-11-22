@@ -14,12 +14,9 @@ import styles from "../admin/admin.module.scss";
 
 type SchoolFormValues = {
   name: string;
-  address: string;
-  phone: string;
   email: string;
-  directorInn: string;
+  directorEmail: string;
   directorName: string;
-  directorPhone: string;
 };
 
 type SchoolFormProps = {
@@ -29,13 +26,11 @@ type SchoolFormProps = {
   onClose: () => void;
 };
 
-// Ошибки 422 backend → поля формы (director.inn → directorInn).
+// Ошибки 422 backend → поля формы. Почта школы и почта директора приходят с одним
+// именем поля «email», поэтому ошибка показывается у почты школы.
 const apiFieldNames: Record<string, keyof SchoolFormValues> = {
   name: "name",
-  address: "address",
-  phone: "phone",
   email: "email",
-  inn: "directorInn",
   full_name: "directorName",
 };
 
@@ -50,7 +45,7 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
   const activeMutation = isEditing ? updateSchool : createSchool;
 
   // Правила схем SystemSchoolCreate и SchoolAdminCreate: название 2–200 символов,
-  // ИНН директора — 14 цифр, ФИО — 3–200 символов.
+  // почта директора — логин, ФИО — 3–200 символов.
   const directorRule = (rule: z.ZodString) => (isEditing ? z.string() : rule);
   const schoolSchema = z.object({
     name: z
@@ -59,10 +54,8 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
       .min(2, tForm("minLength", { count: 2 }))
       .max(200, tForm("maxLength", { count: 200 }))
       .superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
-    address: z.string().superRefine(textRule(validateFreeText, (problem) => tChecks(problem))),
-    phone: z.string(),
     email: z.union([z.literal(""), z.string().trim().email(t("errors.email"))]),
-    directorInn: directorRule(z.string().trim().regex(/^\d{14}$/, tForm("innFormat"))),
+    directorEmail: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
     directorName: directorRule(
       z
         .string()
@@ -71,7 +64,6 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
         .max(200, tForm("maxLength", { count: 200 }))
         .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
     ),
-    directorPhone: z.string(),
   });
 
   const {
@@ -83,12 +75,9 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
     resolver: zodResolver(schoolSchema),
     defaultValues: {
       name: school?.name ?? "",
-      address: school?.address ?? "",
-      phone: school?.phone ?? "",
       email: school?.email ?? "",
-      directorInn: "",
+      directorEmail: "",
       directorName: "",
-      directorPhone: "",
     },
   });
 
@@ -104,8 +93,6 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
   const onSubmit = (values: SchoolFormValues) => {
     const schoolFields = {
       name: values.name.trim(),
-      address: emptyToNull(values.address),
-      phone: emptyToNull(values.phone),
       email: emptyToNull(values.email),
     };
 
@@ -121,9 +108,8 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
       {
         ...schoolFields,
         director: {
-          inn: values.directorInn.trim(),
+          email: values.directorEmail.trim(),
           full_name: values.directorName.trim(),
-          phone: emptyToNull(values.directorPhone),
         },
       },
       { onSuccess: onCreated, onError: showFieldErrors },
@@ -157,18 +143,6 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
           {errors.name && <p className={styles.fieldError}>{errors.name.message}</p>}
         </div>
 
-        <div className={cn(styles.field, styles.fieldWide)}>
-          <label htmlFor="school-address">{t("fields.address")}</label>
-          <input id="school-address" className={styles.input} {...register("address")} />
-          <span className={styles.fieldHint}>{tForm("optional")}</span>
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="school-phone">{t("fields.phone")}</label>
-          <input id="school-phone" type="tel" className={styles.input} {...register("phone")} />
-          <span className={styles.fieldHint}>{tForm("optional")}</span>
-        </div>
-
         <div className={styles.field}>
           <label htmlFor="school-email">{t("fields.email")}</label>
           <input
@@ -191,16 +165,18 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
             <p className={styles.notice}>{t("directorNote")}</p>
 
             <div className={styles.field}>
-              <label htmlFor="director-inn">{t("fields.inn")}</label>
+              <label htmlFor="director-email">{t("fields.directorEmail")}</label>
               <input
-                id="director-inn"
-                inputMode="numeric"
-                maxLength={14}
+                id="director-email"
+                type="email"
+                inputMode="email"
+                autoComplete="off"
+                placeholder={tForm("emailPlaceholder")}
                 className={styles.input}
-                aria-invalid={Boolean(errors.directorInn)}
-                {...register("directorInn")}
+                aria-invalid={Boolean(errors.directorEmail)}
+                {...register("directorEmail")}
               />
-              {errors.directorInn && <p className={styles.fieldError}>{errors.directorInn.message}</p>}
+              {errors.directorEmail && <p className={styles.fieldError}>{errors.directorEmail.message}</p>}
             </div>
 
             <div className={styles.field}>
@@ -214,12 +190,6 @@ export function SchoolForm({ school, onCreated, onClose }: SchoolFormProps) {
               {errors.directorName && (
                 <p className={styles.fieldError}>{errors.directorName.message}</p>
               )}
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="director-phone">{t("fields.phone")}</label>
-              <input id="director-phone" type="tel" className={styles.input} {...register("directorPhone")} />
-              <span className={styles.fieldHint}>{tForm("optional")}</span>
             </div>
           </>
         )}

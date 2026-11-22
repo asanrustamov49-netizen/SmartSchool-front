@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Eye, EyeOff, IdCard, LoaderCircle, Lock } from "lucide-react";
+import { CircleAlert, Eye, EyeOff, LoaderCircle, Lock, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -16,7 +16,7 @@ import { AuthLayout } from "./AuthLayout";
 import styles from "./login.module.scss";
 
 type LoginFormValues = {
-  inn: string;
+  email: string;
   password: string;
 };
 
@@ -27,9 +27,9 @@ const Login = () => {
   const loginMutation = useLogin();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  // Правила совпадают со схемой LoginRequest: inn — ровно 14 символов, password — не пустой.
+  // Правила совпадают со схемой LoginRequest: email — почта, password — не пустой.
   const loginSchema = z.object({
-    inn: z.string().trim().length(14, t("errors.innLength")),
+    email: z.string().trim().pipe(z.email(t("errors.emailFormat"))),
     password: z.string().min(1, t("errors.passwordRequired")),
   });
 
@@ -40,7 +40,7 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { inn: "", password: "" },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = (values: LoginFormValues) => {
@@ -56,8 +56,8 @@ const Login = () => {
       onError: (error) => {
         const fieldErrors = getApiFieldErrors(error);
 
-        if (fieldErrors.inn) {
-          setError("inn", { message: fieldErrors.inn });
+        if (fieldErrors.email) {
+          setError("email", { message: fieldErrors.email });
         }
 
         if (fieldErrors.password) {
@@ -68,7 +68,7 @@ const Login = () => {
   };
 
   // Backend отвечает на /auth/login только по-кыргызски, поэтому известные статусы
-  // показываются своим переводом: 401 — неверный ИНН или пароль, 403 — аккаунт закрыт,
+  // показываются своим переводом: 401 — неверная почта или пароль, 403 — аккаунт закрыт,
   // 429 — слишком много неудачных попыток.
   const getLoginErrorMessage = (error: Error) => {
     const status = getApiErrorStatus(error);
@@ -107,26 +107,28 @@ const Login = () => {
         )}
 
         <div className={styles.field}>
-          <Label htmlFor="inn" className={styles.label}>
-            {t("inn")}
+          <Label htmlFor="email" className={styles.label}>
+            {t("email")}
           </Label>
           <div className={styles.inputWrap}>
-            <IdCard className={styles.inputIcon} size={18} aria-hidden="true" />
+            <Mail className={styles.inputIcon} size={18} aria-hidden="true" />
             <Input
-              id="inn"
+              id="email"
+              type="email"
               className={styles.input}
-              inputMode="numeric"
+              inputMode="email"
               autoComplete="username"
-              maxLength={14}
-              placeholder={t("innPlaceholder")}
-              aria-invalid={Boolean(errors.inn)}
-              aria-describedby={errors.inn ? "inn-error" : undefined}
-              {...register("inn")}
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder={t("emailPlaceholder")}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              {...register("email")}
             />
           </div>
-          {errors.inn && (
-            <p id="inn-error" className={styles.fieldError}>
-              {errors.inn.message}
+          {errors.email && (
+            <p id="email-error" className={styles.fieldError}>
+              {errors.email.message}
             </p>
           )}
         </div>

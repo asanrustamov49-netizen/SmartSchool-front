@@ -5,18 +5,16 @@ import type { StudentStanding } from "./auth.api";
 // поля взяты из backend: mysite/api/students.py (get_students).
 export type Student = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
   class_id: number | null;
   is_active: boolean;
 };
 
 // Схема StudentCreate
 export type StudentCreate = {
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
   class_id: number;
 };
 
@@ -24,7 +22,7 @@ export type StudentCreate = {
 export type StudentCreated = {
   message: string;
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
   role: string;
   class_id: number;
@@ -35,7 +33,6 @@ export type StudentCreated = {
 // Схема StudentUpdate
 export type StudentUpdate = {
   full_name: string;
-  phone: string | null;
 };
 
 export async function getStudents(): Promise<Student[]> {
@@ -47,9 +44,8 @@ export async function getStudents(): Promise<Student[]> {
 // поля взяты из backend: mysite/api/students.py (get_class_students).
 export type ClassStudent = {
   id: number;
-  inn: string;
+  email: string;
   full_name: string;
-  phone: string | null;
   class_id: number;
   academic_year: string;
 };
@@ -72,7 +68,7 @@ export async function updateStudent(studentId: number, data: StudentUpdate) {
 // row в errors — номер строки в загруженном файле. Временные пароли приходят один раз.
 export type ExcelImportResult = {
   total_added: number;
-  added_users: { inn: string; full_name: string; temporary_password: string }[];
+  added_users: { email: string; full_name: string; temporary_password: string }[];
   errors: { row: number; error: string }[];
 };
 
@@ -81,7 +77,7 @@ type StudentImportResponse = Omit<ExcelImportResult, "added_users"> & {
   added_students: ExcelImportResult["added_users"];
 };
 
-// Шаблон с правильными колонками отдаёт backend: ИНН | Толук аты-жөнү | Телефон.
+// Шаблон с правильными колонками отдаёт backend: Почта | Толук аты-жөнү.
 export async function downloadStudentsTemplate(): Promise<Blob> {
   const response = await api.get<Blob>("/admin/excel/templates/students", {
     responseType: "blob",

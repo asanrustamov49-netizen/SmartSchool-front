@@ -4,14 +4,12 @@ import api from "@/lib/axios";
 export type Subject = {
   id: number;
   name: string;
-  code: string | null;
   school_id: number;
 };
 
 // Схема SubjectCreate
 export type SubjectCreate = {
   name: string;
-  code: string | null;
 };
 
 export async function getSubjects(): Promise<Subject[]> {
@@ -24,7 +22,7 @@ export async function createSubject(data: SubjectCreate): Promise<Subject> {
   return response.data;
 }
 
-// Схема SubjectUpdate: name 2–100 символов, code до 30.
+// Схема SubjectUpdate: name 2–100 символов.
 export async function updateSubject(subjectId: number, data: SubjectCreate): Promise<Subject> {
   const response = await api.put<Subject>(`/subjects/${subjectId}`, data);
   return response.data;
