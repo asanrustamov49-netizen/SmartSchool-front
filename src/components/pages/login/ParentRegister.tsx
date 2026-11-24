@@ -7,6 +7,7 @@ import {
   Baby,
   CircleAlert,
   Info,
+  KeyRound,
   LoaderCircle,
   Mail,
   UserRound,
@@ -16,7 +17,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { z } from "zod";
-import { getParentLinkErrorKey } from "@/apis/parents.api";
+import { getParentLinkErrorKey, isParentCode, normalizeParentCode } from "@/apis/parents.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,8 +33,7 @@ type ParentRegisterFormValues = {
   fullName: string;
   email: string;
   password: string;
-  studentEmail: string;
-  studentPassword: string;
+  studentCode: string;
 };
 
 type TextFieldProps = {
@@ -81,8 +81,7 @@ const apiFieldNames: Record<string, keyof ParentRegisterFormValues> = {
   full_name: "fullName",
   email: "email",
   password: "password",
-  student_email: "studentEmail",
-  student_password: "studentPassword",
+  student_code: "studentCode",
 };
 
 const ParentRegister = () => {
@@ -104,12 +103,7 @@ const ParentRegister = () => {
         .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
       email: emailRule,
       password: z.string().min(8, t("errors.passwordMin")),
-      studentEmail: emailRule,
-      studentPassword: z.string().min(1, t("errors.childPasswordRequired")),
-    })
-    .refine((values) => values.email.toLowerCase() !== values.studentEmail.toLowerCase(), {
-      message: t("errors.sameEmail"),
-      path: ["studentEmail"],
+      studentCode: z.string().refine(isParentCode, t("errors.codeFormat")),
     });
 
   const {
@@ -124,8 +118,7 @@ const ParentRegister = () => {
       fullName: "",
       email: "",
       password: "",
-      studentEmail: "",
-      studentPassword: "",
+      studentCode: "",
     },
   });
 
@@ -133,7 +126,7 @@ const ParentRegister = () => {
   const [step, setStep] = useState<1 | 2>(1);
 
   const goToParentStep = async () => {
-    if (await trigger(["studentEmail", "studentPassword"])) {
+    if (await trigger(["studentCode"])) {
       setStep(2);
     }
   };
@@ -144,8 +137,7 @@ const ParentRegister = () => {
         full_name: values.fullName.trim(),
         email: values.email.trim(),
         password: values.password,
-        student_email: values.studentEmail.trim(),
-        student_password: values.studentPassword,
+        student_code: normalizeParentCode(values.studentCode),
       },
       {
         onSuccess: () => router.replace("/"),
@@ -153,7 +145,7 @@ const ParentRegister = () => {
           const fieldErrors = getApiFieldErrors(error);
           // Ошибка про данные ребёнка — возвращаем на первый шаг, где эти поля.
           const errorKey = getParentLinkErrorKey(error);
-          if ((errorKey && errorKey !== "emailTaken") || fieldErrors.student_email || fieldErrors.student_password) {
+          if ((errorKey && errorKey !== "emailTaken") || fieldErrors.student_code) {
             setStep(1);
           }
 
@@ -201,22 +193,13 @@ const ParentRegister = () => {
               {t("childNote")}
             </p>
             <TextField
-              id="child-email"
-              label={t("childEmail")}
-              icon={Mail}
-              type="email"
-              inputMode="email"
+              id="child-code"
+              label={t("childCode")}
+              icon={KeyRound}
               autoComplete="off"
-              placeholder={tAuth("emailPlaceholder")}
-              error={errors.studentEmail?.message}
-              registration={register("studentEmail")}
-            />
-            <PasswordField
-              id="child-password"
-              label={t("childPassword")}
-              autoComplete="off"
-              error={errors.studentPassword?.message}
-              registration={register("studentPassword")}
+              placeholder={t("childCodePlaceholder")}
+              error={errors.studentCode?.message}
+              registration={register("studentCode")}
             />
             <Button type="button" className={styles.submitButton} onClick={goToParentStep}>
               {t("next")}

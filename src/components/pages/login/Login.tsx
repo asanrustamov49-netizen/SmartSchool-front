@@ -167,6 +167,9 @@ const Login = () => {
               {errors.password.message}
             </p>
           )}
+          <Link href="/forgot-password" className={styles.forgotLink}>
+            {t("forgotLink")}
+          </Link>
         </div>
 
         <Button type="submit" className={styles.submitButton} disabled={isSubmitting}>

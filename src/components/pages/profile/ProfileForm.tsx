@@ -105,6 +105,20 @@ export function ProfileForm({ user }: { user: CurrentUser }) {
           <span className={styles.fieldHint}>{t("emailReadonly")}</span>
         </div>
 
+        {/* Сохраняется сразу, без кнопки «Сохранить». */}
+        <label className={`${styles.fieldWide} ${styles.checkboxField}`}>
+          <input
+            type="checkbox"
+            checked={user.email_notifications}
+            disabled={updateProfile.isPending}
+            onChange={(event) => updateProfile.mutate({ email_notifications: event.target.checked })}
+          />
+          <span>
+            <strong>{t("emailNotifications")}</strong>
+            <small>{t("emailNotificationsHint")}</small>
+          </span>
+        </label>
+
         {canEditName && (
           <div className={styles.formActions}>
             <button

@@ -8,6 +8,8 @@ const handleI18nRouting = createMiddleware(routing);
 const LANDING_PATH = "/welcome";
 const API_PROXY_PREFIX = "/api";
 const GUEST_ONLY_PATHS = ["/login", "/register", LANDING_PATH];
+// Сброс пароля открывается по ссылке из письма — и гостю, и уже вошедшему пользователю.
+const PUBLIC_PATHS = ["/forgot-password", "/reset-password"];
 
 function getPathWithoutLocale(pathname: string, locale: string) {
   const path = pathname.replace(new RegExp(`^/${locale}(?=/|$)`), "");
@@ -47,6 +49,10 @@ export default function proxy(request: NextRequest) {
   // Гость, открывший сайт, сначала видит Landing, а не форму входа.
   if (!hasToken && path === "/") {
     return NextResponse.redirect(new URL(`/${locale}${LANDING_PATH}`, request.url));
+  }
+
+  if (PUBLIC_PATHS.includes(path)) {
+    return handleI18nRouting(request);
   }
 
   if (!hasToken && !isGuestOnlyPath) {

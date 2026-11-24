@@ -8,6 +8,8 @@ export type CredentialRow = {
   email: string;
   full_name: string;
   role: string;
+  // Код, по которому родитель привязывает ребёнка (8 символов, показывается как XXXX-XXXX).
+  parent_code: string | null;
   is_temp_password: boolean;
   temporary_password: string | null;
 };
@@ -46,6 +48,14 @@ export async function resetClassStudentPassword(
 ): Promise<StudentPasswordReset> {
   const response = await api.post<StudentPasswordReset>(
     `/classes/${classId}/students/${studentId}/reset-password`,
+  );
+  return response.data;
+}
+
+// Новый код для родителей: старый перестаёт работать.
+export async function regenerateParentCode(classId: number, studentId: number): Promise<{ parent_code: string }> {
+  const response = await api.post<{ parent_code: string }>(
+    `/classes/${classId}/students/${studentId}/parent-code`,
   );
   return response.data;
 }

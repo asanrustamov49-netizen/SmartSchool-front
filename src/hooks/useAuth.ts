@@ -3,6 +3,8 @@ import {
   changeFirstLoginPassword,
   getCurrentUser,
   login,
+  requestPasswordReset,
+  resetPassword,
 } from "@/apis/auth.api";
 import { resetAppearance } from "@/lib/appearance";
 import { redirectToLogin, removeToken, saveToken } from "@/lib/auth";
@@ -56,4 +58,12 @@ export function useLogout() {
     queryClient.clear();
     redirectToLogin();
   };
+}
+
+export function useRequestPasswordReset() {
+  return useMutation({ mutationFn: requestPasswordReset });
+}
+
+export function useResetPassword() {
+  return useMutation({ mutationFn: resetPassword });
 }

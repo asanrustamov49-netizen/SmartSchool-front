@@ -7,6 +7,7 @@ import {
   getFlag,
   getSavedBanner,
   getSidebarCollapsed,
+  getTipsDismissed,
   parseBannerPosition,
   subscribeAppearance,
   type Accent,
@@ -37,4 +38,9 @@ export function useChoice<TName extends ChoiceName>(name: TName): ChoiceValue<TN
 export function useBannerPosition(userId: number, bannerUrl: string): BannerPosition {
   const saved = useSyncExternalStore(subscribeAppearance, () => getSavedBanner(userId), () => null);
   return parseBannerPosition(saved, bannerUrl);
+}
+
+// На сервере карточка скрыта, чтобы она не мелькала у тех, кто её уже закрыл.
+export function useTipsDismissed(userId: number): boolean {
+  return useSyncExternalStore(subscribeAppearance, () => getTipsDismissed(userId), () => true);
 }

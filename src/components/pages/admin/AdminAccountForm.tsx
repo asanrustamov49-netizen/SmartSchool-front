@@ -26,12 +26,12 @@ type AdminAccountFormProps = {
   error: unknown;
   onSubmit: (data: SchoolAdminFields & { role: SchoolAdminRole }) => void;
   onClose: () => void;
-  // Изменение существующего руководителя: почта (логин) только для чтения, без выбора роли.
+  // Изменение существующего руководителя: ФИО и почта, без выбора роли.
   person?: SchoolAdmin;
 };
 
 // Новый директор или завуч: схема SchoolAdminCreate (почта, ФИО 3–200 символов).
-// С person — изменение ФИО (схема SchoolAdminUpdate).
+// С person — изменение ФИО и почты (схема SchoolAdminUpdate).
 export function AdminAccountForm({
   title,
   allowedRoles,
@@ -49,7 +49,7 @@ export function AdminAccountForm({
   const tChecks = useTranslations("textChecks");
 
   const accountSchema = z.object({
-    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
+    email: z.string().trim().pipe(z.email(tForm("emailFormat"))),
     fullName: z
       .string()
       .trim()
@@ -135,12 +135,11 @@ export function AdminAccountForm({
             inputMode="email"
             autoComplete="off"
             placeholder={tForm("emailPlaceholder")}
-            readOnly={isEditing}
             className={styles.input}
             aria-invalid={Boolean(errors.email)}
             {...register("email")}
           />
-          {isEditing && <span className={styles.fieldHint}>{t("emailReadonly")}</span>}
+          {isEditing && !errors.email && <span className={styles.fieldHint}>{tForm("emailChangeHint")}</span>}
           {errors.email && <p className={styles.fieldError}>{errors.email.message}</p>}
         </div>
 

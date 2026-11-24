@@ -3,13 +3,12 @@ import { getApiErrorDetail, getApiErrorStatus } from "@/lib/errorHandler";
 
 // POST /parents/register — схема ParentRegister (backend: mysite/api/parents.py).
 // Родитель регистрируется сам и сразу привязывает первого ребёнка
-// по почте ребёнка и временному паролю, который выдала школа.
+// по коду для родителей, который выдал классный руководитель.
 export type ParentRegisterRequest = {
   email: string;
   full_name: string;
   password: string;
-  student_email: string;
-  student_password: string;
+  student_code: string;
 };
 
 export type ParentRegisterResponse = {
@@ -23,8 +22,7 @@ export type ParentRegisterResponse = {
 
 // POST /parents/add-child — схема ParentAddChild.
 export type ParentAddChildRequest = {
-  student_email: string;
-  student_password: string;
+  student_code: string;
 };
 
 export type ParentAddChildResponse = {
@@ -46,8 +44,6 @@ export async function addChild(data: ParentAddChildRequest): Promise<ParentAddCh
 // Ключи раздела parentLink.errors в src/lib/locales/*.json.
 export type ParentLinkErrorKey =
   | "studentNotFound"
-  | "childPasswordUsed"
-  | "wrongChildCredentials"
   | "childAlreadyLinked"
   | "childLinkLimit"
   | "tooManyAttempts"
@@ -58,19 +54,13 @@ export type ParentLinkErrorKey =
 export function getParentLinkErrorKey(error: unknown): ParentLinkErrorKey | null {
   const detail = getApiErrorDetail(error) ?? "";
 
-  // Защита от подбора пароля ребёнка: после 10 неудачных попыток проверка на время закрыта.
+  // Защита от подбора кода: после многих неудачных попыток проверка на время закрыта.
   if (getApiErrorStatus(error) === 429) {
     return "tooManyAttempts";
   }
 
-  if (detail.includes("Окуучу табылган жок")) {
+  if (detail.includes("окуучу табылган жок")) {
     return "studentNotFound";
-  }
-  if (detail.includes("убактылуу паролу колдонулган")) {
-    return "childPasswordUsed";
-  }
-  if (detail.includes("почтасы же паролу туура эмес")) {
-    return "wrongChildCredentials";
   }
   // У ребёнка может быть не больше двух родителей (backend: MAX_PARENTS_PER_STUDENT).
   if (detail.includes("эки ата-эне байланган")) {
@@ -83,4 +73,13 @@ export function getParentLinkErrorKey(error: unknown): ParentLinkErrorKey | null
     return "emailTaken";
   }
   return null;
+}
+
+// Код для родителей: «k7p2-mx4q» → «K7P2MX4Q». Дефис и пробелы не важны (как в backend).
+export function normalizeParentCode(value: string): string {
+  return value.replace(/[\s-]/g, "").toUpperCase();
+}
+
+export function isParentCode(value: string): boolean {
+  return /^[A-Z0-9]{6,12}$/.test(normalizeParentCode(value));
 }

@@ -1977,3 +1977,23 @@
     justify-content: center;
   }
 }
+
+// Кнопка «Понятно» у карточки «С чего начать».
+.tipsDismiss {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text);
+  }
+}

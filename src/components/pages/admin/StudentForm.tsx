@@ -26,8 +26,7 @@ type StudentFormProps = {
   onClose: () => void;
 };
 
-// Backend разрешает менять у ученика только ФИО (StudentUpdate):
-// почта (логин) и класс после создания не редактируются.
+// Backend разрешает менять у ученика ФИО и почту (StudentUpdate); класс после создания не меняется.
 export function StudentForm({ student, classes, onCreated, onClose }: StudentFormProps) {
   const t = useTranslations("admin.students");
   const tForm = useTranslations("admin.form");
@@ -39,9 +38,9 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
   const isEditing = student !== null;
 
   // Правила из StudentCreate/StudentUpdate: почта, ФИО 3–200 символов.
-  // При редактировании почта и класс не показываются в полях формы и не отправляются.
+  // При редактировании класс не показывается в полях формы и не отправляется.
   const studentSchema = z.object({
-    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
+    email: z.string().trim().pipe(z.email(tForm("emailFormat"))),
     full_name: z
       .string()
       .trim()
@@ -87,7 +86,7 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
 
     if (student) {
       updateStudent.mutate(
-        { studentId: student.id, data: { full_name: fullName } },
+        { studentId: student.id, data: { full_name: fullName, email: values.email.trim() } },
         { onSuccess: onClose, onError: handleError },
       );
       return;
@@ -137,8 +136,20 @@ export function StudentForm({ student, classes, onCreated, onClose }: StudentFor
           <>
             <div className={styles.field}>
               <label htmlFor="student-email">{t("email")}</label>
-              <input id="student-email" className={styles.input} value={student.email} readOnly disabled />
-              <span className={styles.fieldHint}>{t("emailReadonly")}</span>
+              <input
+                id="student-email"
+                type="email"
+                className={styles.input}
+                inputMode="email"
+                autoComplete="off"
+                aria-invalid={Boolean(errors.email)}
+                {...register("email")}
+              />
+              {errors.email ? (
+                <p className={styles.fieldError}>{errors.email.message}</p>
+              ) : (
+                <span className={styles.fieldHint}>{tForm("emailChangeHint")}</span>
+              )}
             </div>
 
             <div className={styles.field}>

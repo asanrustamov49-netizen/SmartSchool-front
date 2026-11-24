@@ -176,6 +176,33 @@
   grid-column: 1 / -1;
 }
 
+// Переключатель с названием и пояснением (например, «Уведомления на почту» в профиле).
+.checkboxField {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    margin-top: 2px;
+    accent-color: var(--accent);
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+}
+
 .textarea {
   min-height: 96px;
   padding-top: 10px;

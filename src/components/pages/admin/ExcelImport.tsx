@@ -9,7 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { useImportStudents } from "@/hooks/useStudents";
 import { useImportTeachers } from "@/hooks/useTeachers";
 import { handleApiError } from "@/lib/errorHandler";
-import { downloadBlob } from "@/lib/utils";
+import { cn, downloadBlob } from "@/lib/utils";
 import styles from "./admin.module.scss";
 
 // Заголовки и порядок, которые строго проверяет backend (student_import.py, teacher_import.py).
@@ -366,7 +366,7 @@ export function ExcelImport({
             })}
           </p>
           <div className={styles.tableWrap}>
-            <table className={styles.table}>
+            <table className={cn(styles.table, styles.responsiveTable)}>
               <thead>
                 <tr>
                   <th>{t("rowNumber")}</th>
@@ -378,10 +378,11 @@ export function ExcelImport({
               <tbody>
                 {rows.map((row) => (
                   <tr key={row.rowNumber}>
-                    <td className={styles.cellMuted}>{row.rowNumber}</td>
-                    <td>{row.email || "—"}</td>
-                    <td>{row.fullName || "—"}</td>
+                    <td data-label={t("rowNumber")} className={styles.cellMuted}>{row.rowNumber}</td>
+                    <td data-label={t("passwordColumns.email")}>{row.email || "—"}</td>
+                    <td data-label={t("passwordColumns.fullName")}>{row.fullName || "—"}</td>
                     <td
+                      data-label={t("check")}
                       className={
                         row.problem ? styles.statusInactive : styles.statusOk
                       }
@@ -423,7 +424,7 @@ export function ExcelImport({
             <>
               <p className={styles.fieldHint}>{t("passwordsNotice")}</p>
               <div className={styles.tableWrap}>
-                <table className={styles.table}>
+                <table className={cn(styles.table, styles.responsiveTable)}>
                   <thead>
                     <tr>
                       <th>{t("passwordColumns.email")}</th>
@@ -434,9 +435,9 @@ export function ExcelImport({
                   <tbody>
                     {outcome.result.added_users.map((user) => (
                       <tr key={user.email}>
-                        <td className={styles.cellMuted}>{user.email}</td>
-                        <td>{user.full_name}</td>
-                        <td className={styles.secret}>
+                        <td data-label={t("passwordColumns.email")} className={styles.cellMuted}>{user.email}</td>
+                        <td data-label={t("passwordColumns.fullName")}>{user.full_name}</td>
+                        <td data-label={t("passwordColumns.password")} className={styles.secret}>
                           {user.temporary_password}
                         </td>
                       </tr>

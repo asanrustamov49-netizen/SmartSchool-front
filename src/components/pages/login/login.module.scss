@@ -544,3 +544,17 @@
     min-height: 50px;
   }
 }
+
+// «Забыли пароль?» под полем пароля, прижато вправо.
+.forgotLink {
+  align-self: flex-end;
+  margin-top: 2px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -33,6 +33,8 @@ export type StudentCreated = {
 // Схема StudentUpdate
 export type StudentUpdate = {
   full_name: string;
+  // Новая почта (логин); при ошибке в адресе её исправляет директор или завуч.
+  email: string;
 };
 
 export async function getStudents(): Promise<Student[]> {

@@ -263,9 +263,9 @@ export function DeputiesPage() {
           allowedRoles={["DEPUTY"]}
           isPending={updateDeputy.isPending}
           error={updateDeputy.error}
-          onSubmit={({ full_name }) =>
+          onSubmit={({ full_name, email }) =>
             updateDeputy.mutate(
-              { userId: panel.person.id, data: { full_name } },
+              { userId: panel.person.id, data: { full_name, email } },
               {
                 onSuccess: (person) => {
                   setPanel({ type: "none" });

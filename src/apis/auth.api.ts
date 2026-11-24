@@ -101,6 +101,8 @@ export type CurrentUser = {
   avatar_url: string | null;
   school_id: number;
   is_temp_password: boolean;
+  // Присылать ли копии уведомлений на почту.
+  email_notifications: boolean;
   school: CurrentUserSchool | null;
   student?: StudentStanding;
   children?: ParentChild[];
@@ -127,4 +129,14 @@ export async function changeFirstLoginPassword(
 export async function getCurrentUser(): Promise<CurrentUser> {
   const response = await api.get<CurrentUser>("/me");
   return response.data;
+}
+
+// POST /auth/forgot-password: ответ одинаковый, есть такая почта или нет.
+export async function requestPasswordReset(email: string) {
+  await api.post("/auth/forgot-password", { email });
+}
+
+// POST /auth/reset-password: token приходит в ссылке из письма (действует 30 минут, один раз).
+export async function resetPassword(data: { token: string; new_password: string }) {
+  await api.post("/auth/reset-password", data);
 }

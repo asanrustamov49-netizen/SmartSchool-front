@@ -1,12 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Eye, EyeOff, Info, LoaderCircle, UserPlus } from "lucide-react";
+import { CircleAlert, Info, LoaderCircle, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { getParentLinkErrorKey } from "@/apis/parents.api";
+import { getParentLinkErrorKey, isParentCode, normalizeParentCode } from "@/apis/parents.api";
 import { useAddChild } from "@/hooks/useParents";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
@@ -14,8 +13,7 @@ import adminStyles from "../admin/admin.module.scss";
 import scss from "./home.module.scss";
 
 type AddChildFormValues = {
-  studentEmail: string;
-  studentPassword: string;
+  studentCode: string;
 };
 
 type AddChildFormProps = {
@@ -23,17 +21,14 @@ type AddChildFormProps = {
   onCancel?: () => void;
 };
 
-// Привязка ещё одного ребёнка к аккаунту родителя: POST /parents/add-child.
+// Привязка ещё одного ребёнка к аккаунту родителя по коду от классного руководителя.
 export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
   const t = useTranslations("parentLink");
-  const tAuth = useTranslations("auth");
   const tApiErrors = useTranslations("apiErrors");
   const addChildMutation = useAddChild();
-  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const addChildSchema = z.object({
-    studentEmail: z.string().trim().pipe(z.email(tAuth("errors.emailFormat"))),
-    studentPassword: z.string().min(1, t("errors.childPasswordRequired")),
+    studentCode: z.string().refine(isParentCode, t("errors.codeFormat")),
   });
 
   const {
@@ -44,12 +39,12 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
     formState: { errors },
   } = useForm<AddChildFormValues>({
     resolver: zodResolver(addChildSchema),
-    defaultValues: { studentEmail: "", studentPassword: "" },
+    defaultValues: { studentCode: "" },
   });
 
   const onSubmit = (values: AddChildFormValues) => {
     addChildMutation.mutate(
-      { student_email: values.studentEmail.trim(), student_password: values.studentPassword },
+      { student_code: normalizeParentCode(values.studentCode) },
       {
         onSuccess: (response) => {
           reset();
@@ -57,11 +52,8 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
         },
         onError: (error) => {
           const fieldErrors = getApiFieldErrors(error);
-          if (fieldErrors.student_email) {
-            setError("studentEmail", { message: fieldErrors.student_email });
-          }
-          if (fieldErrors.student_password) {
-            setError("studentPassword", { message: fieldErrors.student_password });
+          if (fieldErrors.student_code) {
+            setError("studentCode", { message: fieldErrors.student_code });
           }
         },
       },
@@ -92,43 +84,18 @@ export function AddChildForm({ onAdded, onCancel }: AddChildFormProps) {
       )}
 
       <div className={adminStyles.field}>
-        <label htmlFor="add-child-email">{t("childEmail")}</label>
+        <label htmlFor="add-child-code">{t("childCode")}</label>
         <input
-          id="add-child-email"
-          type="email"
+          id="add-child-code"
           className={adminStyles.input}
-          inputMode="email"
           autoComplete="off"
-          placeholder={tAuth("emailPlaceholder")}
-          aria-invalid={Boolean(errors.studentEmail)}
-          {...register("studentEmail")}
+          autoCapitalize="characters"
+          spellCheck={false}
+          placeholder={t("childCodePlaceholder")}
+          aria-invalid={Boolean(errors.studentCode)}
+          {...register("studentCode")}
         />
-        {errors.studentEmail && <p className={adminStyles.fieldError}>{errors.studentEmail.message}</p>}
-      </div>
-
-      <div className={adminStyles.field}>
-        <label htmlFor="add-child-password">{t("childPassword")}</label>
-        <div className={scss.passwordInput}>
-          <input
-            id="add-child-password"
-            className={adminStyles.input}
-            type={passwordVisible ? "text" : "password"}
-            autoComplete="off"
-            aria-invalid={Boolean(errors.studentPassword)}
-            {...register("studentPassword")}
-          />
-          <button
-            type="button"
-            aria-label={passwordVisible ? t("hidePassword") : t("showPassword")}
-            aria-pressed={passwordVisible}
-            onClick={() => setPasswordVisible((visible) => !visible)}
-          >
-            {passwordVisible ? <EyeOff size={17} aria-hidden="true" /> : <Eye size={17} aria-hidden="true" />}
-          </button>
-        </div>
-        {errors.studentPassword && (
-          <p className={adminStyles.fieldError}>{errors.studentPassword.message}</p>
-        )}
+        {errors.studentCode && <p className={adminStyles.fieldError}>{errors.studentCode.message}</p>}
       </div>
 
       <div className={adminStyles.formActions}>

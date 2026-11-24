@@ -71,6 +71,7 @@ export type Teacher = {
 // Схема TeacherUpdate: full_name 3–200 символов.
 export type TeacherUpdate = {
   full_name: string;
+  email: string;
 };
 
 export async function getTeachers(): Promise<Teacher[]> {

@@ -16,9 +16,10 @@ export async function createDeputy(data: SchoolAdminFields): Promise<SchoolAdmin
   return response.data;
 }
 
-// Схема SchoolAdminUpdate: почта (логин) не меняется.
+// Схема SchoolAdminUpdate.
 export type DeputyUpdate = {
   full_name: string;
+  email: string;
 };
 
 export async function updateDeputy(userId: number, data: DeputyUpdate): Promise<SchoolAdmin> {

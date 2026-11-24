@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { downloadClassCredentials, type CredentialRow } from "@/apis/credentials.api";
 import { DataState } from "@/components/ui/DataState";
-import { useClassCredentials, useResetClassStudentPassword } from "@/hooks/useCredentials";
+import { useClassCredentials, useRegenerateParentCode, useResetClassStudentPassword } from "@/hooks/useCredentials";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn, downloadBlob } from "@/lib/utils";
 import { SecretNotice } from "./SecretNotice";
@@ -19,6 +19,11 @@ type ClassCredentialsProps = {
 
 type SecretState = { message: string; secret: string };
 
+// «K7P2MX4Q» → «K7P2-MX4Q»: так код легче продиктовать и переписать.
+function formatParentCode(code: string) {
+  return `${code.slice(0, 4)}-${code.slice(4)}`;
+}
+
 // Логины и временные пароли учеников класса: раздать на собрании или вернуть доступ.
 // Пароль виден, пока ученик его не сменил; после смены его можно только сбросить.
 export function ClassCredentials({ classId, onClose }: ClassCredentialsProps) {
@@ -27,6 +32,7 @@ export function ClassCredentials({ classId, onClose }: ClassCredentialsProps) {
   const tApiErrors = useTranslations("apiErrors");
   const credentialsQuery = useClassCredentials(classId);
   const resetPassword = useResetClassStudentPassword(classId);
+  const regenerateCode = useRegenerateParentCode(classId);
   const [passwordsVisible, setPasswordsVisible] = useState(false);
   const [confirmRow, setConfirmRow] = useState<CredentialRow | null>(null);
   const [secret, setSecret] = useState<SecretState | null>(null);
@@ -85,6 +91,11 @@ export function ClassCredentials({ classId, onClose }: ClassCredentialsProps) {
                 <span>
                   {t("login")}: {row.email}
                 </span>
+                {row.parent_code && (
+                  <span>
+                    {t("parentCode")}: <strong className={peopleStyles.secret}>{formatParentCode(row.parent_code)}</strong>
+                  </span>
+                )}
               </span>
               {row.is_temp_password ? (
                 <span className={peopleStyles.tempPassword}>
@@ -103,6 +114,15 @@ export function ClassCredentials({ classId, onClose }: ClassCredentialsProps) {
             <div className={peopleStyles.personActions}>
               <button type="button" className={styles.linkButton} onClick={() => setConfirmRow(row)}>
                 {t("reset")}
+              </button>
+              <button
+                type="button"
+                className={styles.linkButton}
+                disabled={regenerateCode.isPending}
+                title={t("newCodeHint")}
+                onClick={() => regenerateCode.mutate(row.id, { onError: (error) => setActionError(handleApiError(error, tApiErrors)) })}
+              >
+                {t("newCode")}
               </button>
             </div>
           </li>

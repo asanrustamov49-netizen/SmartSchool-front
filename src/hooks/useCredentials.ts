@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getClassCredentials, resetClassStudentPassword } from "@/apis/credentials.api";
+import { getClassCredentials, regenerateParentCode, resetClassStudentPassword } from "@/apis/credentials.api";
 
 function classCredentialsKey(classId: number) {
   return ["credentials", "class", classId];
@@ -17,6 +17,14 @@ export function useResetClassStudentPassword(classId: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (studentId: number) => resetClassStudentPassword(classId, studentId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: classCredentialsKey(classId) }),
+  });
+}
+
+export function useRegenerateParentCode(classId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (studentId: number) => regenerateParentCode(classId, studentId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: classCredentialsKey(classId) }),
   });
 }

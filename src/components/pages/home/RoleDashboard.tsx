@@ -14,6 +14,7 @@ import { SystemDashboard } from "./SystemDashboard";
 import { TeacherDashboard } from "./TeacherDashboard";
 import { TodayLessonsPanel } from "./TodayLessonsPanel";
 import { TodayTasks } from "./TodayTasks";
+import { WelcomeTips } from "./WelcomeTips";
 import scss from "./home.module.scss";
 
 // Роль известна только после /me на клиенте. AppShell показывает страницу,
@@ -48,6 +49,7 @@ export function RoleDashboard() {
   return (
     <>
       <DashboardHero currentUser={currentUser} />
+      <WelcomeTips currentUser={currentUser} />
       {currentUser.role !== "SYSTEM_ADMIN" && <TodayTasks currentUser={currentUser} />}
       {/* Расписание есть у учителя, ученика и родителя; директор смотрит его в разделе «Расписание». */}
       {["TEACHER", "CLASS_TEACHER", "STUDENT", "PARENT"].includes(currentUser.role) && (

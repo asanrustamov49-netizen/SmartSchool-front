@@ -5,6 +5,7 @@ import type { CurrentUser } from "@/apis/auth.api";
 // остальным backend отвечает 403 — поэтому для них поле не отправляется.
 export type ProfileUpdate = {
   full_name?: string;
+  email_notifications?: boolean;
 };
 
 // Схема PasswordChange: new_password — от 8 до 128 символов.

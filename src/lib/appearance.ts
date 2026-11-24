@@ -240,3 +240,19 @@ export function saveBannerPosition(userId: number, bannerUrl: string, position: 
   }
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
+
+// Карточка «С чего начать» на главной: скрыта ли она этим пользователем.
+const tipsKey = (userId: number) => `smart-school-tips-${userId}`;
+
+export function getTipsDismissed(userId: number): boolean {
+  try {
+    return window.localStorage.getItem(tipsKey(userId)) === "hidden";
+  } catch {
+    return false;
+  }
+}
+
+export function dismissTips(userId: number) {
+  writeStorage(tipsKey(userId), "hidden");
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}

@@ -17,7 +17,7 @@ type TeacherFormValues = {
 };
 
 type TeacherFormProps = {
-  // null — новый учитель, иначе редактирование (почту менять нельзя).
+  // null — новый учитель, иначе редактирование.
   teacher: Teacher | null;
   onCreated: (teacher: TeacherCreated) => void;
   onClose: () => void;
@@ -35,7 +35,7 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
 
   // Правила из схем TeacherCreate и TeacherUpdate: email — почта, full_name — 3–200 символов.
   const teacherSchema = z.object({
-    email: isEditing ? z.string() : z.string().trim().pipe(z.email(tForm("emailFormat"))),
+    email: z.string().trim().pipe(z.email(tForm("emailFormat"))),
     fullName: z
       .string()
       .trim()
@@ -60,8 +60,16 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
   const onSubmit = (values: TeacherFormValues) => {
     if (teacher) {
       updateTeacher.mutate(
-        { teacherId: teacher.id, data: { full_name: values.fullName.trim() } },
-        { onSuccess: onClose },
+        { teacherId: teacher.id, data: { full_name: values.fullName.trim(), email: values.email.trim() } },
+        {
+          onSuccess: onClose,
+          onError: (error) => {
+            const fieldErrors = getApiFieldErrors(error);
+            if (fieldErrors.email) {
+              setError("email", { message: fieldErrors.email });
+            }
+          },
+        },
       );
       return;
     }
@@ -122,12 +130,11 @@ export function TeacherForm({ teacher, onCreated, onClose }: TeacherFormProps) {
             inputMode="email"
             autoComplete="off"
             placeholder={tForm("emailPlaceholder")}
-            readOnly={isEditing}
             className={styles.input}
             aria-invalid={Boolean(errors.email)}
             {...register("email")}
           />
-          {isEditing && <span className={styles.fieldHint}>{t("emailReadonly")}</span>}
+          {isEditing && !errors.email && <span className={styles.fieldHint}>{tForm("emailChangeHint")}</span>}
           {errors.email && <p className={styles.fieldError}>{errors.email.message}</p>}
         </div>
 
