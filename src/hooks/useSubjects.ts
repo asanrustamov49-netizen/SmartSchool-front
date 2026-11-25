@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createSubject,
   deleteSubject,
@@ -9,11 +9,15 @@ import {
 
 const subjectsQueryKey = ["subjects"];
 
+// Справочник меняется редко: 10 минут без перезапроса. После изменения кэш сбрасывается мутациями ниже.
+export const subjectsQuery = queryOptions({
+  queryKey: subjectsQueryKey,
+  queryFn: getSubjects,
+  staleTime: 10 * 60 * 1000,
+});
+
 export function useSubjects() {
-  return useQuery({
-    queryKey: subjectsQueryKey,
-    queryFn: getSubjects,
-  });
+  return useQuery(subjectsQuery);
 }
 
 export function useCreateSubject() {

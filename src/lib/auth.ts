@@ -32,6 +32,31 @@ export function saveToken(token: string) {
 
 export function removeToken() {
   document.cookie = `${TOKEN_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
+  try {
+    window.localStorage.removeItem(LAST_ROLE_KEY);
+  } catch {
+    // Хранилище недоступно: удалять нечего.
+  }
+}
+
+// Роль с прошлого входа: по ней главная начинает грузить свои данные, не дожидаясь /me.
+// Это только ускорение — права всё равно проверяет backend.
+const LAST_ROLE_KEY = "smart-school-last-role";
+
+export function rememberRole(role: string) {
+  try {
+    window.localStorage.setItem(LAST_ROLE_KEY, role);
+  } catch {
+    // Хранилище недоступно: главная просто подождёт /me.
+  }
+}
+
+export function getRememberedRole(): string | null {
+  try {
+    return window.localStorage.getItem(LAST_ROLE_KEY);
+  } catch {
+    return null;
+  }
 }
 
 export function getLocaleFromPathname(pathname: string): string {

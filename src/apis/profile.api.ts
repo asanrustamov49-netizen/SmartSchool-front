@@ -1,11 +1,13 @@
 import api from "@/lib/axios";
-import type { CurrentUser } from "@/apis/auth.api";
+import type { BannerPosition, CurrentUser } from "@/apis/auth.api";
 
 // Схема ProfileUpdate. full_name может менять только директор, завуч или родитель,
 // остальным backend отвечает 403 — поэтому для них поле не отправляется.
 export type ProfileUpdate = {
   full_name?: string;
   email_notifications?: boolean;
+  // null — снова по центру
+  banner_position?: BannerPosition | null;
 };
 
 // Схема PasswordChange: new_password — от 8 до 128 символов.

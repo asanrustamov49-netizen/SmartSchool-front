@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getNotifications,
   getUnreadNotificationsCount,
@@ -8,19 +8,27 @@ import {
 
 const notificationsQueryKey = ["notifications"];
 
-export function useNotifications(limit: number, enabled: boolean) {
-  return useQuery({
+// «Последние события» на главной.
+export const HOME_EVENTS_LIMIT = 5;
+
+export function notificationsQuery(limit: number) {
+  return queryOptions({
     queryKey: [...notificationsQueryKey, "list", limit],
     queryFn: () => getNotifications(limit),
-    enabled,
   });
 }
 
+export const unreadNotificationsCountQuery = queryOptions({
+  queryKey: [...notificationsQueryKey, "unread-count"],
+  queryFn: getUnreadNotificationsCount,
+});
+
+export function useNotifications(limit: number, enabled: boolean) {
+  return useQuery({ ...notificationsQuery(limit), enabled });
+}
+
 export function useUnreadNotificationsCount() {
-  return useQuery({
-    queryKey: [...notificationsQueryKey, "unread-count"],
-    queryFn: getUnreadNotificationsCount,
-  });
+  return useQuery(unreadNotificationsCountQuery);
 }
 
 export function useMarkAllNotificationsRead() {

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   cancelAbsenceRequest,
   createAbsenceRequest,
@@ -11,12 +11,15 @@ import {
 const absenceQueryKey = ["absence-requests"];
 
 // enabled = false — когда роли заявки недоступны (ученик получил бы 403).
-export function useAbsenceRequests(status: AbsenceStatus | null, enabled = true) {
-  return useQuery({
+export function absenceRequestsQuery(status: AbsenceStatus | null) {
+  return queryOptions({
     queryKey: [...absenceQueryKey, "list", status],
     queryFn: () => getAbsenceRequests(status),
-    enabled,
   });
+}
+
+export function useAbsenceRequests(status: AbsenceStatus | null, enabled = true) {
+  return useQuery({ ...absenceRequestsQuery(status), enabled });
 }
 
 export function useAbsenceRules(enabled: boolean) {

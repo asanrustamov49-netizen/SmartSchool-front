@@ -11,12 +11,16 @@ import { useRouter } from "@/i18n/navigation";
 import { handleApiError } from "@/lib/errorHandler";
 import { cn } from "@/lib/utils";
 import adminStyles from "../admin/admin.module.scss";
-import { AddChildForm } from "./AddChildForm";
+import dynamic from "next/dynamic";
 import { XpRing } from "./XpRing";
 import scss from "./home.module.scss";
 
 // Один запрос рейтинга школы вместо отдельного запроса на каждого ребёнка (без N+1).
 // Максимум, который разрешает backend для /ratings/school.
+// Форма с проверкой (zod) нужна только при добавлении ребёнка — грузится по нажатию,
+// а не вместе с главной у всех пользователей.
+const AddChildForm = dynamic(() => import("./AddChildForm").then((module) => module.AddChildForm));
+
 const SCHOOL_RATING_LIMIT = 1000;
 
 function getInitials(fullName: string) {

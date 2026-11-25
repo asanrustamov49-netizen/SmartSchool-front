@@ -3,16 +3,15 @@
 import { Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
-import { useSchoolRating } from "@/hooks/useDashboard";
+import { HOME_RATING_LIMIT, useSchoolRating } from "@/hooks/useDashboard";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
 
-const TOP_STUDENTS_LIMIT = 5;
 
 export function SchoolRatingPanel() {
   const t = useTranslations("dashboard.ranking");
   const tApiErrors = useTranslations("apiErrors");
-  const ratingQuery = useSchoolRating(TOP_STUDENTS_LIMIT);
+  const ratingQuery = useSchoolRating(HOME_RATING_LIMIT);
 
   const renderContent = () => {
     if (ratingQuery.isPending) {

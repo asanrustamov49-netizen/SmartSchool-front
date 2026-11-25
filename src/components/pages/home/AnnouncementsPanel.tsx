@@ -4,17 +4,16 @@ import { CalendarDays, Megaphone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
 import { useDateFormat } from "@/hooks/useDateFormat";
-import { useLatestAnnouncements } from "@/hooks/useDashboard";
+import { HOME_ANNOUNCEMENTS_LIMIT, useLatestAnnouncements } from "@/hooks/useDashboard";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
 
-const LATEST_ANNOUNCEMENTS_LIMIT = 3;
 
 export function AnnouncementsPanel() {
   const t = useTranslations("dashboard.announcements");
   const tApiErrors = useTranslations("apiErrors");
   const { formatDate } = useDateFormat();
-  const announcementsQuery = useLatestAnnouncements(LATEST_ANNOUNCEMENTS_LIMIT);
+  const announcementsQuery = useLatestAnnouncements(HOME_ANNOUNCEMENTS_LIMIT);
 
   const renderContent = () => {
     if (announcementsQuery.isPending) {

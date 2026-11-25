@@ -108,7 +108,7 @@ export function DashboardHero({ currentUser }: { currentUser: CurrentUser }) {
       {/* Свет за курсором — только на градиентном баннере, не поверх фото школы. */}
       {!bannerUrl && <span data-spotlight-glow aria-hidden="true" />}
       {/* Баннер школы из «Настроек школы»: фон с затемнением, чтобы текст оставался читаемым. */}
-      {bannerUrl && <HeroBanner userId={currentUser.id} bannerUrl={bannerUrl} />}
+      {bannerUrl && <HeroBanner bannerUrl={bannerUrl} saved={currentUser.banner_position} />}
       <div className={scss.heroCopy}>
         <span className={scss.heroBrand}>
           <CalendarDays size={15} strokeWidth={2} aria-hidden="true" />

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
@@ -22,6 +23,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Toaster } from "@/components/ui/Toaster";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
+import { usePrefetchHome } from "@/hooks/usePrefetchHome";
 import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
 import { applySavedAppearance, getFlag, setSidebarCollapsed } from "@/lib/appearance";
@@ -42,7 +44,6 @@ import { AccountMenu } from "./AccountMenu";
 import { MobileMoreSheet } from "./MobileMoreSheet";
 import { CabinetSpotlight } from "./CabinetSpotlight";
 import { SidebarTooltip } from "./SidebarTooltip";
-import { CommandPalette } from "./CommandPalette";
 import { OPEN_SHORTCUTS_EVENT, ShortcutsDialog } from "./ShortcutsDialog";
 import {
   getAllowedItems,
@@ -57,6 +58,9 @@ import {
 import { NotificationsMenu } from "./NotificationsMenu";
 import styles from "./app-shell.module.scss";
 
+// Быстрый поиск (Ctrl+K) нужен не всегда — его код грузится при первом открытии.
+const CommandPalette = dynamic(() => import("./CommandPalette").then((module) => module.CommandPalette));
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations("app");
   const tCommon = useTranslations("common");
@@ -65,6 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const logout = useLogout();
   const currentUserQuery = useCurrentUser();
+  usePrefetchHome();
   const currentUser = currentUserQuery.data;
   const mustChangePassword = currentUser?.is_temp_password === true;
 

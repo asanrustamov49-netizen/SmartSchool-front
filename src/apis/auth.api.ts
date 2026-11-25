@@ -91,6 +91,10 @@ export type TeacherAssignmentSummary = {
   academic_year: string;
 };
 
+// Положение баннера школы у этого пользователя (проценты 0–100). url — для какого баннера:
+// когда школа меняет баннер, старое положение не применяется.
+export type BannerPosition = { url: string; x: number; y: number };
+
 // GET /me. В openapi.json схема ответа не описана,
 // поля взяты из backend: mysite/api/me.py (get_me).
 export type CurrentUser = {
@@ -103,6 +107,7 @@ export type CurrentUser = {
   is_temp_password: boolean;
   // Присылать ли копии уведомлений на почту.
   email_notifications: boolean;
+  banner_position: BannerPosition | null;
   school: CurrentUserSchool | null;
   student?: StudentStanding;
   children?: ParentChild[];

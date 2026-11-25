@@ -3,12 +3,16 @@
 import { Check, Move, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { useBannerPosition } from "@/hooks/useAppearance";
-import { DEFAULT_BANNER_POSITION, saveBannerPosition, type BannerPosition } from "@/lib/appearance";
+import type { BannerPosition as SavedBannerPosition } from "@/apis/auth.api";
+import { useUpdateProfile } from "@/hooks/useProfile";
 import { getMediaUrl } from "@/lib/utils";
 import scss from "./home.module.scss";
 
 const KEYBOARD_STEP = 2;
+
+type BannerPosition = { x: number; y: number };
+
+const DEFAULT_BANNER_POSITION: BannerPosition = { x: 50, y: 50 };
 
 type DragStart = { pointerX: number; pointerY: number; position: BannerPosition };
 
@@ -18,9 +22,14 @@ function clampPercent(value: number) {
 
 // Баннер школы на главной. Снимок у всех один, а положение каждый настраивает себе сам:
 // перетаскивает снимок мышью или пальцем (или стрелками), и видит только свой вариант.
-export function HeroBanner({ userId, bannerUrl }: { userId: number; bannerUrl: string }) {
+// Положение хранится в аккаунте, поэтому одинаково на телефоне и компьютере.
+type HeroBannerProps = { bannerUrl: string; saved: SavedBannerPosition | null };
+
+export function HeroBanner({ bannerUrl, saved }: HeroBannerProps) {
   const t = useTranslations("dashboard.hero.banner");
-  const savedPosition = useBannerPosition(userId, bannerUrl);
+  const updateProfile = useUpdateProfile();
+  // Положение, сохранённое для прежнего баннера школы, к новому не применяется.
+  const savedPosition = saved && saved.url === bannerUrl ? { x: saved.x, y: saved.y } : DEFAULT_BANNER_POSITION;
   const [draft, setDraft] = useState<BannerPosition | null>(null);
   const dragStart = useRef<DragStart | null>(null);
   const isEditing = draft !== null;
@@ -63,10 +72,13 @@ export function HeroBanner({ userId, bannerUrl }: { userId: number; bannerUrl: s
   };
 
   const save = () => {
-    if (draft) {
-      saveBannerPosition(userId, bannerUrl, draft);
+    if (!draft) {
+      return;
     }
-    setDraft(null);
+    updateProfile.mutate(
+      { banner_position: { url: bannerUrl, x: Math.round(draft.x), y: Math.round(draft.y) } },
+      { onSuccess: () => setDraft(null) },
+    );
   };
 
   return (
@@ -106,7 +118,7 @@ export function HeroBanner({ userId, bannerUrl }: { userId: number; bannerUrl: s
               <X size={15} aria-hidden="true" />
               {t("cancel")}
             </button>
-            <button type="button" className={scss.bannerEditorSave} onClick={save}>
+            <button type="button" className={scss.bannerEditorSave} onClick={save} disabled={updateProfile.isPending}>
               <Check size={15} aria-hidden="true" />
               {t("save")}
             </button>

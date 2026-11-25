@@ -7,7 +7,7 @@ import {
   resetPassword,
 } from "@/apis/auth.api";
 import { resetAppearance } from "@/lib/appearance";
-import { redirectToLogin, removeToken, saveToken } from "@/lib/auth";
+import { redirectToLogin, rememberRole, removeToken, saveToken } from "@/lib/auth";
 import { resetSelectedChild } from "./useSelectedChild";
 
 export const currentUserQueryKey = ["current-user"];
@@ -15,7 +15,11 @@ export const currentUserQueryKey = ["current-user"];
 export function useCurrentUser() {
   return useQuery({
     queryKey: currentUserQueryKey,
-    queryFn: getCurrentUser,
+    queryFn: async () => {
+      const user = await getCurrentUser();
+      rememberRole(user.role);
+      return user;
+    },
     staleTime: 5 * 60 * 1000,
   });
 }

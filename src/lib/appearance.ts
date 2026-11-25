@@ -187,60 +187,6 @@ export function subscribeAppearance(onChange: () => void) {
 // лендинг и страница входа всегда в оформлении по умолчанию.
 export const APPEARANCE_INIT_SCRIPT = `try{if(document.cookie.indexOf("${TOKEN_COOKIE_NAME}=")>-1){var d=document.documentElement;var a=localStorage.getItem("${ACCENT_KEY}");if(a)d.dataset.accent=a;var s=localStorage.getItem("${SIDEBAR_KEY}");if(s)d.dataset.sidebar=s;${FLAGS.map((flag) => `if(localStorage.getItem("${flagKey(flag)}")==="on")d.dataset.${flag}="on";`).join("")}${CHOICE_NAMES.map((name) => `var c_${name}=localStorage.getItem("${choiceKey(name)}");if(c_${name}&&c_${name}!=="${CHOICES[name][0]}")d.dataset.${name}=c_${name};`).join("")}}}catch(e){}`;
 
-// Положение баннера школы на главной: каждый пользователь сдвигает снимок под себя,
-// сам файл баннера у всех один. Хранится в браузере отдельно для каждого аккаунта
-// вместе с адресом баннера: новый баннер школы снова показывается по центру.
-export type BannerPosition = { x: number; y: number };
-
-export const DEFAULT_BANNER_POSITION: BannerPosition = { x: 50, y: 50 };
-
-const bannerKey = (userId: number) => `smart-school-banner-${userId}`;
-
-export function getSavedBanner(userId: number): string | null {
-  try {
-    return window.localStorage.getItem(bannerKey(userId));
-  } catch {
-    return null;
-  }
-}
-
-export function parseBannerPosition(saved: string | null, bannerUrl: string): BannerPosition {
-  if (!saved) {
-    return DEFAULT_BANNER_POSITION;
-  }
-  try {
-    const value: unknown = JSON.parse(saved);
-    if (
-      typeof value === "object" &&
-      value !== null &&
-      "url" in value &&
-      "x" in value &&
-      "y" in value &&
-      value.url === bannerUrl &&
-      typeof value.x === "number" &&
-      typeof value.y === "number"
-    ) {
-      return { x: value.x, y: value.y };
-    }
-  } catch {
-    // Повреждённое значение: баннер показывается по центру.
-  }
-  return DEFAULT_BANNER_POSITION;
-}
-
-export function saveBannerPosition(userId: number, bannerUrl: string, position: BannerPosition | null) {
-  if (position === null) {
-    try {
-      window.localStorage.removeItem(bannerKey(userId));
-    } catch {
-      // Хранилище недоступно: сбрасывать нечего.
-    }
-  } else {
-    writeStorage(bannerKey(userId), JSON.stringify({ url: bannerUrl, ...position }));
-  }
-  window.dispatchEvent(new Event(CHANGE_EVENT));
-}
-
 // Карточка «С чего начать» на главной: скрыта ли она этим пользователем.
 const tipsKey = (userId: number) => `smart-school-tips-${userId}`;
 

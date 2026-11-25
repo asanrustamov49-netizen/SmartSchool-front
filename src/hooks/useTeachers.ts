@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   activateTeacher,
   createAssignment,
@@ -13,12 +13,15 @@ import {
 
 const teachersQueryKey = ["teachers"];
 
+// Справочник меняется редко: 10 минут без перезапроса. После изменения кэш сбрасывается мутациями ниже.
+export const teachersQuery = queryOptions({
+  queryKey: teachersQueryKey,
+  queryFn: getTeachers,
+  staleTime: 10 * 60 * 1000,
+});
+
 export function useTeachers(enabled = true) {
-  return useQuery({
-    queryKey: teachersQueryKey,
-    queryFn: getTeachers,
-    enabled,
-  });
+  return useQuery({ ...teachersQuery, enabled });
 }
 
 // Список учителей и их число на главной обновляются после любых изменений.

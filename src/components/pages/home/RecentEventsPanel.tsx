@@ -4,18 +4,17 @@ import { BellRing } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
 import { useDateFormat } from "@/hooks/useDateFormat";
-import { useMarkNotificationRead, useNotifications } from "@/hooks/useNotifications";
+import { HOME_EVENTS_LIMIT, useMarkNotificationRead, useNotifications } from "@/hooks/useNotifications";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
 
-const RECENT_EVENTS_LIMIT = 5;
 
 // Последние события — это личные уведомления пользователя из /notifications.
 export function RecentEventsPanel() {
   const t = useTranslations("dashboard.events");
   const tApiErrors = useTranslations("apiErrors");
   const { formatRelative } = useDateFormat();
-  const notificationsQuery = useNotifications(RECENT_EVENTS_LIMIT, true);
+  const notificationsQuery = useNotifications(HOME_EVENTS_LIMIT, true);
   const markRead = useMarkNotificationRead();
 
   const renderContent = () => {

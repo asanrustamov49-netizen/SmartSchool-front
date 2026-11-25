@@ -5,13 +5,10 @@ import {
   getAccent,
   getChoice,
   getFlag,
-  getSavedBanner,
   getSidebarCollapsed,
   getTipsDismissed,
-  parseBannerPosition,
   subscribeAppearance,
   type Accent,
-  type BannerPosition,
   type ChoiceName,
   type ChoiceValue,
   type Flag,
@@ -32,12 +29,6 @@ export function useFlag(flag: Flag): boolean {
 
 export function useChoice<TName extends ChoiceName>(name: TName): ChoiceValue<TName> {
   return useSyncExternalStore(subscribeAppearance, () => getChoice(name), () => CHOICES[name][0]);
-}
-
-// Сохранённое положение баннера этого пользователя (на сервере — по центру).
-export function useBannerPosition(userId: number, bannerUrl: string): BannerPosition {
-  const saved = useSyncExternalStore(subscribeAppearance, () => getSavedBanner(userId), () => null);
-  return parseBannerPosition(saved, bannerUrl);
 }
 
 // На сервере карточка скрыта, чтобы она не мелькала у тех, кто её уже закрыл.
