@@ -36,8 +36,10 @@ function daysUntil(dueDate: string) {
   return Math.round((Date.UTC(year, month - 1, day) - Date.UTC(todayYear, todayMonth - 1, todayDay)) / millisecondsPerDay);
 }
 
+// Ссылки на файлы заданий подписаны (?exp=…&sig=…) — подпись в имя файла не попадает.
 export function fileNameFromUrl(url: string) {
-  return decodeURIComponent(url.split("/").pop() ?? url);
+  const path = url.split("?")[0];
+  return decodeURIComponent(path.split("/").pop() ?? path);
 }
 
 // Список прикреплённых файлов: картинки — превью, документы — ссылки.

@@ -31,7 +31,22 @@ function proxyToBackend(request: NextRequest) {
 
   const { pathname, search } = request.nextUrl;
   const backendPath = pathname.slice(API_PROXY_PREFIX.length) || "/";
-  return NextResponse.rewrite(new URL(`${backendPath}${search}`, backendUrl));
+
+  // Backend доверяет только запросам с секретом (BACKEND_PROXY_SECRET = PROXY_SECRET на сервере).
+  // Адрес клиента берётся из x-forwarded-for, который Vercel выставляет сам — подделать его нельзя.
+  const headers = new Headers(request.headers);
+  headers.delete("x-proxy-secret");
+  headers.delete("x-client-ip");
+  const proxySecret = process.env.BACKEND_PROXY_SECRET;
+  if (proxySecret) {
+    headers.set("x-proxy-secret", proxySecret);
+  }
+  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (clientIp) {
+    headers.set("x-client-ip", clientIp);
+  }
+
+  return NextResponse.rewrite(new URL(`${backendPath}${search}`, backendUrl), { request: { headers } });
 }
 
 export default function proxy(request: NextRequest) {

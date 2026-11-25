@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useChangePassword } from "@/hooks/useProfile";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { isStrongPassword } from "@/lib/textChecks";
 import styles from "../admin/admin.module.scss";
 
 type PasswordFormValues = {
@@ -33,7 +34,8 @@ export function PasswordForm() {
       newPassword: z
         .string()
         .min(8, t("newPasswordMin"))
-        .max(128, tForm("maxLength", { count: 128 })),
+        .max(128, tForm("maxLength", { count: 128 }))
+        .refine(isStrongPassword, tAuth("errors.weakPassword")),
       confirmPassword: z.string(),
     })
     .refine((values) => values.newPassword === values.confirmPassword, {

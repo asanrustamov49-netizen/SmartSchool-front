@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useResetPassword } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
 import { getApiErrorStatus, handleApiError } from "@/lib/errorHandler";
+import { isStrongPassword } from "@/lib/textChecks";
 import { AuthLayout } from "./AuthLayout";
 import { PasswordField } from "./PasswordField";
 import styles from "./login.module.scss";
@@ -23,13 +24,14 @@ type ResetPasswordValues = {
 const ResetPassword = () => {
   const t = useTranslations("auth.reset");
   const tFirst = useTranslations("auth.firstLogin");
+  const tAuth = useTranslations("auth");
   const tApiErrors = useTranslations("apiErrors");
   const token = useSearchParams().get("token") ?? "";
   const resetPassword = useResetPassword();
 
   const schema = z
     .object({
-      newPassword: z.string().min(8, tFirst("errors.newPasswordMin")),
+      newPassword: z.string().min(8, tFirst("errors.newPasswordMin")).refine(isStrongPassword, tAuth("errors.weakPassword")),
       confirmPassword: z.string(),
     })
     .refine((values) => values.newPassword === values.confirmPassword, {

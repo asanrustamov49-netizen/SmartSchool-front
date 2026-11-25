@@ -97,3 +97,17 @@ export function textRule(validate: (text: string) => TextProblem | null, transla
     }
   };
 }
+
+// Те же правила, что у backend (validate_new_password): буквы и цифры, не самый частый пароль.
+// Длина (от 8 символов) проверяется в каждой форме своим сообщением.
+const COMMON_PASSWORDS = new Set([
+  "password", "password1", "qwerty123", "qwertyui", "12345678", "123456789", "1234567890",
+  "11111111", "00000000", "87654321", "abcd1234", "1q2w3e4r", "qwerty12", "admin123",
+  "parol123", "mektep123", "school123", "smartschool", "iloveyou",
+]);
+
+export function isStrongPassword(value: string): boolean {
+  const hasLetter = /\p{L}/u.test(value);
+  const hasDigit = /\d/.test(value);
+  return hasLetter && hasDigit && !COMMON_PASSWORDS.has(value.toLowerCase()) && new Set(value).size >= 4;
+}

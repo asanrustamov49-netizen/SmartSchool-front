@@ -1,4 +1,5 @@
 import {
+  BookMarked,
   BookOpen,
   CalendarClock,
   ChartNoAxesCombined,
@@ -113,6 +114,15 @@ const schoolSettingsItem: NavigationItem = {
 
 // Разделы взяты из backend FRONTEND.md («Экраны → эндпоинты»).
 // available: true ставится только после того, как страница реально сделана.
+// Учебная программа: учитель отмечает пройденные темы, директор и завуч загружают программы.
+const programsItem: NavigationItem = {
+  key: "programs",
+  href: "/programs",
+  icon: BookMarked,
+  available: true,
+  group: "learning",
+};
+
 function getAdminItems(): NavigationItem[] {
   return [
     homeItem,
@@ -124,6 +134,7 @@ function getAdminItems(): NavigationItem[] {
     { key: "classes", href: "/admin/classes", icon: School, available: true, group: "learning" },
     { key: "subjects", href: "/admin/subjects", icon: Library, available: true, group: "learning" },
     { key: "journal", href: "/journal", icon: NotebookPen, available: true, group: "learning" },
+    programsItem,
     // Перевод учеников на новый учебный год: директор и завуч.
     { key: "promotion", href: "/admin/promotion", icon: TrendingUp, available: true, group: "learning" },
     {
@@ -166,6 +177,8 @@ function getTeacherItems(isClassTeacher: boolean): NavigationItem[] {
     scheduleItem,
     { key: "journal", href: "/journal", icon: NotebookPen, available: true, group: "learning" },
     { key: "assignments", href: "/homeworks", icon: ClipboardList, available: true, group: "learning" },
+    // После заданий: нижнее меню телефона (первые пункты) остаётся привычным.
+    programsItem,
   ];
 
   // Классный руководитель определяется не ролью, а привязкой к классу (is_class_teacher).

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useCurrentUser, useFirstLoginChange, useLogout } from "@/hooks/useAuth";
 import { useRouter } from "@/i18n/navigation";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { isStrongPassword } from "@/lib/textChecks";
 import { AuthLayout } from "./AuthLayout";
 import { PasswordField } from "./PasswordField";
 import styles from "./login.module.scss";
@@ -22,6 +23,7 @@ type FirstLoginChangeFormValues = {
 
 const FirstLoginChange = () => {
   const t = useTranslations("auth.firstLogin");
+  const tAuth = useTranslations("auth");
   const tCommon = useTranslations("common");
   const tApiErrors = useTranslations("apiErrors");
   const router = useRouter();
@@ -34,7 +36,7 @@ const FirstLoginChange = () => {
   const firstLoginChangeSchema = z
     .object({
       currentPassword: z.string().min(1, t("errors.currentRequired")),
-      newPassword: z.string().min(8, t("errors.newPasswordMin")),
+      newPassword: z.string().min(8, t("errors.newPasswordMin")).refine(isStrongPassword, tAuth("errors.weakPassword")),
       confirmPassword: z.string(),
     })
     .refine((values) => values.newPassword === values.confirmPassword, {

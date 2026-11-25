@@ -1,0 +1,439 @@
+// Окуу программасы: карточки предметов и страница тем.
+
+// ---------- Карточки «предмет · класс» ----------
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cardTitle {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  strong {
+    font-size: 15.5px;
+    font-weight: 750;
+  }
+}
+
+.cardArrow {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.cardTeacher {
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.classChip {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.progress {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--soft);
+
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+}
+
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nextTopic {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  span {
+    color: var(--muted);
+  }
+}
+
+// ---------- Метки состояния ----------
+.status {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusOk,
+.statusDone {
+  background: color-mix(in srgb, var(--ss-success, #16a34a) 14%, transparent);
+  color: var(--ss-success, #16a34a);
+}
+
+.statusBehind {
+  background: color-mix(in srgb, var(--ss-warning, #d97706) 15%, transparent);
+  color: var(--ss-warning, #d97706);
+}
+
+.statusCurrent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.statusMuted {
+  background: var(--soft);
+  color: var(--muted);
+}
+
+// ---------- Страница программы ----------
+.backLink {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text);
+  }
+}
+
+.programHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: 13px;
+
+  strong {
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.filters {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.filter {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filterActive {
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  color: var(--text);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  margin: 10px 0 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.topics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.topic {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--ss-radius);
+  background: var(--surface);
+}
+
+.topicCurrent {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+// Круглая отметка «пройдено»: пустая — не пройдено, заполненная — пройдено.
+.check {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-top: 4px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: transparent;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.topicDone .check {
+  border-color: var(--ss-success, #16a34a);
+  background: var(--ss-success, #16a34a);
+  color: #ffffff;
+}
+
+.topicDone .topicText strong {
+  color: var(--muted);
+}
+
+.topicBody {
+  min-width: 0;
+  flex: 1;
+
+  summary {
+    display: flex;
+    min-height: 36px;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &[open] .chevron {
+    transform: rotate(180deg);
+  }
+}
+
+.topicNumber {
+  flex: 0 0 auto;
+  min-width: 22px;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.topicText {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 14.5px;
+    font-weight: 650;
+  }
+
+  small {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+}
+
+.chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.topicDetails {
+  display: grid;
+  gap: 12px;
+  padding: 8px 0 4px 32px;
+
+  p {
+    margin: 2px 0 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+}
+
+.detailLabel {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.detailEmpty {
+  color: var(--muted);
+}
+
+.materials {
+  white-space: pre-line;
+  word-break: break-word;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--accent);
+  }
+}
+
+.noteField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+// ---------- Загрузка программы ----------
+.importForm {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  align-items: end;
+  gap: 12px;
+
+  > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .topic {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .topicDetails {
+    padding-left: 0;
+  }
+
+  .programHeader h1 {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .progress > span,
+  .chevron {
+    transition: none;
+  }
+}

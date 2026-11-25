@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { useRegisterParent } from "@/hooks/useParents";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
-import { textRule, validatePersonName } from "@/lib/textChecks";
+import { isStrongPassword, textRule, validatePersonName } from "@/lib/textChecks";
 import { AuthLayout } from "./AuthLayout";
 import { PasswordField } from "./PasswordField";
 import styles from "./login.module.scss";
@@ -102,7 +102,7 @@ const ParentRegister = () => {
         .min(3, t("errors.fullNameMin"))
         .superRefine(textRule(validatePersonName, (problem) => tChecks(problem))),
       email: emailRule,
-      password: z.string().min(8, t("errors.passwordMin")),
+      password: z.string().min(8, t("errors.passwordMin")).refine(isStrongPassword, tAuth("errors.weakPassword")),
       studentCode: z.string().refine(isParentCode, t("errors.codeFormat")),
     });
 
