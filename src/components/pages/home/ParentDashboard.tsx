@@ -128,7 +128,7 @@ export function ParentDashboard({ currentUser }: { currentUser: CurrentUser }) {
                   <DataState status="loading" />
                 ) : rating ? (
                   <div className={scss.childProgress}>
-                    <XpRing value={rating.xp} max={leaderXp} size={92}>
+                    <XpRing value={rating.xp} max={leaderXp} size={72}>
                       <strong>{rating.xp}</strong>
                       <span>XP</span>
                     </XpRing>
