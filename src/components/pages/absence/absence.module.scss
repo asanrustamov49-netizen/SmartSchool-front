@@ -83,7 +83,7 @@
   flex: 0 0 auto;
   padding: 3px 9px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -131,7 +131,7 @@
 
 .meta {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .actions {
@@ -158,5 +158,25 @@
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+}
+
+// Телефон: фильтры в одну строку с прокруткой (как в мобильных приложениях), кнопки не меньше 40 px.
+@media (max-width: 640px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -4px;
+    padding-inline: 4px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 40px;
   }
 }

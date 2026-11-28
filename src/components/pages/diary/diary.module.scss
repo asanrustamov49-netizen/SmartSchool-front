@@ -200,7 +200,7 @@
 .attendance {
   padding: 3px 8px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -382,4 +382,30 @@
 
 .trend_down {
   color: var(--ss-danger);
+}
+
+// День без записей — одна тихая строка вместо целой карточки.
+.dayEmpty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding-block: 10px;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.daySkeleton {
+  min-height: 96px;
+}
+
+.skeletonLine {
+  display: block;
+  width: 60%;
+  height: 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ss-ink) 8%, transparent);
 }

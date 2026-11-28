@@ -89,7 +89,7 @@
   }
 
   small {
-    font-size: 11px;
+    font-size: 12px;
     opacity: 0.85;
   }
 }
@@ -230,7 +230,7 @@
   }
 
   small {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
   }
 }
@@ -384,7 +384,7 @@
 
   > small {
     color: var(--muted);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
   }
 }
@@ -433,7 +433,7 @@
   display: block;
   margin-top: 3px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -613,7 +613,7 @@
   border-radius: 6px;
   background: color-mix(in srgb, var(--ss-success, #059669) 14%, transparent);
   color: var(--ss-success, #059669);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -659,5 +659,18 @@
 @media (max-width: 640px) {
   .allPresent {
     width: 100%;
+  }
+}
+
+// Телефон: у дней-кнопок область нажатия 40 px, хотя сами квадраты остаются 32 px.
+@media (max-width: 640px) {
+  button.dayContent {
+    position: relative;
+
+    &::after {
+      position: absolute;
+      inset: -4px;
+      content: "";
+    }
   }
 }

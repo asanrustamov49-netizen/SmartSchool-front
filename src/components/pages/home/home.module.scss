@@ -795,7 +795,7 @@
   > span {
     margin-top: 2px;
     color: var(--ss-muted);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
   }
 }
@@ -1038,7 +1038,7 @@
   margin: 0;
   padding: 0;
   color: var(--ss-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   list-style: none;
@@ -2022,5 +2022,18 @@
 
   &:hover {
     color: var(--ss-accent);
+  }
+}
+
+// Телефон: «Неделя / Месяц / Год» и точки графика удобно нажимать пальцем.
+@media (max-width: 640px) {
+  .perfPeriods > button {
+    min-height: 40px;
+  }
+
+  .perfPoint::after {
+    position: absolute;
+    inset: -6px;
+    content: "";
   }
 }

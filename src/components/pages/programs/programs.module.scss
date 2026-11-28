@@ -121,7 +121,7 @@
   display: inline-flex;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -371,7 +371,7 @@
 
 .detailLabel {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -435,5 +435,25 @@
   .progress > span,
   .chevron {
     transition: none;
+  }
+}
+
+// Телефон: фильтры в одну строку с прокруткой (как в мобильных приложениях), кнопки не меньше 40 px.
+@media (max-width: 640px) {
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -4px;
+    padding-inline: 4px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .filter {
+    flex: 0 0 auto;
+    min-height: 40px;
   }
 }

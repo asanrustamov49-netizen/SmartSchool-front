@@ -26,7 +26,7 @@ export function ReportCard({ summary, schoolName, className, date }: ReportCardP
   return (
     <section className={scss.reportCard} aria-hidden="true">
       {schoolName && <p className={scss.school}>{schoolName}</p>}
-      <h1>{t("title")}</h1>
+      <h2>{t("title")}</h2>
       <dl className={scss.meta}>
         <div>
           <dt>{t("student")}</dt>

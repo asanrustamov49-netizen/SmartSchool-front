@@ -520,11 +520,12 @@
   }
 
   .card {
-    padding-top: 14px;
+    padding-top: 28px;
   }
 
+  // Логотип остаётся: на телефоне это единственное место, где видно, куда входит пользователь.
   .brand {
-    display: none;
+    margin-bottom: 14px;
   }
 
   .title {
@@ -557,4 +558,11 @@
   &:hover {
     text-decoration: underline;
   }
+}
+
+// «Вернуться ко входу» и похожие ссылки под формой — нормальная область нажатия.
+.switchAuth a {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
 }

@@ -640,7 +640,7 @@
   border-radius: 999px;
   background: var(--ss-warning, #d97706);
   color: #ffffff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -658,7 +658,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--ss-warning, #d97706) 14%, transparent);
   color: var(--ss-warning, #d97706);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -698,7 +698,7 @@
   small {
     margin-left: 6px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -744,8 +744,8 @@
   top: 50%;
   right: 6px;
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border-radius: 8px;
   color: var(--muted);
@@ -1008,5 +1008,13 @@
 
   .table td {
     padding: 6px 8px;
+  }
+}
+
+// Телефон: любая кнопка не ниже 40 px.
+@media (max-width: 640px) {
+  .primaryButton,
+  .secondaryButton {
+    min-height: 40px;
   }
 }

@@ -232,3 +232,23 @@
   color: var(--muted);
   font-size: 13px;
 }
+
+// Телефон: фильтры в одну строку с прокруткой (как в мобильных приложениях), кнопки не меньше 40 px.
+@media (max-width: 640px) {
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -4px;
+    padding-inline: 4px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    min-height: 40px;
+  }
+}

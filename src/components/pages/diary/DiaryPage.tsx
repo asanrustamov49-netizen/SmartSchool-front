@@ -94,25 +94,30 @@ function LessonRow({ lesson }: { lesson: DiaryLesson }) {
           </span>
         )}
         {lesson.grade_value !== null && <GradeBadge value={lesson.grade_value} />}
-        {lesson.xp > 0 && <span className={styles.xp}>{t("xp", { count: lesson.xp })}</span>}
+        {/* XP за обычное посещение есть почти у каждого урока — показываем его только вместе с оценкой. */}
+        {lesson.grade_value !== null && lesson.xp > 0 && (
+          <span className={styles.xp}>{t("xp", { count: lesson.xp })}</span>
+        )}
       </div>
     </li>
   );
 }
 
-function SummaryCards({ summary }: { summary: GradesSummary }) {
+// Пока сводка грузится, карточки уже на месте с «—»: страница не прыгает, когда приходят цифры.
+function SummaryCards({ summary }: { summary: GradesSummary | undefined }) {
   const t = useTranslations("diary");
-  const gradesCount = summary.subjects.reduce((total, subject) => total + subject.grades_count, 0);
+  const gradesCount = summary?.subjects.reduce((total, subject) => total + subject.grades_count, 0);
+  const placeholder = "—";
 
   const cards = [
     {
       label: t("overallAverage"),
-      value: summary.overall_average?.toFixed(2) ?? "—",
-      tone: averageTone(summary.overall_average),
+      value: summary?.overall_average?.toFixed(1) ?? placeholder,
+      tone: summary ? averageTone(summary.overall_average) : undefined,
     },
-    { label: t("gradesCount"), value: String(gradesCount) },
-    { label: t("absences"), value: String(summary.attendance["Ж"] ?? 0) },
-    { label: t("lates"), value: String(summary.attendance["К"] ?? 0) },
+    { label: t("gradesCount"), value: summary ? String(gradesCount) : placeholder },
+    { label: t("absences"), value: summary ? String(summary.attendance["Ж"] ?? 0) : placeholder },
+    { label: t("lates"), value: summary ? String(summary.attendance["К"] ?? 0) : placeholder },
   ];
 
   return (
@@ -297,8 +302,18 @@ function StudentDiary({ user }: { user: CurrentUser }) {
     .filter((day, index) => index < 6 || daysWithLessons.has(day));
 
   const renderWeek = () => {
+    // Пока неделя грузится, на месте дней — заготовки той же высоты.
     if (diaryQuery.isPending) {
-      return <DataState status="loading" />;
+      return (
+        <div className={styles.days} aria-busy="true">
+          {weekDays.map((day) => (
+            <article key={day} className={cn(styles.day, styles.daySkeleton)}>
+              <h3>{formatLongDate(day)}</h3>
+              <span className={styles.skeletonLine} />
+            </article>
+          ))}
+        </div>
+      );
     }
 
     if (diaryQuery.isError) {
@@ -319,7 +334,7 @@ function StudentDiary({ user }: { user: CurrentUser }) {
             <article key={day} className={cn(styles.day, lessons.length === 0 && styles.dayEmpty)}>
               <h3>{formatLongDate(day)}</h3>
               {lessons.length === 0 ? (
-                <p className={styles.dayNote}>{t("noEntries")}</p>
+                <span className={styles.dayNote}>{t("noEntries")}</span>
               ) : (
                 <ul className={styles.lessons}>
                   {lessons.map((lesson) => (
@@ -345,7 +360,7 @@ function StudentDiary({ user }: { user: CurrentUser }) {
         />
       )}
 
-      {summaryQuery.data && <SummaryCards summary={summaryQuery.data} />}
+      {!summaryQuery.isError && <SummaryCards summary={summaryQuery.data} />}
 
       <div className={styles.layout}>
         <section className={adminStyles.card}>
