@@ -1,8 +1,12 @@
 "use client";
 
 import {
+  CalendarDays,
   Check,
   Keyboard,
+  Rows2,
+  Rows4,
+  Type,
   Monitor,
   Moon,
   PanelLeftClose,
@@ -14,6 +18,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useAccent, useChoice, useFlag, useSidebarCollapsed } from "@/hooks/useAppearance";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import {
@@ -28,7 +33,9 @@ import {
 } from "@/lib/appearance";
 import { OPEN_SHORTCUTS_EVENT } from "@/components/layout/ShortcutsDialog";
 import { cn } from "@/lib/utils";
+import { DARK_FROM_HOUR, DARK_UNTIL_HOUR } from "@/components/layout/ThemeSchedule";
 import adminStyles from "../admin/admin.module.scss";
+import { PersonalSettings } from "./PersonalSettings";
 import styles from "./settings.module.scss";
 
 type Option<TValue extends string> = {
@@ -108,6 +115,11 @@ export function SettingsPage() {
   const sidebarCollapsed = useSidebarCollapsed();
   const designStyle = useChoice("style");
   const textSize = useChoice("textSize");
+  const density = useChoice("density");
+  const font = useChoice("font");
+  const dateFormat = useChoice("dateFormat");
+  const isThemeScheduled = useFlag("scheduledTheme");
+  const currentUser = useCurrentUser().data;
 
   return (
     <div className={adminStyles.page}>
@@ -164,14 +176,38 @@ export function SettingsPage() {
           <h2 className={adminStyles.cardTitle}>{t("themeTitle")}</h2>
           <OptionGroup
             label={t("themeTitle")}
-            value={theme}
-            onChange={setTheme}
+            value={isThemeScheduled ? undefined : theme}
+            onChange={(value) => {
+              // Выбор темы вручную выключает смену по времени.
+              setFlag("scheduledTheme", false);
+              setTheme(value);
+            }}
             options={[
               { value: "light", label: t("themes.light"), icon: Sun },
               { value: "dark", label: t("themes.dark"), icon: Moon },
               { value: "system", label: t("themes.system"), icon: Monitor },
             ]}
           />
+          <div className={styles.flags}>
+            <label className={styles.flag}>
+              <span>
+                <strong>{t("flags.scheduledTheme.title")}</strong>
+                <small>
+                  {t("flags.scheduledTheme.hint", {
+                    from: `${DARK_FROM_HOUR}:00`,
+                    until: `${DARK_UNTIL_HOUR}:00`,
+                  })}
+                </small>
+              </span>
+              <input
+                type="checkbox"
+                role="switch"
+                className={styles.switch}
+                checked={isThemeScheduled}
+                onChange={(event) => setFlag("scheduledTheme", event.target.checked)}
+              />
+            </label>
+          </div>
         </section>
 
         <section className={adminStyles.card}>
@@ -222,15 +258,58 @@ export function SettingsPage() {
         </div>
       </section>
 
-      <section className={adminStyles.card}>
-        <h2 className={adminStyles.cardTitle}>{t("textSizeTitle")}</h2>
-        <OptionGroup
-          label={t("textSizeTitle")}
-          value={textSize}
-          onChange={(value) => setChoice("textSize", value)}
-          options={CHOICES.textSize.map((option) => ({ value: option, label: t(`textSizes.${option}`) }))}
-        />
-      </section>
+      <div className={styles.columns}>
+        <section className={adminStyles.card}>
+          <h2 className={adminStyles.cardTitle}>{t("textSizeTitle")}</h2>
+          <OptionGroup
+            label={t("textSizeTitle")}
+            value={textSize}
+            onChange={(value) => setChoice("textSize", value)}
+            options={CHOICES.textSize.map((option) => ({ value: option, label: t(`textSizes.${option}`) }))}
+          />
+        </section>
+
+        <section className={adminStyles.card}>
+          <h2 className={adminStyles.cardTitle}>{t("fontTitle")}</h2>
+          <OptionGroup
+            label={t("fontTitle")}
+            value={font}
+            onChange={(value) => setChoice("font", value)}
+            options={CHOICES.font.map((option) => ({ value: option, label: t(`fonts.${option}`), icon: Type }))}
+          />
+          <p className={styles.hint}>{t("fontHint")}</p>
+        </section>
+
+        <section className={adminStyles.card}>
+          <h2 className={adminStyles.cardTitle}>{t("densityTitle")}</h2>
+          <OptionGroup
+            label={t("densityTitle")}
+            value={density}
+            onChange={(value) => setChoice("density", value)}
+            options={[
+              { value: "comfortable", label: t("densities.comfortable"), icon: Rows2 },
+              { value: "compact", label: t("densities.compact"), icon: Rows4 },
+            ]}
+          />
+          <p className={styles.hint}>{t("densityHint")}</p>
+        </section>
+
+        <section className={adminStyles.card}>
+          <h2 className={adminStyles.cardTitle}>{t("dateFormatTitle")}</h2>
+          <OptionGroup
+            label={t("dateFormatTitle")}
+            value={dateFormat}
+            onChange={(value) => setChoice("dateFormat", value)}
+            options={CHOICES.dateFormat.map((option) => ({
+              value: option,
+              label: t(`dateFormats.${option}`),
+              icon: CalendarDays,
+            }))}
+          />
+        </section>
+      </div>
+
+      {currentUser && currentUser.role !== "SYSTEM_ADMIN" && <PersonalSettings currentUser={currentUser} />}
 
       <div className={styles.flagColumns}>
         {FLAG_GROUPS.map((group) => (

@@ -4,7 +4,12 @@ import { BellRing } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
 import { useDateFormat } from "@/hooks/useDateFormat";
-import { HOME_EVENTS_LIMIT, useMarkNotificationRead, useNotifications } from "@/hooks/useNotifications";
+import {
+  HOME_EVENTS_LIMIT,
+  useMarkNotificationRead,
+  useNotifications,
+  useVisibleNotifications,
+} from "@/hooks/useNotifications";
 import { handleApiError } from "@/lib/errorHandler";
 import scss from "./home.module.scss";
 
@@ -15,6 +20,7 @@ export function RecentEventsPanel() {
   const tApiErrors = useTranslations("apiErrors");
   const { formatRelative } = useDateFormat();
   const notificationsQuery = useNotifications(HOME_EVENTS_LIMIT, true);
+  const filterVisible = useVisibleNotifications();
   const markRead = useMarkNotificationRead();
 
   const renderContent = () => {
@@ -32,13 +38,14 @@ export function RecentEventsPanel() {
       );
     }
 
-    if (notificationsQuery.data.length === 0) {
+    const notifications = filterVisible(notificationsQuery.data);
+    if (notifications.length === 0) {
       return <DataState status="empty" message={t("empty")} />;
     }
 
     return (
       <ol className={scss.timeline}>
-        {notificationsQuery.data.map((notification) => (
+        {notifications.map((notification) => (
           <li
             key={notification.id}
             className={notification.is_read ? scss.timelineItem : `${scss.timelineItem} ${scss.timelineUnread}`}

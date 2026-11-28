@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createClass,
   getClasses,
@@ -8,13 +8,16 @@ import {
 
 const classesQueryKey = ["classes"];
 
+// Справочник меняется редко: 10 минут без перезапроса. После изменений кэш сбрасывают мутации.
+export const classesQuery = queryOptions({
+  queryKey: classesQueryKey,
+  queryFn: getClasses,
+  staleTime: 10 * 60 * 1000,
+});
+
 // enabled = false — когда список классов роли не нужен (например, ученику на странице рейтинга).
 export function useClasses(enabled = true) {
-  return useQuery({
-    queryKey: classesQueryKey,
-    queryFn: getClasses,
-    enabled,
-  });
+  return useQuery({ ...classesQuery, enabled });
 }
 
 function useInvalidateClasses() {

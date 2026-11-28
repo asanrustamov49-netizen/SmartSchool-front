@@ -991,3 +991,22 @@
 .pushLeft {
   margin-right: auto;
 }
+
+// Компактный вид (настройки → «Плотность»): меньше отступов, больше строк на экране.
+:global(html[data-density="compact"]) {
+  .page {
+    gap: 8px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .table th {
+    padding: 6px 8px;
+  }
+
+  .table td {
+    padding: 6px 8px;
+  }
+}

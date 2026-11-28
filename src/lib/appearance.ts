@@ -31,9 +31,11 @@ const SIDEBAR_KEY = "smart-school-sidebar";
 // Переключатели вида: ключ в браузере и атрибут <html data-…="on">.
 // autoLogout — выход после 15 минут без действий
 // (общий компьютер в учительской); reduceMotion — без анимаций;
-// readableText — шире интервалы между буквами и строками; underlineLinks — ссылки подчёркнуты.
+// readableText — шире интервалы между буквами и строками; underlineLinks — ссылки подчёркнуты;
+// scheduledTheme — тёмная тема вечером и ночью, светлая днём (components/layout/ThemeSchedule).
 export const FLAGS = [
   "autoLogout",
+  "scheduledTheme",
   "reduceMotion",
   "readableText",
   "underlineLinks",
@@ -45,9 +47,14 @@ const flagKey = (flag: Flag) => `smart-school-${flag}`;
 // Первый вариант — по умолчанию, для него атрибут не ставится.
 // style: основной, государственный (строгий официальный вид, как на гос. платформах),
 // минимализм, мягкий, высокий контраст. textSize: мелкий, обычный, крупный.
+// density: просторно или компактно (больше строк в таблицах). font: фирменный или чёткий системный.
+// dateFormat: «24 нояб. 2026 г.» или «24.11.2026» (hooks/useDateFormat).
 export const CHOICES = {
   style: ["default", "gov", "minimal", "soft", "contrast"],
   textSize: ["normal", "small", "large"],
+  density: ["comfortable", "compact"],
+  font: ["default", "clear"],
+  dateFormat: ["text", "numeric"],
 } as const;
 export type ChoiceName = keyof typeof CHOICES;
 export type ChoiceValue<TName extends ChoiceName> = (typeof CHOICES)[TName][number];

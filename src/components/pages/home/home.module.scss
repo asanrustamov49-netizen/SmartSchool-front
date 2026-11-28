@@ -1997,3 +1997,30 @@
     color: var(--text);
   }
 }
+
+:global(html[data-density="compact"]) {
+  .panel {
+    padding: 12px 14px;
+  }
+
+  .task {
+    min-height: 44px;
+    padding: 4px 8px;
+  }
+}
+
+// «Настроить главную» внизу страницы — ведёт в настройки, где блоки включаются и выключаются.
+.customizeLink {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  color: var(--ss-muted);
+  font-size: 13px;
+  font-weight: 600;
+
+  &:hover {
+    color: var(--ss-accent);
+  }
+}

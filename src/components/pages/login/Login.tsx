@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { CircleAlert, Eye, EyeOff, LoaderCircle, Lock, Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -9,9 +10,10 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLogin } from "@/hooks/useAuth";
+import { currentUserQuery, useLogin } from "@/hooks/useAuth";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getApiErrorStatus, getApiFieldErrors, handleApiError } from "@/lib/errorHandler";
+import { getPreferences } from "@/lib/preferences";
 import { AuthLayout } from "./AuthLayout";
 import styles from "./login.module.scss";
 
@@ -25,6 +27,7 @@ const Login = () => {
   const tApiErrors = useTranslations("apiErrors");
   const router = useRouter();
   const loginMutation = useLogin();
+  const queryClient = useQueryClient();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   // Правила совпадают со схемой LoginRequest: email — почта, password — не пустой.
@@ -51,7 +54,11 @@ const Login = () => {
           return;
         }
 
-        router.replace("/");
+        // Стартовая страница из настроек пользователя (например, журнал у учителя).
+        queryClient
+          .fetchQuery(currentUserQuery)
+          .then((user) => router.replace(getPreferences(user.id).startPage))
+          .catch(() => router.replace("/"));
       },
       onError: (error) => {
         const fieldErrors = getApiFieldErrors(error);

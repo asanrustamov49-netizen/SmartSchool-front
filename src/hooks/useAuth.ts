@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   changeFirstLoginPassword,
   getCurrentUser,
@@ -12,16 +12,18 @@ import { resetSelectedChild } from "./useSelectedChild";
 
 export const currentUserQueryKey = ["current-user"];
 
+export const currentUserQuery = queryOptions({
+  queryKey: currentUserQueryKey,
+  queryFn: async () => {
+    const user = await getCurrentUser();
+    rememberRole(user.role);
+    return user;
+  },
+  staleTime: 5 * 60 * 1000,
+});
+
 export function useCurrentUser() {
-  return useQuery({
-    queryKey: currentUserQueryKey,
-    queryFn: async () => {
-      const user = await getCurrentUser();
-      rememberRole(user.role);
-      return user;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
+  return useQuery(currentUserQuery);
 }
 
 export function useLogin() {

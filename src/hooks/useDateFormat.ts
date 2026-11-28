@@ -1,5 +1,6 @@
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { getRelativeTimeParts } from "@/lib/utils";
+import { useChoice } from "./useAppearance";
 
 type DateInput = string | Date | null | undefined;
 
@@ -42,6 +43,7 @@ export function useDateFormat() {
   const format = useFormatter();
   const t = useTranslations("dates");
   const isKyrgyz = locale === "ky";
+  const isNumeric = useChoice("dateFormat") === "numeric";
 
   const getWords = (key: "months" | "weekdays") => {
     const words = isKyrgyz ? t.raw(key) : [];
@@ -75,6 +77,10 @@ export function useDateFormat() {
       return EMPTY_DATE;
     }
 
+    if (isNumeric) {
+      return `${padTime(date.getDate())}.${padTime(date.getMonth() + 1)}.${date.getFullYear()}`;
+    }
+
     return isKyrgyz ? `${kyDay(date)}, ${kyYear(date)}` : format.dateTime(date, { dateStyle: "medium" });
   };
 
@@ -85,7 +91,7 @@ export function useDateFormat() {
       return EMPTY_DATE;
     }
 
-    if (isKyrgyz) {
+    if (isKyrgyz || isNumeric) {
       return `${formatDate(date)}, ${padTime(date.getHours())}:${padTime(date.getMinutes())}`;
     }
 

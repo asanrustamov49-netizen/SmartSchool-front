@@ -24,8 +24,10 @@ import { Toaster } from "@/components/ui/Toaster";
 import { useSidebarCollapsed } from "@/hooks/useAppearance";
 import { useCurrentUser, useLogout } from "@/hooks/useAuth";
 import { usePrefetchHome } from "@/hooks/usePrefetchHome";
-import { useUnreadNotificationsCount } from "@/hooks/useNotifications";
+import { useVisibleUnreadCount } from "@/hooks/useNotifications";
 import { useNavIndicator } from "@/hooks/useNavIndicator";
+import { usePreferences } from "@/hooks/usePreferences";
+import { usePrefetchSection } from "@/hooks/usePrefetchSection";
 import { applySavedAppearance, getFlag, setSidebarCollapsed } from "@/lib/appearance";
 
 const AUTO_LOGOUT_MS = 15 * 60 * 1000;
@@ -44,6 +46,7 @@ import { AccountMenu } from "./AccountMenu";
 import { MobileMoreSheet } from "./MobileMoreSheet";
 import { CabinetSpotlight } from "./CabinetSpotlight";
 import { SidebarTooltip } from "./SidebarTooltip";
+import { ThemeSchedule } from "./ThemeSchedule";
 import { OPEN_SHORTCUTS_EVENT, ShortcutsDialog } from "./ShortcutsDialog";
 import {
   getAllowedItems,
@@ -133,14 +136,15 @@ function AuthenticatedShell({
   const pathname = usePathname();
   const { setTheme } = useTheme();
   const collapsed = useSidebarCollapsed();
+  const { preferences } = usePreferences();
+  const prefetchSection = usePrefetchSection();
   // Лист «Ещё» на телефоне и планшете — там все остальные разделы, профиль, язык и выход.
   const [moreOpen, setMoreOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const logout = useLogout();
   const isOnline = useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
-  const unreadQuery = useUnreadNotificationsCount();
-  const unreadCount = unreadQuery.data?.unread ?? 0;
+  const unreadCount = useVisibleUnreadCount();
 
   // Число непрочитанных во вкладке браузера, как в Gmail: «(3) Smart School».
   // pathname в зависимостях: при переходе Next.js ставит заголовок страницы заново.
@@ -168,8 +172,8 @@ function AuthenticatedShell({
   }, []);
 
   const navigation = getRoleNavigation(currentUser);
-  const mobileItems = getMobileItems(navigation);
-  const moreItems = getMoreItems(navigation);
+  const mobileItems = getMobileItems(navigation, preferences.mobileTabs);
+  const moreItems = getMoreItems(navigation, preferences.mobileTabs);
 
   // В нижней панели мало места: короткая подпись раздела, если она есть (app.navShort).
   const getMobileLabel = (key: string) => (t.has(`navShort.${key}`) ? t(`navShort.${key}`) : t(`nav.${key}`));
@@ -275,6 +279,8 @@ function AuthenticatedShell({
           aria-current={isActive ? "page" : undefined}
           aria-label={label}
           data-tooltip={collapsed ? label : undefined}
+          onMouseEnter={() => prefetchSection(item.href)}
+          onFocus={() => prefetchSection(item.href)}
         >
           {content}
         </Link>
@@ -448,6 +454,7 @@ function AuthenticatedShell({
               href={item.href}
               className={cn(styles.mobileNavItem, isActive && styles.mobileNavItemActive)}
               aria-current={isActive ? "page" : undefined}
+              onPointerDown={() => prefetchSection(item.href)}
             >
               <span className={styles.mobileNavIcon} aria-hidden="true">
                 <Icon size={22} strokeWidth={isActive ? 2.1 : 1.7} />
@@ -492,6 +499,7 @@ function AuthenticatedShell({
         </p>
       )}
       <Toaster />
+      <ThemeSchedule />
     </div>
   );
 }

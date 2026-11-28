@@ -617,6 +617,18 @@ html[data-text-size="large"] {
   zoom: 1.12;
 }
 
+/* Чёткий шрифт: системный (Segoe UI, Roboto, San Francisco) — привычные формы букв,
+   чуть жирнее и шире. Ничего не скачивается. */
+html[data-font="clear"],
+html[data-font="clear"] body {
+  --font-app: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+html[data-font="clear"] body {
+  font-weight: 500;
+}
+
 /* ---------- Стили дизайна (настройки → «Дизайн») ----------
    Меняют только токены: каждая страница перекрашивается сама. */
 

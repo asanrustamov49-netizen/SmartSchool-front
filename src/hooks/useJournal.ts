@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getDiary,
   getGradesSummary,
@@ -11,11 +11,15 @@ import {
   savePeriodGrades,
 } from "@/apis/journal.api";
 
+// Справочник меняется редко: 10 минут без перезапроса. После изменений кэш сбрасывают мутации.
+export const journalAssignmentsQuery = queryOptions({
+  queryKey: ["journal", "assignments"],
+  queryFn: getJournalAssignments,
+  staleTime: 10 * 60 * 1000,
+});
+
 export function useJournalAssignments() {
-  return useQuery({
-    queryKey: ["journal", "assignments"],
-    queryFn: getJournalAssignments,
-  });
+  return useQuery(journalAssignmentsQuery);
 }
 
 export const SAVE_JOURNAL_DAY_KEY = ["journal", "save-day"];

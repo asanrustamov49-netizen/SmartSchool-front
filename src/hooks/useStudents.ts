@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createStudent,
   deactivateStudent,
@@ -13,11 +13,15 @@ import {
 
 const studentsQueryKey = ["students"];
 
+// Список учеников меняет только администрация, и мутации сразу сбрасывают кэш.
+export const studentsQuery = queryOptions({
+  queryKey: studentsQueryKey,
+  queryFn: getStudents,
+  staleTime: 5 * 60 * 1000,
+});
+
 export function useStudents() {
-  return useQuery({
-    queryKey: studentsQueryKey,
-    queryFn: getStudents,
-  });
+  return useQuery(studentsQuery);
 }
 
 export function useClassStudents(classId: number) {

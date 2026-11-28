@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Notification } from "@/apis/notifications.api";
@@ -10,12 +11,14 @@ import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
-  useUnreadNotificationsCount,
+  useVisibleNotifications,
+  useVisibleUnreadCount,
+  MENU_NOTIFICATIONS_LIMIT,
+  unreadNotificationsCountQuery,
 } from "@/hooks/useNotifications";
 import { handleApiError } from "@/lib/errorHandler";
 import styles from "./app-shell.module.scss";
 
-const NOTIFICATIONS_LIMIT = 20;
 
 // Ссылки из notification.link ведут на разделы, которых во frontend ещё нет,
 // поэтому уведомление пока только отмечается прочитанным.
@@ -25,12 +28,13 @@ export function NotificationsMenu() {
   const { formatDateTime } = useDateFormat();
   const [isOpen, setIsOpen] = useState(false);
 
-  const unreadCountQuery = useUnreadNotificationsCount();
-  const notificationsQuery = useNotifications(NOTIFICATIONS_LIMIT, isOpen);
+  const queryClient = useQueryClient();
+  const unreadCount = useVisibleUnreadCount();
+  const filterVisible = useVisibleNotifications();
+  const notificationsQuery = useNotifications(MENU_NOTIFICATIONS_LIMIT, isOpen);
   const markAllRead = useMarkAllNotificationsRead();
   const markRead = useMarkNotificationRead();
 
-  const unreadCount = unreadCountQuery.data?.unread ?? 0;
 
   const handleNotificationClick = (notification: Notification) => {
     if (!notification.is_read) {
@@ -53,13 +57,14 @@ export function NotificationsMenu() {
       );
     }
 
-    if (notificationsQuery.data.length === 0) {
+    const notifications = filterVisible(notificationsQuery.data);
+    if (notifications.length === 0) {
       return <DataState status="empty" message={t("notificationsEmpty")} />;
     }
 
     return (
       <div className={styles.notificationList}>
-        {notificationsQuery.data.map((notification) => (
+        {notifications.map((notification) => (
           <button
             key={notification.id}
             type="button"
@@ -98,7 +103,7 @@ export function NotificationsMenu() {
         onClick={() => {
           // Счётчик не обновляется в фоне, поэтому перечитывается при открытии списка.
           if (!isOpen) {
-            unreadCountQuery.refetch();
+            void queryClient.invalidateQueries({ queryKey: unreadNotificationsCountQuery.queryKey });
           }
           setIsOpen(!isOpen);
         }}

@@ -1,9 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DataState } from "@/components/ui/DataState";
 import { useCurrentUser } from "@/hooks/useAuth";
+import { usePreferences } from "@/hooks/usePreferences";
+import { Link } from "@/i18n/navigation";
+import type { HomeBlock } from "@/lib/preferences";
 import { AnnouncementsPanel } from "./AnnouncementsPanel";
 import { DashboardHero } from "./DashboardHero";
 import { RecentEventsPanel } from "./RecentEventsPanel";
@@ -27,6 +31,7 @@ const TeacherDashboard = dynamic(() => import("./TeacherDashboard").then((module
 export function RoleDashboard() {
   const t = useTranslations("dashboard");
   const currentUser = useCurrentUser().data;
+  const hiddenBlocks = usePreferences().preferences.hiddenHomeBlocks;
 
   if (!currentUser) {
     return null;
@@ -51,23 +56,34 @@ export function RoleDashboard() {
     }
   };
 
+  const isShown = (block: HomeBlock) => !hiddenBlocks.includes(block);
+  const isSchoolUser = currentUser.role !== "SYSTEM_ADMIN";
+  const schoolPanels = [
+    isShown("rating") && <SchoolRatingPanel key="rating" />,
+    isShown("events") && <RecentEventsPanel key="events" />,
+    isShown("announcements") && <AnnouncementsPanel key="announcements" />,
+  ].filter(Boolean);
+  // Сетка подстраивается под число оставленных блоков, чтобы не было пустых колонок.
+  const panelsGridClass = schoolPanels.length === 3 ? scss.panelsGrid3 : scss.panelsGrid;
+
   return (
     <>
       <DashboardHero currentUser={currentUser} />
       <WelcomeTips currentUser={currentUser} />
-      {currentUser.role !== "SYSTEM_ADMIN" && <TodayTasks currentUser={currentUser} />}
+      {isSchoolUser && isShown("tasks") && <TodayTasks currentUser={currentUser} />}
       {/* Расписание есть у учителя, ученика и родителя; директор смотрит его в разделе «Расписание». */}
-      {["TEACHER", "CLASS_TEACHER", "STUDENT", "PARENT"].includes(currentUser.role) && (
+      {["TEACHER", "CLASS_TEACHER", "STUDENT", "PARENT"].includes(currentUser.role) && isShown("lessons") && (
         <TodayLessonsPanel currentUser={currentUser} />
       )}
       {renderRoleContent()}
       {/* Рейтинг, события и объявления относятся к школе; у системного администратора школы нет. */}
-      {currentUser.role !== "SYSTEM_ADMIN" && (
-        <div className={scss.panelsGrid3}>
-          <SchoolRatingPanel />
-          <RecentEventsPanel />
-          <AnnouncementsPanel />
-        </div>
+      {isSchoolUser && schoolPanels.length > 1 && <div className={panelsGridClass}>{schoolPanels}</div>}
+      {isSchoolUser && schoolPanels.length === 1 && schoolPanels}
+      {isSchoolUser && (
+        <Link href="/settings#home" className={scss.customizeLink}>
+          <SlidersHorizontal size={15} aria-hidden="true" />
+          {t("customize")}
+        </Link>
       )}
     </>
   );

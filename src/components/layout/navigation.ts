@@ -234,13 +234,18 @@ export function getRoleNavigation(user: CurrentUser): RoleNavigation {
 }
 
 // Нижняя панель на телефоне: четыре главных раздела роли и кнопка «Ещё».
-export function getMobileItems(navigation: RoleNavigation): NavigationItem[] {
-  return navigation.items.filter((item) => item.available).slice(0, MOBILE_ITEMS_COUNT);
+// Пользователь может выбрать свои разделы в настройках (chosenKeys).
+export function getMobileItems(navigation: RoleNavigation, chosenKeys: string[] | null = null): NavigationItem[] {
+  const available = navigation.items.filter((item) => item.available);
+  const chosen = (chosenKeys ?? [])
+    .map((key) => available.find((item) => item.key === key))
+    .filter((item): item is NavigationItem => item !== undefined);
+  return chosen.length > 0 ? chosen.slice(0, MOBILE_ITEMS_COUNT) : available.slice(0, MOBILE_ITEMS_COUNT);
 }
 
 // Всё, что не поместилось в нижнюю панель, открывается листом «Ещё».
-export function getMoreItems(navigation: RoleNavigation): NavigationItem[] {
-  const mobileKeys = new Set(getMobileItems(navigation).map((item) => item.key));
+export function getMoreItems(navigation: RoleNavigation, chosenKeys: string[] | null = null): NavigationItem[] {
+  const mobileKeys = new Set(getMobileItems(navigation, chosenKeys).map((item) => item.key));
   return navigation.items.filter((item) => item.available && !mobileKeys.has(item.key));
 }
 
