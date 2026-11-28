@@ -2037,3 +2037,26 @@
     content: "";
   }
 }
+
+// Советы «С чего начать» внутри блока дел.
+.tipsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tipsHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ss-muted);
+    font-size: 13px;
+    font-weight: 650;
+  }
+}

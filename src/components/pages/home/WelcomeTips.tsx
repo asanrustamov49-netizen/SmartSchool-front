@@ -39,25 +39,34 @@ const TIPS: Partial<Record<UserRole, Tip[]>> = {
   ],
 };
 
-// Карточка «С чего начать» на главной. Скрывается навсегда кнопкой «Понятно» (в этом браузере).
+// Классный руководитель приходит с ролью TEACHER и признаком is_class_teacher.
+function getTips(currentUser: CurrentUser): Tip[] | undefined {
+  return TIPS[currentUser.is_class_teacher ? "CLASS_TEACHER" : currentUser.role];
+}
+
+// Есть ли советы «С чего начать», которые пользователь ещё не скрыл.
+export function useHasWelcomeTips(currentUser: CurrentUser): boolean {
+  const dismissed = useTipsDismissed(currentUser.id);
+  return Boolean(getTips(currentUser)) && !dismissed;
+}
+
+// Советы «С чего начать» внутри блока «Что сделать сегодня»: показываются, пока срочных дел нет
+// (обычно у нового пользователя). Скрываются навсегда кнопкой «Понятно» (в этом браузере).
 export function WelcomeTips({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.tips");
-  const dismissed = useTipsDismissed(currentUser.id);
-  // Классный руководитель приходит с ролью TEACHER и признаком is_class_teacher.
-  const role = currentUser.is_class_teacher ? "CLASS_TEACHER" : currentUser.role;
-  const tips = TIPS[role];
+  const tips = getTips(currentUser);
 
-  if (!tips || dismissed) {
+  if (!tips) {
     return null;
   }
 
   return (
-    <section className={scss.panel} aria-labelledby="welcome-tips">
-      <div className={scss.panelHeading}>
-        <div className={scss.headingTitle}>
-          <Lightbulb size={20} aria-hidden="true" />
-          <h2 id="welcome-tips">{t("title")}</h2>
-        </div>
+    <div className={scss.tipsBlock}>
+      <div className={scss.tipsHeading}>
+        <span>
+          <Lightbulb size={16} aria-hidden="true" />
+          {t("title")}
+        </span>
         <button
           type="button"
           className={scss.tipsDismiss}
@@ -80,6 +89,6 @@ export function WelcomeTips({ currentUser }: { currentUser: CurrentUser }) {
           </li>
         ))}
       </ol>
-    </section>
+    </div>
   );
 }

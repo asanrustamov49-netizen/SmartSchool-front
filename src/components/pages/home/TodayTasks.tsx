@@ -22,6 +22,7 @@ import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import scss from "./home.module.scss";
 import { QuickAbsence } from "./QuickAbsence";
+import { WelcomeTips, useHasWelcomeTips } from "./WelcomeTips";
 
 type TaskTone = "danger" | "warning" | "accent";
 
@@ -50,6 +51,7 @@ function dateString(offsetDays: number) {
 // Собирается из уже существующих запросов (задания, заявки, расписание, учителя) — без нового API.
 export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
   const t = useTranslations("dashboard.tasks");
+  const hasTips = useHasWelcomeTips(currentUser);
   const role = currentUser.role;
   const isAdmin = role === "DIRECTOR" || role === "DEPUTY";
   const isTeacher = role === "TEACHER" || role === "CLASS_TEACHER";
@@ -60,6 +62,9 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
   const { selectedChildId } = useSelectedChild(children);
   const studentId = role === "PARENT" ? selectedChildId : null;
   const selectedChild = children.find((child) => child.id === selectedChildId);
+  // Имя ребёнка («Эркин»): родителю с несколькими детьми важно, о ком дело.
+  const childName = selectedChild ? (selectedChild.full_name.split(" ")[1] ?? selectedChild.full_name) : null;
+  const withChild = (text: string) => (childName && children.length > 1 ? `${childName} · ${text}` : text);
   const homeworksQuery = useHomeworks(studentId, isStudentSide && (role === "STUDENT" || studentId !== null));
   const pendingAbsences = useAbsenceRequests("PENDING", reviewsAbsences || role === "PARENT");
   const todayQuery = useTodaySchedule(null, isTeacher);
@@ -81,7 +86,7 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
         icon: TriangleAlert,
         tone: "danger",
         title: t("overdue", { count: overdue.length }),
-        hint: overdue.map((homework) => homework.subject_name).filter(Boolean).slice(0, 3).join(", "),
+        hint: withChild(overdue.map((homework) => homework.subject_name).filter(Boolean).slice(0, 3).join(", ")),
         href: "/homeworks",
       });
     }
@@ -91,7 +96,7 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
         icon: AlarmClock,
         tone: "warning",
         title: homework.due_date === today ? t("dueToday") : t("dueTomorrow"),
-        hint: `${homework.subject_name ?? ""} · ${homework.title}`,
+        hint: withChild(`${homework.subject_name ?? ""} · ${homework.title}`),
         href: "/homeworks",
       });
     }
@@ -155,12 +160,14 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
         {tasks.length > 0 && <span className={scss.panelMeta}>{t("count", { count: tasks.length })}</span>}
       </div>
 
-      {tasks.length === 0 ? (
+      {tasks.length === 0 && hasTips && <WelcomeTips currentUser={currentUser} />}
+      {tasks.length === 0 && !hasTips && (
         <p className={scss.tasksDone}>
           <CircleCheck size={18} aria-hidden="true" />
           {t("allDone")}
         </p>
-      ) : (
+      )}
+      {tasks.length > 0 && (
         <ul className={scss.tasks}>
           {tasks.map((task) => {
             const Icon = task.icon;
@@ -185,7 +192,7 @@ export function TodayTasks({ currentUser }: { currentUser: CurrentUser }) {
       {role === "PARENT" && selectedChild && (
         <QuickAbsence
           studentId={selectedChild.id}
-          childName={selectedChild.full_name.split(" ")[1] ?? selectedChild.full_name}
+          childName={childName ?? selectedChild.full_name}
           today={dateString(0)}
           requests={pendingAbsences.data ?? []}
         />

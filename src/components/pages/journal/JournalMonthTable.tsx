@@ -109,16 +109,20 @@ export function JournalMonthTable({
   const days = getMonthDays(month);
 
   // Открываем табель так, чтобы сегодняшний день был у правого края, а прошедшие дни — видны.
+  // Прокрутка кратна ширине дня: первый видимый день не обрезается под закреплёнными колонками.
   useEffect(() => {
     const wrap = scrollRef.current;
     const todayHeader = wrap?.querySelector<HTMLElement>("[data-today]");
     if (wrap && todayHeader) {
-      wrap.scrollLeft = todayHeader.offsetLeft + todayHeader.offsetWidth * 2 - wrap.clientWidth;
+      const dayWidth = todayHeader.offsetWidth;
+      const wanted = todayHeader.offsetLeft + dayWidth * 2 - wrap.clientWidth;
+      wrap.scrollLeft = Math.max(0, Math.ceil(wanted / dayWidth) * dayWidth);
     }
   }, [month]);
 
   const scrollBy = (direction: number) => {
-    scrollRef.current?.scrollBy({ left: direction * SCROLL_STEP_PX, behavior: "smooth" });
+    const dayWidth = scrollRef.current?.querySelector<HTMLElement>("[data-day]")?.offsetWidth ?? SCROLL_STEP_PX / 7;
+    scrollRef.current?.scrollBy({ left: direction * dayWidth * 7, behavior: "smooth" });
   };
 
   const renderDay = (day: string, content: ReactNode, focusable: boolean) => {
@@ -223,6 +227,7 @@ export function JournalMonthTable({
                 return (
                   <th
                     key={day}
+                    data-day=""
                     data-today={day === today ? "" : undefined}
                     className={cn(
                       styles.dayHeader,
@@ -276,6 +281,22 @@ export function JournalMonthTable({
           </tbody>
         </table>
       </div>
+
+      {/* Легенда: что значат точки и буквы. */}
+      <ul className={styles.legend}>
+        <li>
+          <span className={styles.presentDot} aria-hidden="true" />
+          {t("attendanceCodes.Б")}
+        </li>
+        {(["К", "Ж", "С"] as const).map((code) => (
+          <li key={code}>
+            <span className={cn(styles.attendanceMark, ATTENDANCE_CLASSES[code])} aria-hidden="true">
+              {code}
+            </span>
+            {t(`attendanceCodes.${code}`)}
+          </li>
+        ))}
+      </ul>
     </>
   );
 }

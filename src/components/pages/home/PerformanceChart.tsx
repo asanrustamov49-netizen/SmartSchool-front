@@ -48,7 +48,10 @@ export function PerformanceChart() {
     setActiveIndex(null);
   };
 
-  const renderChart = (allPoints: PerformancePoint[]) => {
+  // На оси только дни (месяцы) с оценками: будущие дни и выходные не растягивают пустую ось,
+  // и линия занимает всю ширину графика.
+  const renderChart = (periodPoints: PerformancePoint[]) => {
+    const allPoints = periodPoints.filter((point) => point.percent !== null);
     const points: ChartPoint[] = [];
     allPoints.forEach((point, index) => {
       if (point.percent !== null) {

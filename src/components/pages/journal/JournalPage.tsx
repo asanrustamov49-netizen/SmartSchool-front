@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataState } from "@/components/ui/DataState";
 import { Select } from "@/components/ui/Select";
+import { useCurrentUser } from "@/hooks/useAuth";
 import {
   SAVE_JOURNAL_DAY_KEY,
   useJournalAssignments,
@@ -51,6 +52,7 @@ function getTodayString() {
 
 export function JournalPage() {
   const t = useTranslations("journal");
+  const currentUserName = useCurrentUser().data?.full_name;
   const tApiErrors = useTranslations("apiErrors");
   const today = getTodayString();
   const currentMonth = today.slice(0, 7);
@@ -183,7 +185,12 @@ export function JournalPage() {
             onValueChange={(value) => selectAssignment(Number(value))}
             options={assignments.map((assignment) => ({
               value: String(assignment.id),
-              label: [assignment.class_name, assignment.subject_name, assignment.teacher_name]
+              // Своё имя учителю не нужно: «11-Б · Кыргыз тили» вместо «… · Иванова Мария Петровна».
+              label: [
+                assignment.class_name,
+                assignment.subject_name,
+                assignment.teacher_name === currentUserName ? null : assignment.teacher_name,
+              ]
                 .filter(Boolean)
                 .join(" · "),
             }))}

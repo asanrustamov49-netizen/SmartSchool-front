@@ -876,7 +876,7 @@
     }
 
     tr > td[data-label]:first-child,
-    td[data-mobile-hidden] + td {
+    td[data-mobile-hidden]:first-child + td {
       justify-content: flex-start;
       font-size: 15px;
       font-weight: 700;
@@ -1016,5 +1016,44 @@
   .primaryButton,
   .secondaryButton {
     min-height: 40px;
+  }
+}
+
+// Телефон: карточки людей и записей компактнее — больше записей на экране.
+@media (max-width: 640px) {
+  .responsiveTable {
+    tbody {
+      gap: 8px;
+    }
+
+    tr {
+      gap: 4px;
+      padding: 12px 14px;
+    }
+
+    td {
+      min-height: 28px;
+      font-size: 14px;
+    }
+
+    td[data-actions] {
+      margin-top: 4px;
+      padding-top: 6px;
+    }
+  }
+}
+
+// Показ только на компьютере или только на телефоне (например, кнопки Excel и меню «Excel ▾»).
+.phoneOnly {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .desktopOnly {
+    display: none !important;
+  }
+
+  .phoneOnly {
+    display: inline-flex !important;
   }
 }

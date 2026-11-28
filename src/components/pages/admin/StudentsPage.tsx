@@ -16,7 +16,8 @@ import { useState } from "react";
 import { getClassName } from "@/apis/classes.api";
 import { downloadStudentsTemplate, type Student } from "@/apis/students.api";
 import { DataState } from "@/components/ui/DataState";
-import { RowActions } from "@/components/ui/RowActions";
+import { ActionsMenu } from "@/components/ui/ActionsMenu";
+import { RowActions, type RowAction } from "@/components/ui/RowActions";
 import { Select } from "@/components/ui/Select";
 import { useCreateIntent } from "@/hooks/useCreateIntent";
 import { useClasses } from "@/hooks/useClasses";
@@ -188,7 +189,11 @@ export function StudentsPage() {
                 <td data-label={t("fullName")}>{student.full_name}</td>
                 <td data-label={t("email")} className={styles.cellMuted}>{student.email}</td>
                 <td data-label={t("class")}>{getStudentClassName(student)}</td>
-                <td data-label={t("status")} className={student.is_active ? undefined : styles.statusInactive}>
+                <td
+                  data-label={t("status")}
+                  data-mobile-hidden={student.is_active ? "" : undefined}
+                  className={student.is_active ? undefined : styles.statusInactive}
+                >
                   {student.is_active ? t("active") : t("inactive")}
                 </td>
                 <td data-actions>
@@ -229,6 +234,12 @@ export function StudentsPage() {
 
   const isConfirmPending = deactivateMutation.isPending || resetPasswordMutation.isPending;
 
+  const excelActions: RowAction[] = [
+    { label: t("downloadTemplate"), icon: FileSpreadsheet, onSelect: handleTemplateDownload },
+    { label: t("exportExcel"), icon: Download, onSelect: handleExport, disabled: students.length === 0 },
+    { label: t("importExcel"), icon: Upload, onSelect: () => openPanel({ type: "import" }) },
+  ];
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
@@ -237,27 +248,28 @@ export function StudentsPage() {
           <p>{t("description")}</p>
         </div>
         <div className={styles.headerActions}>
-          <button type="button" className={styles.secondaryButton} onClick={handleTemplateDownload}>
-            <FileSpreadsheet size={16} aria-hidden="true" />
-            {t("downloadTemplate")}
-          </button>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            disabled={students.length === 0}
-            onClick={handleExport}
-          >
-            <Download size={16} aria-hidden="true" />
-            {t("exportExcel")}
-          </button>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() => openPanel({ type: "import" })}
-          >
-            <Upload size={16} aria-hidden="true" />
-            {t("importExcel")}
-          </button>
+          {/* На компьютере — три кнопки, на телефоне — одно меню «Excel», чтобы список был сразу виден. */}
+          {excelActions.map((action) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={action.label}
+                type="button"
+                className={cn(styles.secondaryButton, styles.desktopOnly)}
+                disabled={action.disabled}
+                onClick={action.onSelect}
+              >
+                <Icon size={16} aria-hidden="true" />
+                {action.label}
+              </button>
+            );
+          })}
+          <ActionsMenu
+            label="Excel"
+            icon={FileSpreadsheet}
+            actions={excelActions}
+            triggerClassName={cn(styles.secondaryButton, styles.phoneOnly)}
+          />
           <button
             type="button"
             className={styles.primaryButton}

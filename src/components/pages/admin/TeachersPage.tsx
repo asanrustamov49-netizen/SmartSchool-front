@@ -215,7 +215,11 @@ export function TeachersPage() {
                   <td data-label={t("subjects")} className={cn(styles.cellMuted, styles.cellWrap)}>
                     {subjectNames.length > 0 ? subjectNames.join(", ") : "—"}
                   </td>
-                  <td data-label={t("status")} className={teacher.is_active ? undefined : styles.statusInactive}>
+                  <td
+                  data-label={t("status")}
+                  data-mobile-hidden={teacher.is_active ? "" : undefined}
+                  className={teacher.is_active ? undefined : styles.statusInactive}
+                >
                     {teacher.is_active ? t("active") : t("inactive")}
                   </td>
                   <td data-actions>

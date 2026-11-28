@@ -14,7 +14,6 @@ import { RecentEventsPanel } from "./RecentEventsPanel";
 import { SchoolRatingPanel } from "./SchoolRatingPanel";
 import { TodayLessonsPanel } from "./TodayLessonsPanel";
 import { TodayTasks } from "./TodayTasks";
-import { WelcomeTips } from "./WelcomeTips";
 import scss from "./home.module.scss";
 
 // Каждый пользователь загружает код только своей роли: например, экран системного администратора
@@ -69,7 +68,6 @@ export function RoleDashboard() {
   return (
     <>
       <DashboardHero currentUser={currentUser} />
-      <WelcomeTips currentUser={currentUser} />
       {isSchoolUser && isShown("tasks") && <TodayTasks currentUser={currentUser} />}
       {/* Расписание есть у учителя, ученика и родителя; директор смотрит его в разделе «Расписание». */}
       {["TEACHER", "CLASS_TEACHER", "STUDENT", "PARENT"].includes(currentUser.role) && isShown("lessons") && (

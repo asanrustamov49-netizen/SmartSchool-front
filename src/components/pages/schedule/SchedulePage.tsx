@@ -47,16 +47,35 @@ function WeekState({ query, children }: { query: WeekQuery; children: (week: Sch
   return <>{children(query.data)}</>;
 }
 
+const LAST_CLASS_KEY = "smart-school-schedule-class";
+
+function readLastClass(): number | null {
+  try {
+    const value = Number(window.localStorage.getItem(LAST_CLASS_KEY));
+    return Number.isFinite(value) && value > 0 ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 // Директор и завуч: расписание выбранного класса с добавлением и изменением уроков.
 function AdminSchedule({ bells }: { bells: ScheduleBells }) {
   const t = useTranslations("schedule");
   const classesQuery = useClasses();
   const assignmentsQuery = useJournalAssignments();
-  const [selectedClassId, setSelectedClassId] = useState<number | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(() =>
+    typeof window === "undefined" ? null : readLastClass(),
+  );
   const [draft, setDraft] = useState<LessonDraft | null>(null);
 
   const classes = classesQuery.data ?? [];
-  const classId = selectedClassId ?? classes[0]?.id ?? null;
+  // Без сохранённого выбора — первый класс, где уже назначены учителя: там скорее всего есть уроки,
+  // а не пустая сетка.
+  const assignedClassIds = new Set((assignmentsQuery.data ?? []).map((assignment) => assignment.class_id));
+  const defaultClass = classes.find((schoolClass) => assignedClassIds.has(schoolClass.id)) ?? classes[0];
+  const classId = classes.some((schoolClass) => schoolClass.id === selectedClassId)
+    ? selectedClassId
+    : (defaultClass?.id ?? null);
   const scheduleQuery = useClassSchedule(classId);
   const classAssignments = (assignmentsQuery.data ?? []).filter(
     (assignment) => assignment.class_id === classId,
@@ -80,6 +99,11 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
           onValueChange={(value) => {
             setDraft(null);
             setSelectedClassId(Number(value));
+            try {
+              window.localStorage.setItem(LAST_CLASS_KEY, value);
+            } catch {
+              // Без localStorage выбор просто не запомнится.
+            }
           }}
           options={classes.map((schoolClass) => ({
             value: String(schoolClass.id),
@@ -101,7 +125,9 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
 
       <WeekState query={scheduleQuery}>
         {(week) => (
-          <ScheduleGrid
+          <>
+            {week.lessons.length === 0 && <p className={adminStyles.notice}>{t("emptyClassHint")}</p>}
+            <ScheduleGrid
             lessons={week.lessons}
             bells={bells}
             secondary="teacher"
@@ -110,6 +136,7 @@ function AdminSchedule({ bells }: { bells: ScheduleBells }) {
               setDraft({ lesson, weekday: lesson.weekday, lessonNumber: lesson.lesson_number })
             }
           />
+          </>
         )}
       </WeekState>
     </>
